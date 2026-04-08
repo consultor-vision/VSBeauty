@@ -1,7 +1,8 @@
 import { useState } from "react";
 import Layout from "@/components/Layout";
-import { Menu, Plus, Trash2, Pencil, X, PlusCircle } from "lucide-react";
+import { Menu, Plus, Trash2, Pencil, X, PlusCircle, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -23,6 +24,9 @@ interface Procedimento {
 }
 interface EstoqueItem {
   id: number; produto: string; sistemaMedidas: string; quantidade: number;
+}
+interface ContaPagar {
+  id: number; status: string; dataVencimento: string; categoria: string; item: string; valor: string;
 }
 
 // ── Mock Data ──
@@ -63,6 +67,23 @@ const mockEstoque: EstoqueItem[] = [
 
 const mockProdutos = ["Luva", "Mascara", "Seringas", "Touca", "Gazes", "Espátula", "Pincel"];
 
+const mockContasPagar: ContaPagar[] = [
+  { id: 1, status: "Pago", dataVencimento: "07/02/2026", categoria: "Vitamina", item: "Mounjaro", valor: "R$ 500" },
+  { id: 2, status: "Pago", dataVencimento: "01/02/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300" },
+  { id: 3, status: "Pago", dataVencimento: "01/02/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300" },
+  { id: 4, status: "Atrasado", dataVencimento: "22/01/2026", categoria: "Computador", item: "Teclado", valor: "R$ 50" },
+  { id: 5, status: "Atrasado", dataVencimento: "09/01/2026", categoria: "Salário", item: "Colaborador - Filipe", valor: "R$ 1.000" },
+  { id: 6, status: "Atrasado", dataVencimento: "07/01/2026", categoria: "Vitamina", item: "Mounjaro", valor: "R$ 500" },
+  { id: 7, status: "Pago", dataVencimento: "06/01/2026", categoria: "Bonus", item: "PLR", valor: "R$ 500" },
+  { id: 8, status: "Pago", dataVencimento: "06/01/2026", categoria: "Bonus", item: "PLR", valor: "R$ 500" },
+  { id: 9, status: "Pago", dataVencimento: "01/01/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300" },
+  { id: 10, status: "Atrasado", dataVencimento: "01/01/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300" },
+  { id: 11, status: "Pago", dataVencimento: "23/12/2025", categoria: "Diversos", item: "Festa de Final de Ano da Firma", valor: "R$ 1.600" },
+];
+
+const mockCategorias = ["Aluguel", "Salário", "Diversos", "Energia", "Condominio", "Premiação"];
+const mockItens = ["Salão", "Colaborador - Filipe", "Roupa", "Colaborador - Bianca", "Festa de Final de Ano da Firma", "Presente de Natal"];
+
 const anamnesePerguntas = [
   { pergunta: "Já teve alguma reação ruim em tratamentos estéticos?", complemento: "Qual(is)?" },
   { pergunta: "Já fez alguma cirurgia estética ou reparadora?", complemento: "Quais?" },
@@ -90,7 +111,7 @@ const Gestao = () => {
   const [currentView, setCurrentView] = useState<GestaoView>("colaborador");
   const [showMenu, setShowMenu] = useState(false);
 
-  // Colaborador states
+  // Colaborador
   const [acessoFilter, setAcessoFilter] = useState("liberado");
   const [showNovoColab, setShowNovoColab] = useState(false);
   const [showEditarColab, setShowEditarColab] = useState(false);
@@ -98,115 +119,97 @@ const Gestao = () => {
   const [adminToggle, setAdminToggle] = useState(false);
   const [novoColabForm, setNovoColabForm] = useState({ nome: "", nascimento: "", cpf: "", telefone: "", email: "", admin: false });
 
-  // Procedimento states
+  // Procedimento
   const [showNovoProc, setShowNovoProc] = useState(false);
   const [showEditarProc, setShowEditarProc] = useState(false);
   const [editingProc, setEditingProc] = useState<Procedimento | null>(null);
   const [novoProcForm, setNovoProcForm] = useState({ nome: "", duracao: "", intervalo: "", valor: "", trabalhando: true });
 
-  // Anamnese states
+  // Anamnese
   const [showEditarAnamnese, setShowEditarAnamnese] = useState(false);
   const [editingAnamnese, setEditingAnamnese] = useState<{ pergunta: string; complemento: string } | null>(null);
 
-  // Estoque states
+  // Estoque
   const [showNovoEstoque, setShowNovoEstoque] = useState(false);
   const [novoEstoqueForm, setNovoEstoqueForm] = useState({ produto: "", sistemaMedidas: "", quantidade: "" });
   const [showNovosProdutos, setShowNovosProdutos] = useState(false);
   const [novoProdutoForm, setNovoProdutoForm] = useState({ nome: "", sistemaMedidas: "" });
   const [showEditarProduto, setShowEditarProduto] = useState(false);
   const [editingProdutoNome, setEditingProdutoNome] = useState("");
+  const [showEditarEstoque, setShowEditarEstoque] = useState(false);
+  const [editingEstoque, setEditingEstoque] = useState<EstoqueItem | null>(null);
 
-  const handleEditColab = (c: Colaborador) => {
-    setEditingColab(c);
-    setAdminToggle(c.acessoAdministrativo === "Liberado");
-    setShowEditarColab(true);
-  };
+  // Contas a Pagar
+  const [showNovaContaPagar, setShowNovaContaPagar] = useState(false);
+  const [novaContaForm, setNovaContaForm] = useState({ dataEmissao: "", dataVencimento: "", categoria: "", item: "", valor: "", parcela: "", tipoPagamento: "", status: "Pendente", observacao: "" });
+  const [showNovaCategoria, setShowNovaCategoria] = useState(false);
+  const [novaCategoriaForm, setNovaCategoriaForm] = useState("");
+  const [showNovoItem, setShowNovoItem] = useState(false);
+  const [novoItemForm, setNovoItemForm] = useState("");
 
-  const handleEditProc = (p: Procedimento) => {
-    setEditingProc(p);
-    setShowEditarProc(true);
-  };
+  const handleEditColab = (c: Colaborador) => { setEditingColab(c); setAdminToggle(c.acessoAdministrativo === "Liberado"); setShowEditarColab(true); };
+  const handleEditProc = (p: Procedimento) => { setEditingProc(p); setShowEditarProc(true); };
+  const handleEditAnamnese = (q: { pergunta: string; complemento: string }) => { setEditingAnamnese({ ...q }); setShowEditarAnamnese(true); };
+  const handleEditEstoque = (e: EstoqueItem) => { setEditingEstoque(e); setShowEditarEstoque(true); };
+  const handleMenuSelect = (view: GestaoView) => { setCurrentView(view); setShowMenu(false); };
 
-  const handleEditAnamnese = (q: { pergunta: string; complemento: string }) => {
-    setEditingAnamnese({ ...q });
-    setShowEditarAnamnese(true);
-  };
-
-  const handleMenuSelect = (view: GestaoView) => {
-    setCurrentView(view);
-    setShowMenu(false);
-  };
+  const showNovoCadastroBtn = currentView === "colaborador" || currentView === "procedimento" || currentView === "estoque" || currentView === "contas_pagar";
 
   return (
     <Layout title={`Gestão - ${viewLabels[currentView]}`}>
       <div className="flex flex-col gap-4 relative">
         {/* Top bar */}
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <button onClick={() => setShowMenu(!showMenu)} className="p-2 rounded-lg hover:bg-muted transition-colors">
               <Menu className="w-5 h-5 text-foreground" />
             </button>
-            <Select value={currentView} onValueChange={(v) => setCurrentView(v as GestaoView)}>
-              <SelectTrigger className="w-[180px] bg-input border-border text-foreground h-9">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.entries(viewLabels).map(([k, v]) => (
-                  <SelectItem key={k} value={k}>{v}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all">
-              <Trash2 className="w-4 h-4" />
-            </button>
+
+            {currentView === "contas_pagar" ? (
+              <>
+                <Select><SelectTrigger className="w-[90px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Ano" /></SelectTrigger><SelectContent><SelectItem value="2025">2025</SelectItem><SelectItem value="2026">2026</SelectItem></SelectContent></Select>
+                <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+                <Select><SelectTrigger className="w-[100px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Mês" /></SelectTrigger><SelectContent>{["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"].map((m,i)=>(<SelectItem key={i} value={String(i+1)}>{m}</SelectItem>))}</SelectContent></Select>
+                <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+                <Select><SelectTrigger className="w-[110px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Status" /></SelectTrigger><SelectContent><SelectItem value="pago">Pago</SelectItem><SelectItem value="atrasado">Atrasado</SelectItem><SelectItem value="pendente">Pendente</SelectItem></SelectContent></Select>
+                <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+                <Select><SelectTrigger className="w-[180px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione uma Categoria" /></SelectTrigger><SelectContent>{mockCategorias.map(c=>(<SelectItem key={c} value={c}>{c}</SelectItem>))}</SelectContent></Select>
+                <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+                <Select><SelectTrigger className="w-[160px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione um Item" /></SelectTrigger><SelectContent>{mockItens.map(i=>(<SelectItem key={i} value={i}>{i}</SelectItem>))}</SelectContent></Select>
+                <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+              </>
+            ) : (
+              <>
+                <Select value={currentView} onValueChange={(v) => setCurrentView(v as GestaoView)}>
+                  <SelectTrigger className="w-[180px] bg-input border-border text-foreground h-9"><SelectValue /></SelectTrigger>
+                  <SelectContent>{Object.entries(viewLabels).map(([k, v]) => (<SelectItem key={k} value={k}>{v}</SelectItem>))}</SelectContent>
+                </Select>
+                <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+              </>
+            )}
+
+            {currentView === "colaborador" && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Acesso a Plataforma</span>
+                <Select value={acessoFilter} onValueChange={setAcessoFilter}>
+                  <SelectTrigger className="w-[140px] bg-input border-border text-foreground h-9"><SelectValue /></SelectTrigger>
+                  <SelectContent><SelectItem value="liberado">Liberado</SelectItem><SelectItem value="bloqueado">Bloqueado</SelectItem></SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {currentView === "estoque" && (
+              <Select><SelectTrigger className="w-[200px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione um Produto" /></SelectTrigger><SelectContent>{mockProdutos.map(p=>(<SelectItem key={p} value={p}>{p}</SelectItem>))}</SelectContent></Select>
+            )}
           </div>
 
-          {currentView === "colaborador" && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Acesso a Plataforma</span>
-              <Select value={acessoFilter} onValueChange={setAcessoFilter}>
-                <SelectTrigger className="w-[140px] bg-input border-border text-foreground h-9"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="liberado">Liberado</SelectItem>
-                  <SelectItem value="bloqueado">Bloqueado</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          {currentView === "estoque" && (
-            <div className="flex items-center gap-2">
-              <Select>
-                <SelectTrigger className="w-[200px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione um Produto" /></SelectTrigger>
-                <SelectContent>
-                  {mockProdutos.map((p) => (<SelectItem key={p} value={p}>{p}</SelectItem>))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          {(currentView === "colaborador" || currentView === "procedimento") && (
+          {showNovoCadastroBtn && (
             <button
               onClick={() => {
-                if (currentView === "colaborador") {
-                  setNovoColabForm({ nome: "", nascimento: "", cpf: "", telefone: "", email: "", admin: false });
-                  setShowNovoColab(true);
-                } else {
-                  setNovoProcForm({ nome: "", duracao: "", intervalo: "", valor: "", trabalhando: true });
-                  setShowNovoProc(true);
-                }
-              }}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all"
-            >
-              <Plus className="w-4 h-4" /> Novo Cadastro
-            </button>
-          )}
-
-          {currentView === "estoque" && (
-            <button
-              onClick={() => {
-                setNovoEstoqueForm({ produto: "", sistemaMedidas: "", quantidade: "" });
-                setShowNovoEstoque(true);
+                if (currentView === "colaborador") { setNovoColabForm({ nome: "", nascimento: "", cpf: "", telefone: "", email: "", admin: false }); setShowNovoColab(true); }
+                else if (currentView === "procedimento") { setNovoProcForm({ nome: "", duracao: "", intervalo: "", valor: "", trabalhando: true }); setShowNovoProc(true); }
+                else if (currentView === "estoque") { setNovoEstoqueForm({ produto: "", sistemaMedidas: "", quantidade: "" }); setShowNovoEstoque(true); }
+                else if (currentView === "contas_pagar") { setNovaContaForm({ dataEmissao: "", dataVencimento: "", categoria: "", item: "", valor: "", parcela: "", tipoPagamento: "", status: "Pendente", observacao: "" }); setShowNovaContaPagar(true); }
               }}
               className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all"
             >
@@ -226,33 +229,19 @@ const Gestao = () => {
               </div>
               <div className="p-3 space-y-2">
                 {(Object.keys(viewLabels) as GestaoView[]).map((key) => (
-                  <button
-                    key={key}
-                    onClick={() => handleMenuSelect(key)}
-                    className={`w-full py-2.5 rounded-lg border text-sm font-semibold transition-all ${
-                      currentView === key
-                        ? "bg-gold text-primary-foreground border-gold"
-                        : "bg-gold/15 border-gold text-gold hover:bg-gold/25"
-                    }`}
-                  >
-                    {viewLabels[key]}
-                  </button>
+                  <button key={key} onClick={() => handleMenuSelect(key)} className={`w-full py-2.5 rounded-lg border text-sm font-semibold transition-all ${currentView === key ? "bg-gold text-primary-foreground border-gold" : "bg-gold/15 border-gold text-gold hover:bg-gold/25"}`}>{viewLabels[key]}</button>
                 ))}
               </div>
             </div>
           </>
         )}
 
-        {/* ===== VIEWS ===== */}
-        {currentView === "colaborador" && (
-          <ColaboradorView colaboradores={mockColaboradores} onEdit={handleEditColab} />
-        )}
-        {currentView === "procedimento" && (
-          <ProcedimentoView procedimentos={mockProcedimentos} onEdit={handleEditProc} />
-        )}
+        {/* VIEWS */}
+        {currentView === "colaborador" && <ColaboradorView colaboradores={mockColaboradores} onEdit={handleEditColab} />}
+        {currentView === "procedimento" && <ProcedimentoView procedimentos={mockProcedimentos} onEdit={handleEditProc} />}
         {currentView === "anamnese" && <AnamneseView onEdit={handleEditAnamnese} />}
-        {currentView === "estoque" && <EstoqueView estoque={mockEstoque} />}
-        {currentView === "contas_pagar" && <PlaceholderView title="Contas a Pagar" />}
+        {currentView === "estoque" && <EstoqueView estoque={mockEstoque} onEdit={handleEditEstoque} />}
+        {currentView === "contas_pagar" && <ContasPagarView contas={mockContasPagar} />}
         {currentView === "contas_receber" && <PlaceholderView title="Contas a Receber" />}
       </div>
 
@@ -271,9 +260,7 @@ const Gestao = () => {
               <Input placeholder="Email" value={novoColabForm.email} onChange={(e) => setNovoColabForm(p => ({ ...p, email: e.target.value }))} className="bg-input border-border text-foreground h-10" />
               <div className="flex items-center justify-center gap-3">
                 <span className="text-sm text-muted-foreground">Acesso Administrativo</span>
-                <span className="text-sm">Não</span>
-                <Switch checked={novoColabForm.admin} onCheckedChange={(v) => setNovoColabForm(p => ({ ...p, admin: v }))} />
-                <span className="text-sm">Sim</span>
+                <span className="text-sm">Não</span><Switch checked={novoColabForm.admin} onCheckedChange={(v) => setNovoColabForm(p => ({ ...p, admin: v }))} /><span className="text-sm">Sim</span>
               </div>
             </div>
             <div className="flex justify-center pt-2">
@@ -365,13 +352,8 @@ const Gestao = () => {
           <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Editar Pergunta da Anamnese</DialogTitle></DialogHeader>
           {editingAnamnese && (
             <div className="p-5 space-y-4">
-              <div>
-                <label className="text-xs text-gold mb-1 block">Pergunta da Anamnese</label>
-                <Input value={editingAnamnese.pergunta} onChange={(e) => setEditingAnamnese(p => p ? { ...p, pergunta: e.target.value } : p)} className="bg-input border-border text-foreground h-10" />
-              </div>
-              <div>
-                <Input placeholder="No caso da resposta for sim (opcional)" value={editingAnamnese.complemento} onChange={(e) => setEditingAnamnese(p => p ? { ...p, complemento: e.target.value } : p)} className="bg-input border-border text-foreground h-10" />
-              </div>
+              <div><label className="text-xs text-gold mb-1 block">Pergunta da Anamnese</label><Input value={editingAnamnese.pergunta} onChange={(e) => setEditingAnamnese(p => p ? { ...p, pergunta: e.target.value } : p)} className="bg-input border-border text-foreground h-10" /></div>
+              <Input placeholder="No caso da resposta for sim (opcional)" value={editingAnamnese.complemento} onChange={(e) => setEditingAnamnese(p => p ? { ...p, complemento: e.target.value } : p)} className="bg-input border-border text-foreground h-10" />
               <div className="flex justify-between pt-2">
                 <button className="px-8 py-2.5 rounded-lg bg-destructive text-destructive-foreground font-semibold text-sm hover:bg-destructive/90 transition-all">Excluir</button>
                 <button onClick={() => setShowEditarAnamnese(false)} className="px-12 py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all">Salvar</button>
@@ -386,32 +368,18 @@ const Gestao = () => {
         <DialogContent className="max-w-2xl bg-card border-border p-0">
           <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Novo Estoque</DialogTitle></DialogHeader>
           <div className="p-5 space-y-4">
-            <div>
-              <label className="text-xs text-gold mb-1 block">Produto</label>
+            <div><label className="text-xs text-gold mb-1 block">Produto</label>
               <div className="flex items-center gap-2">
                 <Select value={novoEstoqueForm.produto} onValueChange={(v) => setNovoEstoqueForm(p => ({ ...p, produto: v }))}>
                   <SelectTrigger className="flex-1 bg-input border-border text-foreground h-10"><SelectValue placeholder="Produto" /></SelectTrigger>
-                  <SelectContent>
-                    {mockProdutos.map((p) => (<SelectItem key={p} value={p}>{p}</SelectItem>))}
-                  </SelectContent>
+                  <SelectContent>{mockProdutos.map(p=>(<SelectItem key={p} value={p}>{p}</SelectItem>))}</SelectContent>
                 </Select>
-                <button
-                  onClick={() => { setNovoProdutoForm({ nome: "", sistemaMedidas: "" }); setShowNovosProdutos(true); }}
-                  className="p-2 rounded-full bg-gold/80 text-primary-foreground hover:bg-gold transition-colors"
-                >
-                  <PlusCircle className="w-5 h-5" />
-                </button>
+                <button onClick={() => { setNovoProdutoForm({ nome: "", sistemaMedidas: "" }); setShowNovosProdutos(true); }} className="p-2 rounded-full bg-gold/80 text-primary-foreground hover:bg-gold transition-colors"><PlusCircle className="w-5 h-5" /></button>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs text-gold mb-1 block">Sistema de Medidas</label>
-                <Input placeholder="Sistema de Medidas" value={novoEstoqueForm.sistemaMedidas} onChange={(e) => setNovoEstoqueForm(p => ({ ...p, sistemaMedidas: e.target.value }))} className="bg-input border-border text-foreground h-10" />
-              </div>
-              <div>
-                <label className="text-xs text-gold mb-1 block">Quantidade</label>
-                <Input placeholder="Quantidade" value={novoEstoqueForm.quantidade} onChange={(e) => setNovoEstoqueForm(p => ({ ...p, quantidade: e.target.value }))} className="bg-input border-border text-foreground h-10" />
-              </div>
+              <div><label className="text-xs text-gold mb-1 block">Sistema de Medidas</label><Input placeholder="Sistema de Medidas" value={novoEstoqueForm.sistemaMedidas} onChange={(e) => setNovoEstoqueForm(p => ({ ...p, sistemaMedidas: e.target.value }))} className="bg-input border-border text-foreground h-10" /></div>
+              <div><label className="text-xs text-gold mb-1 block">Quantidade</label><Input placeholder="Quantidade" value={novoEstoqueForm.quantidade} onChange={(e) => setNovoEstoqueForm(p => ({ ...p, quantidade: e.target.value }))} className="bg-input border-border text-foreground h-10" /></div>
             </div>
             <div className="flex justify-center pt-2">
               <button onClick={() => setShowNovoEstoque(false)} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button>
@@ -420,7 +388,26 @@ const Gestao = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Modal Novos Produtos (lista + cadastro) */}
+      <Dialog open={showEditarEstoque} onOpenChange={setShowEditarEstoque}>
+        <DialogContent className="max-w-2xl bg-card border-border p-0">
+          <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Editar Estoque</DialogTitle></DialogHeader>
+          {editingEstoque && (
+            <div className="p-5 space-y-4">
+              <div><label className="text-xs text-gold mb-1 block">Produto</label><Input defaultValue={editingEstoque.produto} className="bg-input border-border text-foreground h-10" /></div>
+              <div className="grid grid-cols-3 gap-3">
+                <div><label className="text-xs text-gold mb-1 block">Sistema de Medidas</label><Input defaultValue={editingEstoque.sistemaMedidas} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Quantidade em Estoque</label><Input defaultValue={String(editingEstoque.quantidade)} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Quantidade Utilizada</label><Input placeholder="Quantidade Utilizada" className="bg-input border-border text-foreground h-10" /></div>
+              </div>
+              <div className="flex justify-between pt-2">
+                <button className="px-8 py-2.5 rounded-lg bg-destructive text-destructive-foreground font-semibold text-sm hover:bg-destructive/90 transition-all">Excluir</button>
+                <button onClick={() => setShowEditarEstoque(false)} className="px-12 py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all">Salvar</button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={showNovosProdutos} onOpenChange={setShowNovosProdutos}>
         <DialogContent className="max-w-lg bg-card border-border p-0">
           <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Novos Produtos</DialogTitle></DialogHeader>
@@ -428,27 +415,16 @@ const Gestao = () => {
             <Input placeholder="Produto" value={novoProdutoForm.nome} onChange={(e) => setNovoProdutoForm(p => ({ ...p, nome: e.target.value }))} className="bg-input border-border text-foreground h-10" />
             <Select value={novoProdutoForm.sistemaMedidas} onValueChange={(v) => setNovoProdutoForm(p => ({ ...p, sistemaMedidas: v }))}>
               <SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue placeholder="Sistema de Medidas" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="unidade">Unidade (Un)</SelectItem>
-                <SelectItem value="miligrama">Miligrama (mg)</SelectItem>
-                <SelectItem value="litro">Litro (L)</SelectItem>
-              </SelectContent>
+              <SelectContent><SelectItem value="unidade">Unidade (Un)</SelectItem><SelectItem value="miligrama">Miligrama (mg)</SelectItem><SelectItem value="litro">Litro (L)</SelectItem></SelectContent>
             </Select>
-            <div className="flex justify-center">
-              <button className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button>
-            </div>
+            <div className="flex justify-center"><button className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button></div>
             <div className="border-t border-border pt-4">
               <h4 className="text-center text-sm font-semibold text-foreground mb-3">Listagem de Produtos</h4>
               <div className="space-y-2 max-h-48 overflow-y-auto">
-                {mockProdutos.map((prod) => (
+                {mockProdutos.map(prod => (
                   <div key={prod} className="flex items-center justify-between px-3 py-2 border-b border-border/50">
                     <span className="text-sm text-foreground">{prod}</span>
-                    <button
-                      onClick={() => { setEditingProdutoNome(prod); setShowEditarProduto(true); }}
-                      className="px-4 py-1.5 rounded-md bg-accent text-accent-foreground text-xs font-semibold hover:bg-accent/80 transition-colors"
-                    >
-                      Editar
-                    </button>
+                    <button onClick={() => { setEditingProdutoNome(prod); setShowEditarProduto(true); }} className="px-4 py-1.5 rounded-md bg-accent text-accent-foreground text-xs font-semibold hover:bg-accent/80 transition-colors">Editar</button>
                   </div>
                 ))}
               </div>
@@ -457,19 +433,117 @@ const Gestao = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Modal Editar Produto */}
       <Dialog open={showEditarProduto} onOpenChange={setShowEditarProduto}>
         <DialogContent className="max-w-md bg-card border-border p-0">
           <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Editar Produto</DialogTitle></DialogHeader>
           <div className="p-5 space-y-4">
             <div className="flex items-center gap-2">
               <Input value={editingProdutoNome} onChange={(e) => setEditingProdutoNome(e.target.value)} className="bg-input border-border text-foreground h-10" />
-              <button className="p-2 rounded bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors">
-                <Trash2 className="w-4 h-4" />
-              </button>
+              <button className="p-2 rounded bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors"><Trash2 className="w-4 h-4" /></button>
             </div>
-            <div className="flex justify-center">
-              <button onClick={() => setShowEditarProduto(false)} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button>
+            <div className="flex justify-center"><button onClick={() => setShowEditarProduto(false)} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button></div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── MODAIS CONTAS A PAGAR ── */}
+      <Dialog open={showNovaContaPagar} onOpenChange={setShowNovaContaPagar}>
+        <DialogContent className="max-w-2xl bg-card border-border p-0 max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Nova Conta a Pagar</DialogTitle></DialogHeader>
+          <div className="p-5 space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div><label className="text-xs text-gold mb-1 block">Data de Emissão</label><Input type="date" placeholder="Selecione uma Data" value={novaContaForm.dataEmissao} onChange={(e) => setNovaContaForm(p => ({ ...p, dataEmissao: e.target.value }))} className="bg-input border-border text-foreground h-10" /></div>
+              <div><label className="text-xs text-gold mb-1 block">Data de Vencimento</label><Input type="date" placeholder="Selecione uma Data" value={novaContaForm.dataVencimento} onChange={(e) => setNovaContaForm(p => ({ ...p, dataVencimento: e.target.value }))} className="bg-input border-border text-foreground h-10" /></div>
+            </div>
+            <div>
+              <label className="text-xs text-gold mb-1 block">Categoria</label>
+              <div className="flex items-center gap-2">
+                <Select value={novaContaForm.categoria} onValueChange={(v) => setNovaContaForm(p => ({ ...p, categoria: v }))}>
+                  <SelectTrigger className="flex-1 bg-input border-border text-foreground h-10"><SelectValue placeholder="Categoria" /></SelectTrigger>
+                  <SelectContent>{mockCategorias.map(c=>(<SelectItem key={c} value={c}>{c}</SelectItem>))}</SelectContent>
+                </Select>
+                <button onClick={() => { setNovaCategoriaForm(""); setShowNovaCategoria(true); }} className="p-2 rounded-full bg-gold/80 text-primary-foreground hover:bg-gold transition-colors"><PlusCircle className="w-5 h-5" /></button>
+              </div>
+            </div>
+            <div>
+              <label className="text-xs text-gold mb-1 block">Item</label>
+              <div className="flex items-center gap-2">
+                <Select value={novaContaForm.item} onValueChange={(v) => setNovaContaForm(p => ({ ...p, item: v }))}>
+                  <SelectTrigger className="flex-1 bg-input border-border text-foreground h-10"><SelectValue placeholder="Item" /></SelectTrigger>
+                  <SelectContent>{mockItens.map(i=>(<SelectItem key={i} value={i}>{i}</SelectItem>))}</SelectContent>
+                </Select>
+                <button onClick={() => { setNovoItemForm(""); setShowNovoItem(true); }} className="p-2 rounded-full bg-gold/80 text-primary-foreground hover:bg-gold transition-colors"><PlusCircle className="w-5 h-5" /></button>
+              </div>
+            </div>
+            <div className="grid grid-cols-4 gap-3">
+              <div><label className="text-xs text-gold mb-1 block">Valor</label><Input placeholder="Valor" value={novaContaForm.valor} onChange={(e) => setNovaContaForm(p => ({ ...p, valor: e.target.value }))} className="bg-input border-border text-foreground h-10" /></div>
+              <div><label className="text-xs text-gold mb-1 block">Parcela</label><Input placeholder="Parcela" value={novaContaForm.parcela} onChange={(e) => setNovaContaForm(p => ({ ...p, parcela: e.target.value }))} className="bg-input border-border text-foreground h-10" /></div>
+              <div><label className="text-xs text-gold mb-1 block">Tipo de Pagamento</label>
+                <Select value={novaContaForm.tipoPagamento} onValueChange={(v) => setNovaContaForm(p => ({ ...p, tipoPagamento: v }))}>
+                  <SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue placeholder="Tipo de Pagamento" /></SelectTrigger>
+                  <SelectContent><SelectItem value="pix">Pix</SelectItem><SelectItem value="boleto">Boleto</SelectItem><SelectItem value="cartao">Cartão</SelectItem><SelectItem value="dinheiro">Dinheiro</SelectItem></SelectContent>
+                </Select>
+              </div>
+              <div><label className="text-xs text-gold mb-1 block">Status</label>
+                <Select value={novaContaForm.status} onValueChange={(v) => setNovaContaForm(p => ({ ...p, status: v }))}>
+                  <SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger>
+                  <SelectContent><SelectItem value="Pendente">Pendente</SelectItem><SelectItem value="Pago">Pago</SelectItem><SelectItem value="Atrasado">Atrasado</SelectItem></SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div><Textarea placeholder="Observação" value={novaContaForm.observacao} onChange={(e) => setNovaContaForm(p => ({ ...p, observacao: e.target.value }))} className="bg-input border-border text-foreground min-h-[100px]" /></div>
+            <div className="flex justify-center pt-2">
+              <button onClick={() => setShowNovaContaPagar(false)} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal Categoria */}
+      <Dialog open={showNovaCategoria} onOpenChange={setShowNovaCategoria}>
+        <DialogContent className="max-w-lg bg-card border-border p-0">
+          <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Categoria</DialogTitle></DialogHeader>
+          <div className="p-5 space-y-4">
+            <div className="flex items-center gap-2">
+              <Input placeholder="Categoria" value={novaCategoriaForm} onChange={(e) => setNovaCategoriaForm(e.target.value)} className="bg-input border-border text-foreground h-10" />
+              <button className="p-2 rounded bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors"><Trash2 className="w-4 h-4" /></button>
+            </div>
+            <div className="flex justify-center"><button className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button></div>
+            <div className="border-t border-border pt-4">
+              <h4 className="text-center text-sm font-semibold text-foreground mb-3">Listagem de Categorias</h4>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {mockCategorias.map(cat => (
+                  <div key={cat} className="flex items-center justify-between px-3 py-2 border-b border-border/50">
+                    <span className="text-sm text-foreground">{cat}</span>
+                    <button className="px-4 py-1.5 rounded-md bg-accent text-accent-foreground text-xs font-semibold hover:bg-accent/80 transition-colors">Editar</button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal Item */}
+      <Dialog open={showNovoItem} onOpenChange={setShowNovoItem}>
+        <DialogContent className="max-w-lg bg-card border-border p-0">
+          <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Item</DialogTitle></DialogHeader>
+          <div className="p-5 space-y-4">
+            <div className="flex items-center gap-2">
+              <Input placeholder="Item" value={novoItemForm} onChange={(e) => setNovoItemForm(e.target.value)} className="bg-input border-border text-foreground h-10" />
+              <button className="p-2 rounded bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors"><Trash2 className="w-4 h-4" /></button>
+            </div>
+            <div className="flex justify-center"><button className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button></div>
+            <div className="border-t border-border pt-4">
+              <h4 className="text-center text-sm font-semibold text-foreground mb-3">Listagem de Categorias</h4>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {mockItens.map(item => (
+                  <div key={item} className="flex items-center justify-between px-3 py-2 border-b border-border/50">
+                    <span className="text-sm text-foreground">{item}</span>
+                    <button className="px-4 py-1.5 rounded-md bg-accent text-accent-foreground text-xs font-semibold hover:bg-accent/80 transition-colors">Editar</button>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </DialogContent>
@@ -503,11 +577,7 @@ const ColaboradorView = ({ colaboradores, onEdit }: { colaboradores: Colaborador
             <TableCell className="text-sm">{c.telefone}</TableCell>
             <TableCell className="text-sm">{c.acessoPlataforma}</TableCell>
             <TableCell className="text-sm">{c.acessoAdministrativo}</TableCell>
-            <TableCell>
-              <button onClick={() => onEdit(c)} className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors">
-                <Pencil className="w-4 h-4 text-accent-foreground" />
-              </button>
-            </TableCell>
+            <TableCell><button onClick={() => onEdit(c)} className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors"><Pencil className="w-4 h-4 text-accent-foreground" /></button></TableCell>
           </TableRow>
         ))}
       </TableBody>
@@ -536,11 +606,7 @@ const ProcedimentoView = ({ procedimentos, onEdit }: { procedimentos: Procedimen
             <TableCell className="text-sm">{p.duracao}</TableCell>
             <TableCell className="text-sm">{p.intervalo}</TableCell>
             <TableCell className="text-sm">{p.trabalhando ? "Sendo Trabalhado" : "Inativo"}</TableCell>
-            <TableCell>
-              <button onClick={() => onEdit(p)} className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors">
-                <Pencil className="w-4 h-4 text-accent-foreground" />
-              </button>
-            </TableCell>
+            <TableCell><button onClick={() => onEdit(p)} className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors"><Pencil className="w-4 h-4 text-accent-foreground" /></button></TableCell>
           </TableRow>
         ))}
       </TableBody>
@@ -553,9 +619,7 @@ const AnamneseView = ({ onEdit }: { onEdit: (q: { pergunta: string; complemento:
     <div className="flex items-center gap-2 mb-4">
       <Select>
         <SelectTrigger className="max-w-lg bg-input border-border text-foreground h-9"><SelectValue placeholder="Pergunta" /></SelectTrigger>
-        <SelectContent>
-          {anamnesePerguntas.map((q, i) => (<SelectItem key={i} value={String(i)}>{q.pergunta}</SelectItem>))}
-        </SelectContent>
+        <SelectContent>{anamnesePerguntas.map((q, i) => (<SelectItem key={i} value={String(i)}>{q.pergunta}</SelectItem>))}</SelectContent>
       </Select>
       <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
     </div>
@@ -570,9 +634,7 @@ const AnamneseView = ({ onEdit }: { onEdit: (q: { pergunta: string; complemento:
           <span className="text-sm text-foreground">{q.pergunta}</span>
           <div className="flex items-center gap-3">
             <span className="text-sm text-muted-foreground">{q.complemento}</span>
-            <button onClick={() => onEdit(q)} className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors">
-              <Pencil className="w-4 h-4 text-accent-foreground" />
-            </button>
+            <button onClick={() => onEdit(q)} className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors"><Pencil className="w-4 h-4 text-accent-foreground" /></button>
           </div>
         </div>
       ))}
@@ -580,7 +642,7 @@ const AnamneseView = ({ onEdit }: { onEdit: (q: { pergunta: string; complemento:
   </div>
 );
 
-const EstoqueView = ({ estoque }: { estoque: EstoqueItem[] }) => (
+const EstoqueView = ({ estoque, onEdit }: { estoque: EstoqueItem[]; onEdit: (e: EstoqueItem) => void }) => (
   <div className="glass-panel p-4 gold-glow">
     <Table>
       <TableHeader>
@@ -597,11 +659,43 @@ const EstoqueView = ({ estoque }: { estoque: EstoqueItem[] }) => (
             <TableCell className="text-sm text-center">{item.produto}</TableCell>
             <TableCell className="text-sm text-center">{item.sistemaMedidas}</TableCell>
             <TableCell className="text-sm text-center">{item.quantidade}</TableCell>
-            <TableCell className="text-center">
-              <button className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors">
-                <Pencil className="w-4 h-4 text-accent-foreground" />
-              </button>
-            </TableCell>
+            <TableCell className="text-center"><button onClick={() => onEdit(item)} className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors"><Pencil className="w-4 h-4 text-accent-foreground" /></button></TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </div>
+);
+
+const ContasPagarView = ({ contas }: { contas: ContaPagar[] }) => (
+  <div className="glass-panel p-4 gold-glow">
+    <div className="flex gap-6 mb-4 text-xs">
+      <span>Total Pago: <span className="text-gold">R$ 4.697,55</span></span>
+      <span>Total a Pagar: <span className="text-foreground">R$ 0,00</span></span>
+      <span>Total Atrasado: <span className="text-destructive">R$ 21.678,99</span></span>
+    </div>
+    <Table>
+      <TableHeader>
+        <TableRow className="border-border hover:bg-transparent">
+          <TableHead className="text-gold text-xs"></TableHead>
+          <TableHead className="text-gold text-xs">Data do Vencimento</TableHead>
+          <TableHead className="text-gold text-xs">Categoria</TableHead>
+          <TableHead className="text-gold text-xs">Item</TableHead>
+          <TableHead className="text-gold text-xs">Valor</TableHead>
+          <TableHead className="text-gold text-xs">Descrição</TableHead>
+          <TableHead className="text-gold text-xs">Editar</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {contas.map((c) => (
+          <TableRow key={c.id} className="border-border hover:bg-muted/30">
+            <TableCell className={`text-sm font-semibold ${c.status === "Pago" ? "text-gold" : "text-destructive"}`}>{c.status}</TableCell>
+            <TableCell className="text-sm">{c.dataVencimento}</TableCell>
+            <TableCell className="text-sm">{c.categoria}</TableCell>
+            <TableCell className="text-sm">{c.item}</TableCell>
+            <TableCell className="text-sm">{c.valor}</TableCell>
+            <TableCell><button className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors"><Search className="w-4 h-4 text-accent-foreground" /></button></TableCell>
+            <TableCell><button className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors"><Pencil className="w-4 h-4 text-accent-foreground" /></button></TableCell>
           </TableRow>
         ))}
       </TableBody>
