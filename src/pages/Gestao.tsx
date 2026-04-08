@@ -165,6 +165,16 @@ const Gestao = () => {
   const [novaCategoriaForm, setNovaCategoriaForm] = useState("");
   const [showNovoItem, setShowNovoItem] = useState(false);
   const [novoItemForm, setNovoItemForm] = useState("");
+  const [showDescricaoPagar, setShowDescricaoPagar] = useState(false);
+  const [descricaoPagarConta, setDescricaoPagarConta] = useState<ContaPagar | null>(null);
+  const [showEditarContaPagar, setShowEditarContaPagar] = useState(false);
+  const [editingContaPagar, setEditingContaPagar] = useState<ContaPagar | null>(null);
+
+  // Contas a Receber
+  const [showDescricaoReceber, setShowDescricaoReceber] = useState(false);
+  const [descricaoReceberConta, setDescricaoReceberConta] = useState<ContaReceber | null>(null);
+  const [showEditarContaReceber, setShowEditarContaReceber] = useState(false);
+  const [editingContaReceber, setEditingContaReceber] = useState<ContaReceber | null>(null);
 
   const handleEditColab = (c: Colaborador) => { setEditingColab(c); setAdminToggle(c.acessoAdministrativo === "Liberado"); setShowEditarColab(true); };
   const handleEditProc = (p: Procedimento) => { setEditingProc(p); setShowEditarProc(true); };
