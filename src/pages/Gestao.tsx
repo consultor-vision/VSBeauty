@@ -194,7 +194,7 @@ const Gestao = () => {
               <Menu className="w-5 h-5 text-foreground" />
             </button>
 
-            {currentView === "contas_pagar" ? (
+            {(currentView === "contas_pagar" || currentView === "contas_receber") ? (
               <>
                 <Select><SelectTrigger className="w-[90px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Ano" /></SelectTrigger><SelectContent><SelectItem value="2025">2025</SelectItem><SelectItem value="2026">2026</SelectItem></SelectContent></Select>
                 <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
@@ -202,10 +202,21 @@ const Gestao = () => {
                 <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
                 <Select><SelectTrigger className="w-[110px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Status" /></SelectTrigger><SelectContent><SelectItem value="pago">Pago</SelectItem><SelectItem value="atrasado">Atrasado</SelectItem><SelectItem value="pendente">Pendente</SelectItem></SelectContent></Select>
                 <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
-                <Select><SelectTrigger className="w-[180px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione uma Categoria" /></SelectTrigger><SelectContent>{mockCategorias.map(c=>(<SelectItem key={c} value={c}>{c}</SelectItem>))}</SelectContent></Select>
-                <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
-                <Select><SelectTrigger className="w-[160px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione um Item" /></SelectTrigger><SelectContent>{mockItens.map(i=>(<SelectItem key={i} value={i}>{i}</SelectItem>))}</SelectContent></Select>
-                <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+                {currentView === "contas_pagar" ? (
+                  <>
+                    <Select><SelectTrigger className="w-[180px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione uma Categoria" /></SelectTrigger><SelectContent>{mockCategorias.map(c=>(<SelectItem key={c} value={c}>{c}</SelectItem>))}</SelectContent></Select>
+                    <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+                    <Select><SelectTrigger className="w-[160px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione um Item" /></SelectTrigger><SelectContent>{mockItens.map(i=>(<SelectItem key={i} value={i}>{i}</SelectItem>))}</SelectContent></Select>
+                    <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+                  </>
+                ) : (
+                  <>
+                    <Select><SelectTrigger className="w-[200px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione o procedimento" /></SelectTrigger><SelectContent>{mockProcedimentos.map(p=>(<SelectItem key={p.id} value={p.nome}>{p.nome}</SelectItem>))}</SelectContent></Select>
+                    <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+                    <Select><SelectTrigger className="w-[180px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione o cliente" /></SelectTrigger><SelectContent>{["Everton","Jota Pe Silva","Filipe Pereira da Silva","Eduardo Yto Cliente","Pinkerton Fagundes","Geraldo Nunes da Silva"].map(c=>(<SelectItem key={c} value={c}>{c}</SelectItem>))}</SelectContent></Select>
+                    <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+                  </>
+                )}
               </>
             ) : (
               <>
