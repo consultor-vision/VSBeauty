@@ -146,6 +146,7 @@ const Index = () => {
 
   // Client search
   const [clientSearch, setClientSearch] = useState("");
+  const [searchField, setSearchField] = useState<"nome" | "cpf" | "telefone" | "email" | "cidade" | "uf">("nome");
 
   const daysInMonth = getDaysInMonth(currentYear, currentMonth);
   const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
@@ -177,13 +178,18 @@ const Index = () => {
   const filteredClients = useMemo(() => {
     if (!clientSearch.trim()) return mockClients;
     const term = clientSearch.toLowerCase();
-    return mockClients.filter(
-      (c) =>
-        c.nome.toLowerCase().includes(term) ||
-        c.cpf.includes(term) ||
-        c.telefone.includes(term)
-    );
-  }, [clientSearch]);
+    return mockClients.filter((c) => {
+      switch (searchField) {
+        case "nome": return c.nome.toLowerCase().includes(term);
+        case "cpf": return c.cpf.includes(term);
+        case "telefone": return c.telefone.includes(term);
+        case "email": return c.email.toLowerCase().includes(term);
+        case "cidade": return c.cidade.toLowerCase().includes(term);
+        case "uf": return c.uf.toLowerCase().includes(term);
+        default: return true;
+      }
+    });
+  }, [clientSearch, searchField]);
 
   // Birthdays this month
   const birthdaysThisMonth = useMemo(() => {
@@ -464,7 +470,7 @@ const Index = () => {
             {/* Search Filters */}
             <div className="p-4 flex flex-wrap gap-3">
               <div className="flex items-center gap-2">
-                <Select>
+                <Select value={searchField} onValueChange={(v) => setSearchField(v as typeof searchField)}>
                   <SelectTrigger className="w-[140px] bg-input border-border">
                     <SelectValue placeholder="Nome" />
                   </SelectTrigger>
@@ -472,6 +478,9 @@ const Index = () => {
                     <SelectItem value="nome">Nome</SelectItem>
                     <SelectItem value="cpf">CPF</SelectItem>
                     <SelectItem value="telefone">Telefone</SelectItem>
+                    <SelectItem value="email">Email</SelectItem>
+                    <SelectItem value="cidade">Cidade</SelectItem>
+                    <SelectItem value="uf">UF</SelectItem>
                   </SelectContent>
                 </Select>
                 <div className="relative flex-1 min-w-[200px]">
