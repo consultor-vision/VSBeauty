@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Layout from "@/components/Layout";
-import { Menu, Plus, Trash2, Pencil, X } from "lucide-react";
+import { Menu, Plus, Trash2, Pencil, X, PlusCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -20,6 +20,9 @@ interface Colaborador {
 }
 interface Procedimento {
   id: number; nome: string; valor: string; duracao: string; intervalo: string; trabalhando: boolean;
+}
+interface EstoqueItem {
+  id: number; produto: string; sistemaMedidas: string; quantidade: number;
 }
 
 // ── Mock Data ──
@@ -48,6 +51,17 @@ const mockProcedimentos: Procedimento[] = [
   { id: 11, nome: "Laser Body", valor: "R$ 100,00", duracao: "60 Min", intervalo: "60 dias", trabalhando: true },
   { id: 12, nome: "Laser Plus", valor: "R$ 250,00", duracao: "45 Min", intervalo: "45 dias", trabalhando: true },
 ];
+
+const mockEstoque: EstoqueItem[] = [
+  { id: 1, produto: "Luva", sistemaMedidas: "Unidade (Un)", quantidade: 54 },
+  { id: 2, produto: "Mascara", sistemaMedidas: "Unidade (Un)", quantidade: 796 },
+  { id: 3, produto: "Touca", sistemaMedidas: "Unidade (Un)", quantidade: 16 },
+  { id: 4, produto: "Gazes", sistemaMedidas: "Unidade (Un)", quantidade: 15 },
+  { id: 5, produto: "Espátula", sistemaMedidas: "Unidade (Un)", quantidade: 7 },
+  { id: 6, produto: "Creme de Limpeza", sistemaMedidas: "Miligrama (mg)", quantidade: 100 },
+];
+
+const mockProdutos = ["Luva", "Mascara", "Seringas", "Touca", "Gazes", "Espátula", "Pincel"];
 
 const anamnesePerguntas = [
   { pergunta: "Já teve alguma reação ruim em tratamentos estéticos?", complemento: "Qual(is)?" },
@@ -90,6 +104,18 @@ const Gestao = () => {
   const [editingProc, setEditingProc] = useState<Procedimento | null>(null);
   const [novoProcForm, setNovoProcForm] = useState({ nome: "", duracao: "", intervalo: "", valor: "", trabalhando: true });
 
+  // Anamnese states
+  const [showEditarAnamnese, setShowEditarAnamnese] = useState(false);
+  const [editingAnamnese, setEditingAnamnese] = useState<{ pergunta: string; complemento: string } | null>(null);
+
+  // Estoque states
+  const [showNovoEstoque, setShowNovoEstoque] = useState(false);
+  const [novoEstoqueForm, setNovoEstoqueForm] = useState({ produto: "", sistemaMedidas: "", quantidade: "" });
+  const [showNovosProdutos, setShowNovosProdutos] = useState(false);
+  const [novoProdutoForm, setNovoProdutoForm] = useState({ nome: "", sistemaMedidas: "" });
+  const [showEditarProduto, setShowEditarProduto] = useState(false);
+  const [editingProdutoNome, setEditingProdutoNome] = useState("");
+
   const handleEditColab = (c: Colaborador) => {
     setEditingColab(c);
     setAdminToggle(c.acessoAdministrativo === "Liberado");
@@ -99,6 +125,11 @@ const Gestao = () => {
   const handleEditProc = (p: Procedimento) => {
     setEditingProc(p);
     setShowEditarProc(true);
+  };
+
+  const handleEditAnamnese = (q: { pergunta: string; complemento: string }) => {
+    setEditingAnamnese({ ...q });
+    setShowEditarAnamnese(true);
   };
 
   const handleMenuSelect = (view: GestaoView) => {
@@ -143,6 +174,17 @@ const Gestao = () => {
             </div>
           )}
 
+          {currentView === "estoque" && (
+            <div className="flex items-center gap-2">
+              <Select>
+                <SelectTrigger className="w-[200px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione um Produto" /></SelectTrigger>
+                <SelectContent>
+                  {mockProdutos.map((p) => (<SelectItem key={p} value={p}>{p}</SelectItem>))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           {(currentView === "colaborador" || currentView === "procedimento") && (
             <button
               onClick={() => {
@@ -157,6 +199,18 @@ const Gestao = () => {
               className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all"
             >
               <Plus className="w-4 h-4" /> Novo Cadastro
+            </button>
+          )}
+
+          {currentView === "estoque" && (
+            <button
+              onClick={() => {
+                setNovoEstoqueForm({ produto: "", sistemaMedidas: "", quantidade: "" });
+                setShowNovoEstoque(true);
+              }}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all"
+            >
+              <PlusCircle className="w-4 h-4" /> Novo Cadastro
             </button>
           )}
         </div>
@@ -196,8 +250,8 @@ const Gestao = () => {
         {currentView === "procedimento" && (
           <ProcedimentoView procedimentos={mockProcedimentos} onEdit={handleEditProc} />
         )}
-        {currentView === "anamnese" && <AnamneseView />}
-        {currentView === "estoque" && <PlaceholderView title="Estoque" />}
+        {currentView === "anamnese" && <AnamneseView onEdit={handleEditAnamnese} />}
+        {currentView === "estoque" && <EstoqueView estoque={mockEstoque} />}
         {currentView === "contas_pagar" && <PlaceholderView title="Contas a Pagar" />}
         {currentView === "contas_receber" && <PlaceholderView title="Contas a Receber" />}
       </div>
@@ -304,6 +358,122 @@ const Gestao = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* ── MODAL ANAMNESE ── */}
+      <Dialog open={showEditarAnamnese} onOpenChange={setShowEditarAnamnese}>
+        <DialogContent className="max-w-2xl bg-card border-border p-0">
+          <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Editar Pergunta da Anamnese</DialogTitle></DialogHeader>
+          {editingAnamnese && (
+            <div className="p-5 space-y-4">
+              <div>
+                <label className="text-xs text-gold mb-1 block">Pergunta da Anamnese</label>
+                <Input value={editingAnamnese.pergunta} onChange={(e) => setEditingAnamnese(p => p ? { ...p, pergunta: e.target.value } : p)} className="bg-input border-border text-foreground h-10" />
+              </div>
+              <div>
+                <Input placeholder="No caso da resposta for sim (opcional)" value={editingAnamnese.complemento} onChange={(e) => setEditingAnamnese(p => p ? { ...p, complemento: e.target.value } : p)} className="bg-input border-border text-foreground h-10" />
+              </div>
+              <div className="flex justify-between pt-2">
+                <button className="px-8 py-2.5 rounded-lg bg-destructive text-destructive-foreground font-semibold text-sm hover:bg-destructive/90 transition-all">Excluir</button>
+                <button onClick={() => setShowEditarAnamnese(false)} className="px-12 py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all">Salvar</button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* ── MODAIS ESTOQUE ── */}
+      <Dialog open={showNovoEstoque} onOpenChange={setShowNovoEstoque}>
+        <DialogContent className="max-w-2xl bg-card border-border p-0">
+          <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Novo Estoque</DialogTitle></DialogHeader>
+          <div className="p-5 space-y-4">
+            <div>
+              <label className="text-xs text-gold mb-1 block">Produto</label>
+              <div className="flex items-center gap-2">
+                <Select value={novoEstoqueForm.produto} onValueChange={(v) => setNovoEstoqueForm(p => ({ ...p, produto: v }))}>
+                  <SelectTrigger className="flex-1 bg-input border-border text-foreground h-10"><SelectValue placeholder="Produto" /></SelectTrigger>
+                  <SelectContent>
+                    {mockProdutos.map((p) => (<SelectItem key={p} value={p}>{p}</SelectItem>))}
+                  </SelectContent>
+                </Select>
+                <button
+                  onClick={() => { setNovoProdutoForm({ nome: "", sistemaMedidas: "" }); setShowNovosProdutos(true); }}
+                  className="p-2 rounded-full bg-gold/80 text-primary-foreground hover:bg-gold transition-colors"
+                >
+                  <PlusCircle className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-gold mb-1 block">Sistema de Medidas</label>
+                <Input placeholder="Sistema de Medidas" value={novoEstoqueForm.sistemaMedidas} onChange={(e) => setNovoEstoqueForm(p => ({ ...p, sistemaMedidas: e.target.value }))} className="bg-input border-border text-foreground h-10" />
+              </div>
+              <div>
+                <label className="text-xs text-gold mb-1 block">Quantidade</label>
+                <Input placeholder="Quantidade" value={novoEstoqueForm.quantidade} onChange={(e) => setNovoEstoqueForm(p => ({ ...p, quantidade: e.target.value }))} className="bg-input border-border text-foreground h-10" />
+              </div>
+            </div>
+            <div className="flex justify-center pt-2">
+              <button onClick={() => setShowNovoEstoque(false)} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal Novos Produtos (lista + cadastro) */}
+      <Dialog open={showNovosProdutos} onOpenChange={setShowNovosProdutos}>
+        <DialogContent className="max-w-lg bg-card border-border p-0">
+          <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Novos Produtos</DialogTitle></DialogHeader>
+          <div className="p-5 space-y-4">
+            <Input placeholder="Produto" value={novoProdutoForm.nome} onChange={(e) => setNovoProdutoForm(p => ({ ...p, nome: e.target.value }))} className="bg-input border-border text-foreground h-10" />
+            <Select value={novoProdutoForm.sistemaMedidas} onValueChange={(v) => setNovoProdutoForm(p => ({ ...p, sistemaMedidas: v }))}>
+              <SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue placeholder="Sistema de Medidas" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="unidade">Unidade (Un)</SelectItem>
+                <SelectItem value="miligrama">Miligrama (mg)</SelectItem>
+                <SelectItem value="litro">Litro (L)</SelectItem>
+              </SelectContent>
+            </Select>
+            <div className="flex justify-center">
+              <button className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button>
+            </div>
+            <div className="border-t border-border pt-4">
+              <h4 className="text-center text-sm font-semibold text-foreground mb-3">Listagem de Produtos</h4>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {mockProdutos.map((prod) => (
+                  <div key={prod} className="flex items-center justify-between px-3 py-2 border-b border-border/50">
+                    <span className="text-sm text-foreground">{prod}</span>
+                    <button
+                      onClick={() => { setEditingProdutoNome(prod); setShowEditarProduto(true); }}
+                      className="px-4 py-1.5 rounded-md bg-accent text-accent-foreground text-xs font-semibold hover:bg-accent/80 transition-colors"
+                    >
+                      Editar
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal Editar Produto */}
+      <Dialog open={showEditarProduto} onOpenChange={setShowEditarProduto}>
+        <DialogContent className="max-w-md bg-card border-border p-0">
+          <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Editar Produto</DialogTitle></DialogHeader>
+          <div className="p-5 space-y-4">
+            <div className="flex items-center gap-2">
+              <Input value={editingProdutoNome} onChange={(e) => setEditingProdutoNome(e.target.value)} className="bg-input border-border text-foreground h-10" />
+              <button className="p-2 rounded bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors">
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="flex justify-center">
+              <button onClick={() => setShowEditarProduto(false)} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };
@@ -329,7 +499,7 @@ const ColaboradorView = ({ colaboradores, onEdit }: { colaboradores: Colaborador
           <TableRow key={c.id} className="border-border hover:bg-muted/30">
             <TableCell className="text-sm">{c.nome}</TableCell>
             <TableCell className="text-sm">{c.cpf}</TableCell>
-            <TableCell className="text-sm text-xs">{c.email}</TableCell>
+            <TableCell className="text-xs">{c.email}</TableCell>
             <TableCell className="text-sm">{c.telefone}</TableCell>
             <TableCell className="text-sm">{c.acessoPlataforma}</TableCell>
             <TableCell className="text-sm">{c.acessoAdministrativo}</TableCell>
@@ -378,7 +548,7 @@ const ProcedimentoView = ({ procedimentos, onEdit }: { procedimentos: Procedimen
   </div>
 );
 
-const AnamneseView = () => (
+const AnamneseView = ({ onEdit }: { onEdit: (q: { pergunta: string; complemento: string }) => void }) => (
   <div className="glass-panel p-4 gold-glow">
     <div className="flex items-center gap-2 mb-4">
       <Select>
@@ -400,13 +570,42 @@ const AnamneseView = () => (
           <span className="text-sm text-foreground">{q.pergunta}</span>
           <div className="flex items-center gap-3">
             <span className="text-sm text-muted-foreground">{q.complemento}</span>
-            <button className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors">
+            <button onClick={() => onEdit(q)} className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors">
               <Pencil className="w-4 h-4 text-accent-foreground" />
             </button>
           </div>
         </div>
       ))}
     </div>
+  </div>
+);
+
+const EstoqueView = ({ estoque }: { estoque: EstoqueItem[] }) => (
+  <div className="glass-panel p-4 gold-glow">
+    <Table>
+      <TableHeader>
+        <TableRow className="border-border hover:bg-transparent">
+          <TableHead className="text-gold text-xs text-center">Produtos</TableHead>
+          <TableHead className="text-gold text-xs text-center">Sistema de Medidas</TableHead>
+          <TableHead className="text-gold text-xs text-center">Quantidade</TableHead>
+          <TableHead className="text-gold text-xs text-center">Editar</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {estoque.map((item) => (
+          <TableRow key={item.id} className="border-border hover:bg-muted/30">
+            <TableCell className="text-sm text-center">{item.produto}</TableCell>
+            <TableCell className="text-sm text-center">{item.sistemaMedidas}</TableCell>
+            <TableCell className="text-sm text-center">{item.quantidade}</TableCell>
+            <TableCell className="text-center">
+              <button className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors">
+                <Pencil className="w-4 h-4 text-accent-foreground" />
+              </button>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   </div>
 );
 
