@@ -1,7 +1,7 @@
 const Index = () => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
-      <h1 className="text-6xl font-bold text-primary">Filipe</h1>
+      <h1 className="text-6xl font-bold text-primary">Lucas</h1>
     </div>
   );
 };
