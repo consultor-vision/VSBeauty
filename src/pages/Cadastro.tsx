@@ -743,6 +743,118 @@ const Cadastro = () => {
           </ScrollArea>
         </DialogContent>
       </Dialog>
+
+      {/* ========== NOVO CADASTRO MODAL ========== */}
+      <Dialog open={showNovoCadastro} onOpenChange={setShowNovoCadastro}>
+        <DialogContent className="max-w-2xl bg-card border-border p-0">
+          <DialogHeader className="p-5 pb-0">
+            <DialogTitle className="text-foreground">Novo Cadastro</DialogTitle>
+          </DialogHeader>
+          <div className="p-5 space-y-4">
+            <div className="flex items-start gap-4">
+              <button className="w-14 h-14 rounded-full bg-gold/20 border border-gold flex items-center justify-center shrink-0 hover:bg-gold/30 transition-colors">
+                <Upload className="w-6 h-6 text-gold" />
+              </button>
+              <div className="flex-1">
+                <Input placeholder="Nome Completo" value={novoCadastro.nome} onChange={(e) => setNovoCadastro((p) => ({ ...p, nome: e.target.value }))} className="bg-input border-border text-foreground h-9" />
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <Input placeholder="Telefone" value={novoCadastro.telefone} onChange={(e) => setNovoCadastro((p) => ({ ...p, telefone: e.target.value }))} className="bg-input border-border text-foreground h-9" />
+              <Input placeholder="Email" value={novoCadastro.email} onChange={(e) => setNovoCadastro((p) => ({ ...p, email: e.target.value }))} className="bg-input border-border text-foreground h-9" />
+              <Input placeholder="Instagram" value={novoCadastro.instagram} onChange={(e) => setNovoCadastro((p) => ({ ...p, instagram: e.target.value }))} className="bg-input border-border text-foreground h-9" />
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <Input placeholder="Insira a Data de Nascimento" value={novoCadastro.nascimento} onChange={(e) => setNovoCadastro((p) => ({ ...p, nascimento: e.target.value }))} className="bg-input border-border text-foreground h-9" />
+              <Select value={novoCadastro.genero || undefined} onValueChange={(v) => setNovoCadastro((p) => ({ ...p, genero: v }))}>
+                <SelectTrigger className="bg-input border-border text-foreground h-9">
+                  <SelectValue placeholder="Gênero" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="feminino">Feminino</SelectItem>
+                  <SelectItem value="masculino">Masculino</SelectItem>
+                  <SelectItem value="outro">Outro</SelectItem>
+                </SelectContent>
+              </Select>
+              <Input placeholder="CPF" value={novoCadastro.cpf} onChange={(e) => setNovoCadastro((p) => ({ ...p, cpf: e.target.value }))} className="bg-input border-border text-foreground h-9" />
+            </div>
+            <div className="flex items-center justify-center gap-3">
+              <Input placeholder="CEP" value={novoCadastro.cep} onChange={(e) => setNovoCadastro((p) => ({ ...p, cep: e.target.value }))} className="w-[200px] bg-input border-border text-foreground h-9" />
+              <button className="h-9 w-9 rounded-md bg-accent border border-gold/40 flex items-center justify-center text-gold hover:bg-accent/80 transition-colors">→</button>
+            </div>
+            <div className="flex justify-center pt-2">
+              <button onClick={() => setShowNovoCadastro(false)} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">
+                Salvar
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ========== NOVO AGENDAMENTO MODAL ========== */}
+      <Dialog open={showNovoAgendamento} onOpenChange={setShowNovoAgendamento}>
+        <DialogContent className="max-w-2xl bg-card border-border p-0">
+          <DialogHeader className="p-5 pb-0">
+            <DialogTitle className="text-foreground">Novo Agendamento</DialogTitle>
+          </DialogHeader>
+          <div className="p-5 space-y-4">
+            {selectedClient && (
+              <p className="text-sm text-center text-foreground">
+                Nome: <span className="text-gold">{selectedClient.nome}</span>
+                {" | "}Data de Nascimento: <span className="text-gold">{selectedClient.nascimento}</span>
+                {" | "}CPF: <span className="text-gold">{selectedClient.cpf}</span>
+              </p>
+            )}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs text-gold mb-1 block">Escolha o Procedimento do Cliente</label>
+                <Select value={novoAgendamento.procedimento || undefined} onValueChange={(v) => setNovoAgendamento((p) => ({ ...p, procedimento: v }))}>
+                  <SelectTrigger className="bg-input border-border text-foreground h-9">
+                    <SelectValue placeholder="Procedimento" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {procedimentosList.map((p) => (
+                      <SelectItem key={p} value={p.toLowerCase()}>{p}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-xs text-gold mb-1 block">Escolha o Profissional</label>
+                <Select value={novoAgendamento.profissional || undefined} onValueChange={(v) => setNovoAgendamento((p) => ({ ...p, profissional: v }))}>
+                  <SelectTrigger className="bg-input border-border text-foreground h-9">
+                    <SelectValue placeholder="Profissionais" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="filipe">Filipe Pereira da Silva</SelectItem>
+                    <SelectItem value="alan">Alan Mazzonelis</SelectItem>
+                    <SelectItem value="eduardo">Eduardo Yto</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="text-xs text-gold mb-1 block">Data para o agendamento</label>
+                <Input type="date" value={novoAgendamento.data} onChange={(e) => setNovoAgendamento((p) => ({ ...p, data: e.target.value }))} className="bg-input border-border text-foreground h-9" />
+              </div>
+              <div>
+                <label className="text-xs text-gold mb-1 block">Horário de Início</label>
+                <Input type="time" placeholder="Defina o Horário" value={novoAgendamento.horarioInicio} onChange={(e) => setNovoAgendamento((p) => ({ ...p, horarioInicio: e.target.value }))} className="bg-input border-border text-foreground h-9" />
+              </div>
+              <div>
+                <label className="text-xs text-gold mb-1 block">Horário de Fechamento</label>
+                <Input type="time" placeholder="Defina o Horário" value={novoAgendamento.horarioFechamento} onChange={(e) => setNovoAgendamento((p) => ({ ...p, horarioFechamento: e.target.value }))} className="bg-input border-border text-foreground h-9" />
+              </div>
+            </div>
+            <div className="flex justify-center pt-2">
+              <button onClick={() => setShowNovoAgendamento(false)} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">
+                Salvar
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };
