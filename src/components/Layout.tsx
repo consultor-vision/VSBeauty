@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Calendar, Users, TrendingUp, Settings, BarChart3, Menu, User } from "lucide-react";
 
 const navItems = [
-  { label: "Agenda", path: "/", icon: Calendar },
+  { label: "Agenda", path: "/dashboard", icon: Calendar },
   { label: "Cadastro", path: "/cadastro", icon: Users },
   { label: "Evolução", path: "/evolucao", icon: TrendingUp },
   { label: "Gestão", path: "/gestao", icon: Settings },
