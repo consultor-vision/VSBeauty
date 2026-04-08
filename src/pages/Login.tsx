@@ -15,23 +15,7 @@ const Login = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
-      toast({
-        title: "Campos obrigatórios",
-        description: "Por favor, preencha e-mail e senha.",
-        variant: "destructive",
-      });
-      return;
-    }
-    setLoading(true);
-    // TODO: Connect to Supabase Auth
-    setTimeout(() => {
-      setLoading(false);
-      toast({
-        title: "Em breve",
-        description: "A autenticação será conectada ao Lovable Cloud.",
-      });
-    }, 1200);
+    navigate("/dashboard");
   };
 
   return (
