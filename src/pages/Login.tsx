@@ -1,40 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 
-const WHATSAPP_NUMBER = "5511999999999";
-const WHATSAPP_MESSAGE = encodeURIComponent(
-  "Olá, gostaria de saber mais informações sobre o Vision Smart Beauty!"
-);
+
+const WHATSAPP_LINK = "https://api.whatsapp.com/send?phone=5511951761388&text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20informa%C3%A7%C3%B5es%20sobre%20o%20Vision%20Smart%20Beauty!";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
-      toast({
-        title: "Campos obrigatórios",
-        description: "Por favor, preencha e-mail e senha.",
-        variant: "destructive",
-      });
-      return;
-    }
-    setLoading(true);
-    // TODO: Connect to Supabase Auth
-    setTimeout(() => {
-      setLoading(false);
-      toast({
-        title: "Em breve",
-        description: "A autenticação será conectada ao Lovable Cloud.",
-      });
-    }, 1200);
+    navigate("/dashboard");
   };
 
   return (
@@ -118,22 +97,14 @@ const Login = () => {
           <button
             id="botaoLogin"
             type="submit"
-            disabled={loading}
-            className="w-full h-12 rounded-xl text-sm font-semibold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60"
+            className="w-full h-12 rounded-xl text-sm font-semibold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
             style={{
               background: "linear-gradient(135deg, #B38B47 0%, #D4AF37 50%, #E5C15A 100%)",
               color: "#07111B",
               boxShadow: "0 4px 20px rgba(179,139,71,0.3)",
             }}
           >
-            {loading ? (
-              <span className="inline-flex items-center gap-2">
-                <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                Entrando...
-              </span>
-            ) : (
-              "Login"
-            )}
+            Login
           </button>
         </form>
 
@@ -155,7 +126,7 @@ const Login = () => {
             Não possui uma conta?{" "}
             <a
               id="botaoContatoWhatsApp"
-              href={`https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}`}
+              href={WHATSAPP_LINK}
               target="_blank"
               rel="noopener noreferrer"
               className="font-semibold tracking-wide transition-colors duration-200 hover:underline"
