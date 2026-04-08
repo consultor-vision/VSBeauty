@@ -27,6 +27,11 @@ interface EstoqueItem {
 }
 interface ContaPagar {
   id: number; status: string; dataVencimento: string; categoria: string; item: string; valor: string;
+  dataEmissao: string; tipoPagamento: string; parcela: string; descricao: string;
+}
+interface ContaReceber {
+  id: number; status: string; dataVencimento: string; procedimento: string; cliente: string; valor: string;
+  dataEmissao: string; tipoPagamento: string; parcela: string; descricao: string; qtdSessoes: string; statusFinanceiro: string;
 }
 
 // ── Mock Data ──
@@ -68,17 +73,31 @@ const mockEstoque: EstoqueItem[] = [
 const mockProdutos = ["Luva", "Mascara", "Seringas", "Touca", "Gazes", "Espátula", "Pincel"];
 
 const mockContasPagar: ContaPagar[] = [
-  { id: 1, status: "Pago", dataVencimento: "07/02/2026", categoria: "Vitamina", item: "Mounjaro", valor: "R$ 500" },
-  { id: 2, status: "Pago", dataVencimento: "01/02/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300" },
-  { id: 3, status: "Pago", dataVencimento: "01/02/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300" },
-  { id: 4, status: "Atrasado", dataVencimento: "22/01/2026", categoria: "Computador", item: "Teclado", valor: "R$ 50" },
-  { id: 5, status: "Atrasado", dataVencimento: "09/01/2026", categoria: "Salário", item: "Colaborador - Filipe", valor: "R$ 1.000" },
-  { id: 6, status: "Atrasado", dataVencimento: "07/01/2026", categoria: "Vitamina", item: "Mounjaro", valor: "R$ 500" },
-  { id: 7, status: "Pago", dataVencimento: "06/01/2026", categoria: "Bonus", item: "PLR", valor: "R$ 500" },
-  { id: 8, status: "Pago", dataVencimento: "06/01/2026", categoria: "Bonus", item: "PLR", valor: "R$ 500" },
-  { id: 9, status: "Pago", dataVencimento: "01/01/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300" },
-  { id: 10, status: "Atrasado", dataVencimento: "01/01/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300" },
-  { id: 11, status: "Pago", dataVencimento: "23/12/2025", categoria: "Diversos", item: "Festa de Final de Ano da Firma", valor: "R$ 1.600" },
+  { id: 1, status: "Pago", dataVencimento: "07/02/2026", categoria: "Vitamina", item: "Mounjaro", valor: "R$ 500", dataEmissao: "06/01/2026", tipoPagamento: "Cartão de Crédito", parcela: "2", descricao: "Injeção para Emagrecimento.Pago" },
+  { id: 2, status: "Pago", dataVencimento: "01/02/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300", dataEmissao: "01/01/2026", tipoPagamento: "Pix", parcela: "1", descricao: "" },
+  { id: 3, status: "Pago", dataVencimento: "01/02/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300", dataEmissao: "01/01/2026", tipoPagamento: "Pix", parcela: "1", descricao: "" },
+  { id: 4, status: "Atrasado", dataVencimento: "22/01/2026", categoria: "Computador", item: "Teclado", valor: "R$ 50", dataEmissao: "01/01/2026", tipoPagamento: "Boleto", parcela: "1", descricao: "" },
+  { id: 5, status: "Atrasado", dataVencimento: "09/01/2026", categoria: "Salário", item: "Colaborador - Filipe", valor: "R$ 1.000", dataEmissao: "01/01/2026", tipoPagamento: "Pix", parcela: "1", descricao: "" },
+  { id: 6, status: "Atrasado", dataVencimento: "07/01/2026", categoria: "Vitamina", item: "Mounjaro", valor: "R$ 500", dataEmissao: "01/01/2026", tipoPagamento: "Cartão", parcela: "1", descricao: "" },
+  { id: 7, status: "Pago", dataVencimento: "06/01/2026", categoria: "Bonus", item: "PLR", valor: "R$ 500", dataEmissao: "01/01/2026", tipoPagamento: "Pix", parcela: "1", descricao: "" },
+  { id: 8, status: "Pago", dataVencimento: "06/01/2026", categoria: "Bonus", item: "PLR", valor: "R$ 500", dataEmissao: "01/01/2026", tipoPagamento: "Pix", parcela: "1", descricao: "" },
+  { id: 9, status: "Pago", dataVencimento: "01/01/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300", dataEmissao: "01/12/2025", tipoPagamento: "Dinheiro", parcela: "1", descricao: "" },
+  { id: 10, status: "Atrasado", dataVencimento: "01/01/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300", dataEmissao: "01/12/2025", tipoPagamento: "Pix", parcela: "1", descricao: "" },
+  { id: 11, status: "Pago", dataVencimento: "23/12/2025", categoria: "Diversos", item: "Festa de Final de Ano da Firma", valor: "R$ 1.600", dataEmissao: "01/12/2025", tipoPagamento: "Pix", parcela: "1", descricao: "" },
+];
+
+const mockContasReceber: ContaReceber[] = [
+  { id: 1, status: "Pendente", dataVencimento: "09/04/2026", procedimento: "Harmonização Facial", cliente: "Everton", valor: "R$ 15.000,00", dataEmissao: "09/02/2026", tipoPagamento: "Cartão de Crédito Recorrente", parcela: "3", descricao: "Observacao", qtdSessoes: "3", statusFinanceiro: "Pendente" },
+  { id: 2, status: "Pago", dataVencimento: "31/03/2026", procedimento: "Bioestimulador de Colágeno", cliente: "Jota Pe Silva", valor: "R$ 1.500,00", dataEmissao: "01/03/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Pago" },
+  { id: 3, status: "Pago", dataVencimento: "31/03/2026", procedimento: "Botox", cliente: "Filipe Pereira da Silva", valor: "R$ 1.000,00", dataEmissao: "01/03/2026", tipoPagamento: "Cartão", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Pago" },
+  { id: 4, status: "Pago", dataVencimento: "30/03/2026", procedimento: "Dreno Detox", cliente: "Eduardo Yto Cliente", valor: "R$ 1.250,00", dataEmissao: "01/03/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Pago" },
+  { id: 5, status: "Atrasado", dataVencimento: "19/03/2026", procedimento: "Bioestimulador de Colágeno", cliente: "Everton", valor: "R$ 750,00", dataEmissao: "01/03/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Atrasado" },
+  { id: 6, status: "Atrasado", dataVencimento: "09/03/2026", procedimento: "Harmonização Facial", cliente: "Everton", valor: "R$ 15.000,00", dataEmissao: "01/03/2026", tipoPagamento: "Cartão", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Atrasado" },
+  { id: 7, status: "Pago", dataVencimento: "05/03/2026", procedimento: "Botox", cliente: "Pinkerton Fagundes", valor: "R$ 1.000,00", dataEmissao: "01/03/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Pago" },
+  { id: 8, status: "Atrasado", dataVencimento: "27/02/2026", procedimento: "Tratamentos para Celulite", cliente: "Eduardo Yto Cliente", valor: "R$ 500,00", dataEmissao: "01/02/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Atrasado" },
+  { id: 9, status: "Atrasado", dataVencimento: "22/02/2026", procedimento: "Botox premium", cliente: "Geraldo Nunes da Silva", valor: "R$ 2.000,00", dataEmissao: "01/02/2026", tipoPagamento: "Boleto", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Atrasado" },
+  { id: 10, status: "Atrasado", dataVencimento: "13/02/2026", procedimento: "Botox (Toxina Botulínica)", cliente: "teste 13-02", valor: "R$ 2.000,00", dataEmissao: "01/02/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Atrasado" },
+  { id: 11, status: "Atrasado", dataVencimento: "09/02/2026", procedimento: "Harmonização Facial", cliente: "Everton", valor: "R$ 15.000,00", dataEmissao: "09/02/2026", tipoPagamento: "Cartão de Crédito Recorrente", parcela: "3", descricao: "Observacao", qtdSessoes: "3", statusFinanceiro: "Pendente" },
 ];
 
 const mockCategorias = ["Aluguel", "Salário", "Diversos", "Energia", "Condominio", "Premiação"];
