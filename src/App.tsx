@@ -5,6 +5,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import SplashVideo from "./components/SplashVideo";
+import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
 import Index from "./pages/Index";
 import Cadastro from "./pages/Cadastro";
 import Evolucao from "./pages/Evolucao";
@@ -28,7 +30,10 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/esqueci-senha" element={<ForgotPassword />} />
+            <Route path="/dashboard" element={<Index />} />
             <Route path="/cadastro" element={<Cadastro />} />
             <Route path="/evolucao" element={<Evolucao />} />
             <Route path="/gestao" element={<Gestao />} />
