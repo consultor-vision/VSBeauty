@@ -193,10 +193,12 @@ const Index = () => {
 
   // Birthdays this month
   const birthdaysThisMonth = useMemo(() => {
-    return mockClients.filter((c) => {
-      const month = new Date(c.dataNascimento).getMonth();
-      return month === currentMonth;
-    });
+    return mockClients
+      .filter((c) => {
+        const month = new Date(c.dataNascimento).getMonth();
+        return month === currentMonth;
+      })
+      .sort((a, b) => new Date(a.dataNascimento).getDate() - new Date(b.dataNascimento).getDate());
   }, [currentMonth]);
 
   const prevMonth = () => {
