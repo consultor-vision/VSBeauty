@@ -5,6 +5,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import SplashVideo from "./components/SplashVideo";
+import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
 import Index from "./pages/Index";
 import Cadastro from "./pages/Cadastro";
 import Evolucao from "./pages/Evolucao";
