@@ -588,6 +588,144 @@ const Gestao = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* ── DESCRIÇÃO CONTA A PAGAR ── */}
+      <Dialog open={showDescricaoPagar} onOpenChange={setShowDescricaoPagar}>
+        <DialogContent className="max-w-2xl bg-card border-border p-0">
+          <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Descrição</DialogTitle></DialogHeader>
+          {descricaoPagarConta && (
+            <div className="p-5 space-y-6">
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div><span className="text-gold text-xs block">Data de Emissão</span><span className="text-sm text-foreground">{descricaoPagarConta.dataEmissao}</span></div>
+                <div><span className="text-gold text-xs block">Data de Vencimento</span><span className="text-sm text-foreground">{descricaoPagarConta.dataVencimento}</span></div>
+                <div><span className="text-gold text-xs block">Descrição</span><span className="text-sm text-foreground">{descricaoPagarConta.descricao || "—"}</span></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-center">
+                <div><span className="text-gold text-xs block">Tipo de Pagamento</span><span className="text-sm text-foreground">{descricaoPagarConta.tipoPagamento}</span></div>
+                <div><span className="text-gold text-xs block">Parcela</span><span className="text-sm text-foreground">{descricaoPagarConta.parcela}</span></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-center">
+                <div><span className="text-gold text-xs block">Categoria</span><span className="text-sm text-foreground">{descricaoPagarConta.categoria}</span></div>
+                <div><span className="text-gold text-xs block">Item</span><span className="text-sm text-foreground">{descricaoPagarConta.item}</span></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-center">
+                <div><span className="text-gold text-xs block">Valor</span><span className="text-sm text-foreground">{descricaoPagarConta.valor}</span></div>
+                <div><span className="text-gold text-xs block">Status</span><span className="text-sm text-foreground">{descricaoPagarConta.status}</span></div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* ── EDITAR CONTA A PAGAR ── */}
+      <Dialog open={showEditarContaPagar} onOpenChange={setShowEditarContaPagar}>
+        <DialogContent className="max-w-2xl bg-card border-border p-0 max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Editar Conta a Pagar</DialogTitle></DialogHeader>
+          {editingContaPagar && (
+            <div className="p-5 space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="text-xs text-gold mb-1 block">Data de Emissão</label><Input defaultValue={editingContaPagar.dataEmissao} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Data de Vencimento</label><Input defaultValue={editingContaPagar.dataVencimento} className="bg-input border-border text-foreground h-10" /></div>
+              </div>
+              <div><label className="text-xs text-gold mb-1 block">Categoria</label>
+                <div className="flex items-center gap-2">
+                  <Select defaultValue={editingContaPagar.categoria}><SelectTrigger className="flex-1 bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent>{mockCategorias.map(c=>(<SelectItem key={c} value={c}>{c}</SelectItem>))}</SelectContent></Select>
+                  <button className="p-2 rounded-full bg-gold/80 text-primary-foreground hover:bg-gold transition-colors"><PlusCircle className="w-5 h-5" /></button>
+                </div>
+              </div>
+              <div><label className="text-xs text-gold mb-1 block">Item</label>
+                <div className="flex items-center gap-2">
+                  <Select defaultValue={editingContaPagar.item}><SelectTrigger className="flex-1 bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent>{mockItens.map(i=>(<SelectItem key={i} value={i}>{i}</SelectItem>))}</SelectContent></Select>
+                  <button className="p-2 rounded-full bg-gold/80 text-primary-foreground hover:bg-gold transition-colors"><PlusCircle className="w-5 h-5" /></button>
+                </div>
+              </div>
+              <div className="grid grid-cols-4 gap-3">
+                <div><label className="text-xs text-gold mb-1 block">Valor</label><Input defaultValue={editingContaPagar.valor} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Parcela</label><Input defaultValue={editingContaPagar.parcela} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Tipo de Pagamento</label>
+                  <Select defaultValue={editingContaPagar.tipoPagamento}><SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Pix">Pix</SelectItem><SelectItem value="Boleto">Boleto</SelectItem><SelectItem value="Cartão">Cartão</SelectItem><SelectItem value="Cartão de Crédito">Cartão de Crédito</SelectItem><SelectItem value="Dinheiro">Dinheiro</SelectItem></SelectContent></Select>
+                </div>
+                <div><label className="text-xs text-gold mb-1 block">Status</label>
+                  <Select defaultValue={editingContaPagar.status}><SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Pendente">Pendente</SelectItem><SelectItem value="Pago">Pago</SelectItem><SelectItem value="Atrasado">Atrasado</SelectItem></SelectContent></Select>
+                </div>
+              </div>
+              <Textarea defaultValue={editingContaPagar.descricao} placeholder="Observação" className="bg-input border-border text-foreground min-h-[100px]" />
+              <div className="flex justify-between pt-2">
+                <button className="px-8 py-2.5 rounded-lg bg-destructive text-destructive-foreground font-semibold text-sm hover:bg-destructive/90 transition-all">Excluir</button>
+                <button onClick={() => setShowEditarContaPagar(false)} className="px-12 py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all">Salvar</button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* ── DESCRIÇÃO CONTA A RECEBER ── */}
+      <Dialog open={showDescricaoReceber} onOpenChange={setShowDescricaoReceber}>
+        <DialogContent className="max-w-2xl bg-card border-border p-0">
+          <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Descrição</DialogTitle></DialogHeader>
+          {descricaoReceberConta && (
+            <div className="p-5 space-y-6">
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div><span className="text-gold text-xs block">Data de Emissão</span><span className="text-sm text-foreground">{descricaoReceberConta.dataEmissao}</span></div>
+                <div><span className="text-gold text-xs block">Data de Vencimento</span><span className="text-sm text-foreground">{descricaoReceberConta.dataVencimento}</span></div>
+                <div><span className="text-gold text-xs block">Descrição</span><span className="text-sm text-foreground">{descricaoReceberConta.descricao || "—"}</span></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-center">
+                <div><span className="text-gold text-xs block">Tipo de Pagamento</span><span className="text-sm text-foreground">{descricaoReceberConta.tipoPagamento}</span></div>
+                <div><span className="text-gold text-xs block">Parcela</span><span className="text-sm text-foreground">{descricaoReceberConta.parcela}</span></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-center">
+                <div><span className="text-gold text-xs block">Categoria</span><span className="text-sm text-foreground">{descricaoReceberConta.procedimento}</span></div>
+                <div><span className="text-gold text-xs block">Item</span><span className="text-sm text-foreground">{descricaoReceberConta.cliente}</span></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-center">
+                <div><span className="text-gold text-xs block">Valor</span><span className="text-sm text-foreground">{descricaoReceberConta.valor}</span></div>
+                <div><span className="text-gold text-xs block">Status Financeiro</span><span className="text-sm text-foreground">{descricaoReceberConta.statusFinanceiro}</span></div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* ── EDITAR CONTA A RECEBER ── */}
+      <Dialog open={showEditarContaReceber} onOpenChange={setShowEditarContaReceber}>
+        <DialogContent className="max-w-2xl bg-card border-border p-0 max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Editar Contas a Receber</DialogTitle></DialogHeader>
+          {editingContaReceber && (
+            <div className="p-5 space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="text-xs text-gold mb-1 block">Data de Emissão</label><Input defaultValue={editingContaReceber.dataEmissao} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Data de Vencimento</label><Input defaultValue={editingContaReceber.dataVencimento} className="bg-input border-border text-foreground h-10" /></div>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div><label className="text-xs text-gold mb-1 block">Categoria</label><Input defaultValue={editingContaReceber.procedimento} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Item</label><Input defaultValue={editingContaReceber.cliente} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Quantidade de Sessões</label><Input defaultValue={editingContaReceber.qtdSessoes} className="bg-input border-border text-foreground h-10" /></div>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div><label className="text-xs text-gold mb-1 block">Valor de Procedimento</label><Input defaultValue={editingContaReceber.valor} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Forma de Pagamento</label>
+                  <Select defaultValue={editingContaReceber.tipoPagamento}><SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Pix">Pix</SelectItem><SelectItem value="Boleto">Boleto</SelectItem><SelectItem value="Cartão">Cartão</SelectItem><SelectItem value="Cartão de Crédito Recorrente">Cartão de Crédito Recorrente</SelectItem><SelectItem value="Dinheiro">Dinheiro</SelectItem></SelectContent></Select>
+                </div>
+                <div><label className="text-xs text-gold mb-1 block">Parcelas</label><Input defaultValue={editingContaReceber.parcela} className="bg-input border-border text-foreground h-10" /></div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="text-xs text-gold mb-1 block">Status do Procedimento</label>
+                  <Select defaultValue={editingContaReceber.status}><SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Pendente">Pendente</SelectItem><SelectItem value="Pago">Pago</SelectItem><SelectItem value="Atrasado">Atrasado</SelectItem></SelectContent></Select>
+                </div>
+                <div><label className="text-xs text-gold mb-1 block">Status Financeiro</label>
+                  <Select defaultValue={editingContaReceber.statusFinanceiro}><SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Pendente">Pendente</SelectItem><SelectItem value="Pago">Pago</SelectItem><SelectItem value="Atrasado">Atrasado</SelectItem></SelectContent></Select>
+                </div>
+              </div>
+              <Textarea defaultValue={editingContaReceber.descricao} placeholder="Observação" className="bg-input border-border text-foreground min-h-[100px]" />
+              <div className="flex justify-between pt-2">
+                <button className="px-8 py-2.5 rounded-lg bg-destructive text-destructive-foreground font-semibold text-sm hover:bg-destructive/90 transition-all">Excluir</button>
+                <button onClick={() => setShowEditarContaReceber(false)} className="px-12 py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all">Salvar</button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };
