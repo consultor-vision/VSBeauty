@@ -27,6 +27,11 @@ interface EstoqueItem {
 }
 interface ContaPagar {
   id: number; status: string; dataVencimento: string; categoria: string; item: string; valor: string;
+  dataEmissao: string; tipoPagamento: string; parcela: string; descricao: string;
+}
+interface ContaReceber {
+  id: number; status: string; dataVencimento: string; procedimento: string; cliente: string; valor: string;
+  dataEmissao: string; tipoPagamento: string; parcela: string; descricao: string; qtdSessoes: string; statusFinanceiro: string;
 }
 
 // ── Mock Data ──
@@ -68,17 +73,31 @@ const mockEstoque: EstoqueItem[] = [
 const mockProdutos = ["Luva", "Mascara", "Seringas", "Touca", "Gazes", "Espátula", "Pincel"];
 
 const mockContasPagar: ContaPagar[] = [
-  { id: 1, status: "Pago", dataVencimento: "07/02/2026", categoria: "Vitamina", item: "Mounjaro", valor: "R$ 500" },
-  { id: 2, status: "Pago", dataVencimento: "01/02/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300" },
-  { id: 3, status: "Pago", dataVencimento: "01/02/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300" },
-  { id: 4, status: "Atrasado", dataVencimento: "22/01/2026", categoria: "Computador", item: "Teclado", valor: "R$ 50" },
-  { id: 5, status: "Atrasado", dataVencimento: "09/01/2026", categoria: "Salário", item: "Colaborador - Filipe", valor: "R$ 1.000" },
-  { id: 6, status: "Atrasado", dataVencimento: "07/01/2026", categoria: "Vitamina", item: "Mounjaro", valor: "R$ 500" },
-  { id: 7, status: "Pago", dataVencimento: "06/01/2026", categoria: "Bonus", item: "PLR", valor: "R$ 500" },
-  { id: 8, status: "Pago", dataVencimento: "06/01/2026", categoria: "Bonus", item: "PLR", valor: "R$ 500" },
-  { id: 9, status: "Pago", dataVencimento: "01/01/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300" },
-  { id: 10, status: "Atrasado", dataVencimento: "01/01/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300" },
-  { id: 11, status: "Pago", dataVencimento: "23/12/2025", categoria: "Diversos", item: "Festa de Final de Ano da Firma", valor: "R$ 1.600" },
+  { id: 1, status: "Pago", dataVencimento: "07/02/2026", categoria: "Vitamina", item: "Mounjaro", valor: "R$ 500", dataEmissao: "06/01/2026", tipoPagamento: "Cartão de Crédito", parcela: "2", descricao: "Injeção para Emagrecimento.Pago" },
+  { id: 2, status: "Pago", dataVencimento: "01/02/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300", dataEmissao: "01/01/2026", tipoPagamento: "Pix", parcela: "1", descricao: "" },
+  { id: 3, status: "Pago", dataVencimento: "01/02/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300", dataEmissao: "01/01/2026", tipoPagamento: "Pix", parcela: "1", descricao: "" },
+  { id: 4, status: "Atrasado", dataVencimento: "22/01/2026", categoria: "Computador", item: "Teclado", valor: "R$ 50", dataEmissao: "01/01/2026", tipoPagamento: "Boleto", parcela: "1", descricao: "" },
+  { id: 5, status: "Atrasado", dataVencimento: "09/01/2026", categoria: "Salário", item: "Colaborador - Filipe", valor: "R$ 1.000", dataEmissao: "01/01/2026", tipoPagamento: "Pix", parcela: "1", descricao: "" },
+  { id: 6, status: "Atrasado", dataVencimento: "07/01/2026", categoria: "Vitamina", item: "Mounjaro", valor: "R$ 500", dataEmissao: "01/01/2026", tipoPagamento: "Cartão", parcela: "1", descricao: "" },
+  { id: 7, status: "Pago", dataVencimento: "06/01/2026", categoria: "Bonus", item: "PLR", valor: "R$ 500", dataEmissao: "01/01/2026", tipoPagamento: "Pix", parcela: "1", descricao: "" },
+  { id: 8, status: "Pago", dataVencimento: "06/01/2026", categoria: "Bonus", item: "PLR", valor: "R$ 500", dataEmissao: "01/01/2026", tipoPagamento: "Pix", parcela: "1", descricao: "" },
+  { id: 9, status: "Pago", dataVencimento: "01/01/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300", dataEmissao: "01/12/2025", tipoPagamento: "Dinheiro", parcela: "1", descricao: "" },
+  { id: 10, status: "Atrasado", dataVencimento: "01/01/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300", dataEmissao: "01/12/2025", tipoPagamento: "Pix", parcela: "1", descricao: "" },
+  { id: 11, status: "Pago", dataVencimento: "23/12/2025", categoria: "Diversos", item: "Festa de Final de Ano da Firma", valor: "R$ 1.600", dataEmissao: "01/12/2025", tipoPagamento: "Pix", parcela: "1", descricao: "" },
+];
+
+const mockContasReceber: ContaReceber[] = [
+  { id: 1, status: "Pendente", dataVencimento: "09/04/2026", procedimento: "Harmonização Facial", cliente: "Everton", valor: "R$ 15.000,00", dataEmissao: "09/02/2026", tipoPagamento: "Cartão de Crédito Recorrente", parcela: "3", descricao: "Observacao", qtdSessoes: "3", statusFinanceiro: "Pendente" },
+  { id: 2, status: "Pago", dataVencimento: "31/03/2026", procedimento: "Bioestimulador de Colágeno", cliente: "Jota Pe Silva", valor: "R$ 1.500,00", dataEmissao: "01/03/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Pago" },
+  { id: 3, status: "Pago", dataVencimento: "31/03/2026", procedimento: "Botox", cliente: "Filipe Pereira da Silva", valor: "R$ 1.000,00", dataEmissao: "01/03/2026", tipoPagamento: "Cartão", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Pago" },
+  { id: 4, status: "Pago", dataVencimento: "30/03/2026", procedimento: "Dreno Detox", cliente: "Eduardo Yto Cliente", valor: "R$ 1.250,00", dataEmissao: "01/03/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Pago" },
+  { id: 5, status: "Atrasado", dataVencimento: "19/03/2026", procedimento: "Bioestimulador de Colágeno", cliente: "Everton", valor: "R$ 750,00", dataEmissao: "01/03/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Atrasado" },
+  { id: 6, status: "Atrasado", dataVencimento: "09/03/2026", procedimento: "Harmonização Facial", cliente: "Everton", valor: "R$ 15.000,00", dataEmissao: "01/03/2026", tipoPagamento: "Cartão", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Atrasado" },
+  { id: 7, status: "Pago", dataVencimento: "05/03/2026", procedimento: "Botox", cliente: "Pinkerton Fagundes", valor: "R$ 1.000,00", dataEmissao: "01/03/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Pago" },
+  { id: 8, status: "Atrasado", dataVencimento: "27/02/2026", procedimento: "Tratamentos para Celulite", cliente: "Eduardo Yto Cliente", valor: "R$ 500,00", dataEmissao: "01/02/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Atrasado" },
+  { id: 9, status: "Atrasado", dataVencimento: "22/02/2026", procedimento: "Botox premium", cliente: "Geraldo Nunes da Silva", valor: "R$ 2.000,00", dataEmissao: "01/02/2026", tipoPagamento: "Boleto", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Atrasado" },
+  { id: 10, status: "Atrasado", dataVencimento: "13/02/2026", procedimento: "Botox (Toxina Botulínica)", cliente: "teste 13-02", valor: "R$ 2.000,00", dataEmissao: "01/02/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Atrasado" },
+  { id: 11, status: "Atrasado", dataVencimento: "09/02/2026", procedimento: "Harmonização Facial", cliente: "Everton", valor: "R$ 15.000,00", dataEmissao: "09/02/2026", tipoPagamento: "Cartão de Crédito Recorrente", parcela: "3", descricao: "Observacao", qtdSessoes: "3", statusFinanceiro: "Pendente" },
 ];
 
 const mockCategorias = ["Aluguel", "Salário", "Diversos", "Energia", "Condominio", "Premiação"];
@@ -146,6 +165,16 @@ const Gestao = () => {
   const [novaCategoriaForm, setNovaCategoriaForm] = useState("");
   const [showNovoItem, setShowNovoItem] = useState(false);
   const [novoItemForm, setNovoItemForm] = useState("");
+  const [showDescricaoPagar, setShowDescricaoPagar] = useState(false);
+  const [descricaoPagarConta, setDescricaoPagarConta] = useState<ContaPagar | null>(null);
+  const [showEditarContaPagar, setShowEditarContaPagar] = useState(false);
+  const [editingContaPagar, setEditingContaPagar] = useState<ContaPagar | null>(null);
+
+  // Contas a Receber
+  const [showDescricaoReceber, setShowDescricaoReceber] = useState(false);
+  const [descricaoReceberConta, setDescricaoReceberConta] = useState<ContaReceber | null>(null);
+  const [showEditarContaReceber, setShowEditarContaReceber] = useState(false);
+  const [editingContaReceber, setEditingContaReceber] = useState<ContaReceber | null>(null);
 
   const handleEditColab = (c: Colaborador) => { setEditingColab(c); setAdminToggle(c.acessoAdministrativo === "Liberado"); setShowEditarColab(true); };
   const handleEditProc = (p: Procedimento) => { setEditingProc(p); setShowEditarProc(true); };
@@ -165,7 +194,7 @@ const Gestao = () => {
               <Menu className="w-5 h-5 text-foreground" />
             </button>
 
-            {currentView === "contas_pagar" ? (
+            {(currentView === "contas_pagar" || currentView === "contas_receber") ? (
               <>
                 <Select><SelectTrigger className="w-[90px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Ano" /></SelectTrigger><SelectContent><SelectItem value="2025">2025</SelectItem><SelectItem value="2026">2026</SelectItem></SelectContent></Select>
                 <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
@@ -173,10 +202,21 @@ const Gestao = () => {
                 <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
                 <Select><SelectTrigger className="w-[110px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Status" /></SelectTrigger><SelectContent><SelectItem value="pago">Pago</SelectItem><SelectItem value="atrasado">Atrasado</SelectItem><SelectItem value="pendente">Pendente</SelectItem></SelectContent></Select>
                 <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
-                <Select><SelectTrigger className="w-[180px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione uma Categoria" /></SelectTrigger><SelectContent>{mockCategorias.map(c=>(<SelectItem key={c} value={c}>{c}</SelectItem>))}</SelectContent></Select>
-                <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
-                <Select><SelectTrigger className="w-[160px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione um Item" /></SelectTrigger><SelectContent>{mockItens.map(i=>(<SelectItem key={i} value={i}>{i}</SelectItem>))}</SelectContent></Select>
-                <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+                {currentView === "contas_pagar" ? (
+                  <>
+                    <Select><SelectTrigger className="w-[180px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione uma Categoria" /></SelectTrigger><SelectContent>{mockCategorias.map(c=>(<SelectItem key={c} value={c}>{c}</SelectItem>))}</SelectContent></Select>
+                    <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+                    <Select><SelectTrigger className="w-[160px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione um Item" /></SelectTrigger><SelectContent>{mockItens.map(i=>(<SelectItem key={i} value={i}>{i}</SelectItem>))}</SelectContent></Select>
+                    <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+                  </>
+                ) : (
+                  <>
+                    <Select><SelectTrigger className="w-[200px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione o procedimento" /></SelectTrigger><SelectContent>{mockProcedimentos.map(p=>(<SelectItem key={p.id} value={p.nome}>{p.nome}</SelectItem>))}</SelectContent></Select>
+                    <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+                    <Select><SelectTrigger className="w-[180px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione o cliente" /></SelectTrigger><SelectContent>{["Everton","Jota Pe Silva","Filipe Pereira da Silva","Eduardo Yto Cliente","Pinkerton Fagundes","Geraldo Nunes da Silva"].map(c=>(<SelectItem key={c} value={c}>{c}</SelectItem>))}</SelectContent></Select>
+                    <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+                  </>
+                )}
               </>
             ) : (
               <>
@@ -241,8 +281,8 @@ const Gestao = () => {
         {currentView === "procedimento" && <ProcedimentoView procedimentos={mockProcedimentos} onEdit={handleEditProc} />}
         {currentView === "anamnese" && <AnamneseView onEdit={handleEditAnamnese} />}
         {currentView === "estoque" && <EstoqueView estoque={mockEstoque} onEdit={handleEditEstoque} />}
-        {currentView === "contas_pagar" && <ContasPagarView contas={mockContasPagar} />}
-        {currentView === "contas_receber" && <PlaceholderView title="Contas a Receber" />}
+        {currentView === "contas_pagar" && <ContasPagarView contas={mockContasPagar} onDescricao={(c) => { setDescricaoPagarConta(c); setShowDescricaoPagar(true); }} onEdit={(c) => { setEditingContaPagar(c); setShowEditarContaPagar(true); }} />}
+        {currentView === "contas_receber" && <ContasReceberView contas={mockContasReceber} onDescricao={(c) => { setDescricaoReceberConta(c); setShowDescricaoReceber(true); }} onEdit={(c) => { setEditingContaReceber(c); setShowEditarContaReceber(true); }} />}
       </div>
 
       {/* ── MODAIS COLABORADOR ── */}
@@ -548,6 +588,144 @@ const Gestao = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* ── DESCRIÇÃO CONTA A PAGAR ── */}
+      <Dialog open={showDescricaoPagar} onOpenChange={setShowDescricaoPagar}>
+        <DialogContent className="max-w-2xl bg-card border-border p-0">
+          <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Descrição</DialogTitle></DialogHeader>
+          {descricaoPagarConta && (
+            <div className="p-5 space-y-6">
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div><span className="text-gold text-xs block">Data de Emissão</span><span className="text-sm text-foreground">{descricaoPagarConta.dataEmissao}</span></div>
+                <div><span className="text-gold text-xs block">Data de Vencimento</span><span className="text-sm text-foreground">{descricaoPagarConta.dataVencimento}</span></div>
+                <div><span className="text-gold text-xs block">Descrição</span><span className="text-sm text-foreground">{descricaoPagarConta.descricao || "—"}</span></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-center">
+                <div><span className="text-gold text-xs block">Tipo de Pagamento</span><span className="text-sm text-foreground">{descricaoPagarConta.tipoPagamento}</span></div>
+                <div><span className="text-gold text-xs block">Parcela</span><span className="text-sm text-foreground">{descricaoPagarConta.parcela}</span></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-center">
+                <div><span className="text-gold text-xs block">Categoria</span><span className="text-sm text-foreground">{descricaoPagarConta.categoria}</span></div>
+                <div><span className="text-gold text-xs block">Item</span><span className="text-sm text-foreground">{descricaoPagarConta.item}</span></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-center">
+                <div><span className="text-gold text-xs block">Valor</span><span className="text-sm text-foreground">{descricaoPagarConta.valor}</span></div>
+                <div><span className="text-gold text-xs block">Status</span><span className="text-sm text-foreground">{descricaoPagarConta.status}</span></div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* ── EDITAR CONTA A PAGAR ── */}
+      <Dialog open={showEditarContaPagar} onOpenChange={setShowEditarContaPagar}>
+        <DialogContent className="max-w-2xl bg-card border-border p-0 max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Editar Conta a Pagar</DialogTitle></DialogHeader>
+          {editingContaPagar && (
+            <div className="p-5 space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="text-xs text-gold mb-1 block">Data de Emissão</label><Input defaultValue={editingContaPagar.dataEmissao} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Data de Vencimento</label><Input defaultValue={editingContaPagar.dataVencimento} className="bg-input border-border text-foreground h-10" /></div>
+              </div>
+              <div><label className="text-xs text-gold mb-1 block">Categoria</label>
+                <div className="flex items-center gap-2">
+                  <Select defaultValue={editingContaPagar.categoria}><SelectTrigger className="flex-1 bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent>{mockCategorias.map(c=>(<SelectItem key={c} value={c}>{c}</SelectItem>))}</SelectContent></Select>
+                  <button className="p-2 rounded-full bg-gold/80 text-primary-foreground hover:bg-gold transition-colors"><PlusCircle className="w-5 h-5" /></button>
+                </div>
+              </div>
+              <div><label className="text-xs text-gold mb-1 block">Item</label>
+                <div className="flex items-center gap-2">
+                  <Select defaultValue={editingContaPagar.item}><SelectTrigger className="flex-1 bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent>{mockItens.map(i=>(<SelectItem key={i} value={i}>{i}</SelectItem>))}</SelectContent></Select>
+                  <button className="p-2 rounded-full bg-gold/80 text-primary-foreground hover:bg-gold transition-colors"><PlusCircle className="w-5 h-5" /></button>
+                </div>
+              </div>
+              <div className="grid grid-cols-4 gap-3">
+                <div><label className="text-xs text-gold mb-1 block">Valor</label><Input defaultValue={editingContaPagar.valor} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Parcela</label><Input defaultValue={editingContaPagar.parcela} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Tipo de Pagamento</label>
+                  <Select defaultValue={editingContaPagar.tipoPagamento}><SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Pix">Pix</SelectItem><SelectItem value="Boleto">Boleto</SelectItem><SelectItem value="Cartão">Cartão</SelectItem><SelectItem value="Cartão de Crédito">Cartão de Crédito</SelectItem><SelectItem value="Dinheiro">Dinheiro</SelectItem></SelectContent></Select>
+                </div>
+                <div><label className="text-xs text-gold mb-1 block">Status</label>
+                  <Select defaultValue={editingContaPagar.status}><SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Pendente">Pendente</SelectItem><SelectItem value="Pago">Pago</SelectItem><SelectItem value="Atrasado">Atrasado</SelectItem></SelectContent></Select>
+                </div>
+              </div>
+              <Textarea defaultValue={editingContaPagar.descricao} placeholder="Observação" className="bg-input border-border text-foreground min-h-[100px]" />
+              <div className="flex justify-between pt-2">
+                <button className="px-8 py-2.5 rounded-lg bg-destructive text-destructive-foreground font-semibold text-sm hover:bg-destructive/90 transition-all">Excluir</button>
+                <button onClick={() => setShowEditarContaPagar(false)} className="px-12 py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all">Salvar</button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* ── DESCRIÇÃO CONTA A RECEBER ── */}
+      <Dialog open={showDescricaoReceber} onOpenChange={setShowDescricaoReceber}>
+        <DialogContent className="max-w-2xl bg-card border-border p-0">
+          <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Descrição</DialogTitle></DialogHeader>
+          {descricaoReceberConta && (
+            <div className="p-5 space-y-6">
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div><span className="text-gold text-xs block">Data de Emissão</span><span className="text-sm text-foreground">{descricaoReceberConta.dataEmissao}</span></div>
+                <div><span className="text-gold text-xs block">Data de Vencimento</span><span className="text-sm text-foreground">{descricaoReceberConta.dataVencimento}</span></div>
+                <div><span className="text-gold text-xs block">Descrição</span><span className="text-sm text-foreground">{descricaoReceberConta.descricao || "—"}</span></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-center">
+                <div><span className="text-gold text-xs block">Tipo de Pagamento</span><span className="text-sm text-foreground">{descricaoReceberConta.tipoPagamento}</span></div>
+                <div><span className="text-gold text-xs block">Parcela</span><span className="text-sm text-foreground">{descricaoReceberConta.parcela}</span></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-center">
+                <div><span className="text-gold text-xs block">Categoria</span><span className="text-sm text-foreground">{descricaoReceberConta.procedimento}</span></div>
+                <div><span className="text-gold text-xs block">Item</span><span className="text-sm text-foreground">{descricaoReceberConta.cliente}</span></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-center">
+                <div><span className="text-gold text-xs block">Valor</span><span className="text-sm text-foreground">{descricaoReceberConta.valor}</span></div>
+                <div><span className="text-gold text-xs block">Status Financeiro</span><span className="text-sm text-foreground">{descricaoReceberConta.statusFinanceiro}</span></div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* ── EDITAR CONTA A RECEBER ── */}
+      <Dialog open={showEditarContaReceber} onOpenChange={setShowEditarContaReceber}>
+        <DialogContent className="max-w-2xl bg-card border-border p-0 max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Editar Contas a Receber</DialogTitle></DialogHeader>
+          {editingContaReceber && (
+            <div className="p-5 space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="text-xs text-gold mb-1 block">Data de Emissão</label><Input defaultValue={editingContaReceber.dataEmissao} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Data de Vencimento</label><Input defaultValue={editingContaReceber.dataVencimento} className="bg-input border-border text-foreground h-10" /></div>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div><label className="text-xs text-gold mb-1 block">Categoria</label><Input defaultValue={editingContaReceber.procedimento} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Item</label><Input defaultValue={editingContaReceber.cliente} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Quantidade de Sessões</label><Input defaultValue={editingContaReceber.qtdSessoes} className="bg-input border-border text-foreground h-10" /></div>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div><label className="text-xs text-gold mb-1 block">Valor de Procedimento</label><Input defaultValue={editingContaReceber.valor} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Forma de Pagamento</label>
+                  <Select defaultValue={editingContaReceber.tipoPagamento}><SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Pix">Pix</SelectItem><SelectItem value="Boleto">Boleto</SelectItem><SelectItem value="Cartão">Cartão</SelectItem><SelectItem value="Cartão de Crédito Recorrente">Cartão de Crédito Recorrente</SelectItem><SelectItem value="Dinheiro">Dinheiro</SelectItem></SelectContent></Select>
+                </div>
+                <div><label className="text-xs text-gold mb-1 block">Parcelas</label><Input defaultValue={editingContaReceber.parcela} className="bg-input border-border text-foreground h-10" /></div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="text-xs text-gold mb-1 block">Status do Procedimento</label>
+                  <Select defaultValue={editingContaReceber.status}><SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Pendente">Pendente</SelectItem><SelectItem value="Pago">Pago</SelectItem><SelectItem value="Atrasado">Atrasado</SelectItem></SelectContent></Select>
+                </div>
+                <div><label className="text-xs text-gold mb-1 block">Status Financeiro</label>
+                  <Select defaultValue={editingContaReceber.statusFinanceiro}><SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Pendente">Pendente</SelectItem><SelectItem value="Pago">Pago</SelectItem><SelectItem value="Atrasado">Atrasado</SelectItem></SelectContent></Select>
+                </div>
+              </div>
+              <Textarea defaultValue={editingContaReceber.descricao} placeholder="Observação" className="bg-input border-border text-foreground min-h-[100px]" />
+              <div className="flex justify-between pt-2">
+                <button className="px-8 py-2.5 rounded-lg bg-destructive text-destructive-foreground font-semibold text-sm hover:bg-destructive/90 transition-all">Excluir</button>
+                <button onClick={() => setShowEditarContaReceber(false)} className="px-12 py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all">Salvar</button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };
@@ -667,7 +845,7 @@ const EstoqueView = ({ estoque, onEdit }: { estoque: EstoqueItem[]; onEdit: (e: 
   </div>
 );
 
-const ContasPagarView = ({ contas }: { contas: ContaPagar[] }) => (
+const ContasPagarView = ({ contas, onDescricao, onEdit }: { contas: ContaPagar[]; onDescricao: (c: ContaPagar) => void; onEdit: (c: ContaPagar) => void }) => (
   <div className="glass-panel p-4 gold-glow">
     <div className="flex gap-6 mb-4 text-xs">
       <span>Total Pago: <span className="text-gold">R$ 4.697,55</span></span>
@@ -689,13 +867,49 @@ const ContasPagarView = ({ contas }: { contas: ContaPagar[] }) => (
       <TableBody>
         {contas.map((c) => (
           <TableRow key={c.id} className="border-border hover:bg-muted/30">
-            <TableCell className={`text-sm font-semibold ${c.status === "Pago" ? "text-gold" : "text-destructive"}`}>{c.status}</TableCell>
+            <TableCell className={`text-sm font-semibold ${c.status === "Pago" ? "text-gold" : c.status === "Pendente" ? "text-foreground" : "text-destructive"}`}>{c.status}</TableCell>
             <TableCell className="text-sm">{c.dataVencimento}</TableCell>
             <TableCell className="text-sm">{c.categoria}</TableCell>
             <TableCell className="text-sm">{c.item}</TableCell>
             <TableCell className="text-sm">{c.valor}</TableCell>
-            <TableCell><button className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors"><Search className="w-4 h-4 text-accent-foreground" /></button></TableCell>
-            <TableCell><button className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors"><Pencil className="w-4 h-4 text-accent-foreground" /></button></TableCell>
+            <TableCell><button onClick={() => onDescricao(c)} className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors"><Search className="w-4 h-4 text-accent-foreground" /></button></TableCell>
+            <TableCell><button onClick={() => onEdit(c)} className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors"><Pencil className="w-4 h-4 text-accent-foreground" /></button></TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </div>
+);
+
+const ContasReceberView = ({ contas, onDescricao, onEdit }: { contas: ContaReceber[]; onDescricao: (c: ContaReceber) => void; onEdit: (c: ContaReceber) => void }) => (
+  <div className="glass-panel p-4 gold-glow">
+    <div className="flex gap-6 mb-4 text-xs">
+      <span>Total Recebido: <span className="text-gold">R$ 247.314,55</span></span>
+      <span>Total Pendente: <span className="text-foreground">R$ 15.000,00</span></span>
+      <span>Total Atrasado: <span className="text-destructive">R$ 76.195,00</span></span>
+    </div>
+    <Table>
+      <TableHeader>
+        <TableRow className="border-border hover:bg-transparent">
+          <TableHead className="text-gold text-xs"></TableHead>
+          <TableHead className="text-gold text-xs">Data do Vencimento</TableHead>
+          <TableHead className="text-gold text-xs">Procedimento</TableHead>
+          <TableHead className="text-gold text-xs">Cliente</TableHead>
+          <TableHead className="text-gold text-xs">Valor</TableHead>
+          <TableHead className="text-gold text-xs">Descrição</TableHead>
+          <TableHead className="text-gold text-xs">Editar</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {contas.map((c) => (
+          <TableRow key={c.id} className="border-border hover:bg-muted/30">
+            <TableCell className={`text-sm font-semibold ${c.status === "Pago" ? "text-gold" : c.status === "Pendente" ? "text-foreground" : "text-destructive"}`}>{c.status}</TableCell>
+            <TableCell className="text-sm">{c.dataVencimento}</TableCell>
+            <TableCell className="text-sm">{c.procedimento}</TableCell>
+            <TableCell className="text-sm">{c.cliente}</TableCell>
+            <TableCell className="text-sm">{c.valor}</TableCell>
+            <TableCell><button onClick={() => onDescricao(c)} className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors"><Search className="w-4 h-4 text-accent-foreground" /></button></TableCell>
+            <TableCell><button onClick={() => onEdit(c)} className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors"><Pencil className="w-4 h-4 text-accent-foreground" /></button></TableCell>
           </TableRow>
         ))}
       </TableBody>
