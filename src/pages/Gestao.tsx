@@ -1,41 +1,28 @@
 import { useState } from "react";
 import Layout from "@/components/Layout";
-import { Plus, Trash2, Pencil } from "lucide-react";
+import { Menu, Plus, Trash2, Pencil, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+  Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 
+// ── Types ──
 interface Colaborador {
-  id: number;
-  nome: string;
-  cpf: string;
-  email: string;
-  telefone: string;
-  acessoPlataforma: string;
-  acessoAdministrativo: string;
-  nascimento?: string;
+  id: number; nome: string; cpf: string; email: string; telefone: string;
+  acessoPlataforma: string; acessoAdministrativo: string; nascimento?: string;
+}
+interface Procedimento {
+  id: number; nome: string; valor: string; duracao: string; intervalo: string; trabalhando: boolean;
 }
 
+// ── Mock Data ──
 const mockColaboradores: Colaborador[] = [
   { id: 1, nome: "Alan Mazzonelis", cpf: "0", email: "alangalvaogg@gmail.com", telefone: "+55(11)97576-3217", acessoPlataforma: "Liberado", acessoAdministrativo: "Liberado", nascimento: "01/01/2025" },
   { id: 2, nome: "Bruna Kansaon", cpf: "789.456.123-75", email: "bruna.kansaon@ytonihon.com.br", telefone: "+55(11)95209-6182", acessoPlataforma: "Liberado", acessoAdministrativo: "Liberado" },
@@ -47,37 +34,95 @@ const mockColaboradores: Colaborador[] = [
   { id: 8, nome: "Ricardo Rodrigues", cpf: "123.369.985-21", email: "Rrodrigues@gmail.com", telefone: "+55(11)99999-6666", acessoPlataforma: "Liberado", acessoAdministrativo: "Liberado" },
 ];
 
+const mockProcedimentos: Procedimento[] = [
+  { id: 1, nome: "Bioestimulador de Colágeno", valor: "R$ 750,00", duracao: "60 Min", intervalo: "60 dias", trabalhando: true },
+  { id: 2, nome: "Botox", valor: "R$ 100,00", duracao: "60 Min", intervalo: "60 dias", trabalhando: true },
+  { id: 3, nome: "Botox premium", valor: "R$ 2.000,00", duracao: "60 Min", intervalo: "60 dias", trabalhando: true },
+  { id: 4, nome: "Botox (Toxina Botulínica)", valor: "R$ 1.000,00", duracao: "30 Min", intervalo: "30 dias", trabalhando: true },
+  { id: 5, nome: "Cicatriz na mão", valor: "R$ 57,85", duracao: "15 Min", intervalo: "45 dias", trabalhando: true },
+  { id: 6, nome: "Criolipólise", valor: "R$ 800,00", duracao: "60 Min", intervalo: "60 dias", trabalhando: true },
+  { id: 7, nome: "Depilação a Laser", valor: "R$ 300,00", duracao: "15 Min", intervalo: "15 dias", trabalhando: true },
+  { id: 8, nome: "Dreno Detox", valor: "R$ 250,00", duracao: "45 Min", intervalo: "45 dias", trabalhando: true },
+  { id: 9, nome: "Harmonização Facial", valor: "R$ 10.000,00", duracao: "30 Min", intervalo: "30 dias", trabalhando: true },
+  { id: 10, nome: "Laser4", valor: "R$ 500,00", duracao: "60 Min", intervalo: "60 dias", trabalhando: true },
+  { id: 11, nome: "Laser Body", valor: "R$ 100,00", duracao: "60 Min", intervalo: "60 dias", trabalhando: true },
+  { id: 12, nome: "Laser Plus", valor: "R$ 250,00", duracao: "45 Min", intervalo: "45 dias", trabalhando: true },
+];
+
+const anamnesePerguntas = [
+  { pergunta: "Já teve alguma reação ruim em tratamentos estéticos?", complemento: "Qual(is)?" },
+  { pergunta: "Já fez alguma cirurgia estética ou reparadora?", complemento: "Quais?" },
+  { pergunta: "Tem algum tipo de implante?", complemento: "Qual?" },
+  { pergunta: "Você usa algum medicamento todos os dias?", complemento: "Qual?" },
+  { pergunta: "Tem alguma alergia?", complemento: "Qual?" },
+  { pergunta: "Tem alguma doença crônica?", complemento: "Qual?" },
+  { pergunta: "Usa anticoagulantes ou remédios que afinam o sangue?", complemento: "Qual?" },
+  { pergunta: "Já teve doenças de pele?", complemento: "Qual?" },
+  { pergunta: "Tem alguma outra condição de saúde que devemos saber?", complemento: "Qual?" },
+];
+
+type GestaoView = "colaborador" | "procedimento" | "anamnese" | "estoque" | "contas_pagar" | "contas_receber";
+
+const viewLabels: Record<GestaoView, string> = {
+  colaborador: "Colaborador",
+  procedimento: "Procedimento",
+  anamnese: "Anamnese",
+  estoque: "Estoque",
+  contas_pagar: "Contas a Pagar",
+  contas_receber: "Contas a Receber",
+};
+
 const Gestao = () => {
-  const [filterType, setFilterType] = useState("colaborador");
+  const [currentView, setCurrentView] = useState<GestaoView>("colaborador");
+  const [showMenu, setShowMenu] = useState(false);
+
+  // Colaborador states
   const [acessoFilter, setAcessoFilter] = useState("liberado");
-  const [showNovo, setShowNovo] = useState(false);
-  const [showEditar, setShowEditar] = useState(false);
+  const [showNovoColab, setShowNovoColab] = useState(false);
+  const [showEditarColab, setShowEditarColab] = useState(false);
   const [editingColab, setEditingColab] = useState<Colaborador | null>(null);
   const [adminToggle, setAdminToggle] = useState(false);
+  const [novoColabForm, setNovoColabForm] = useState({ nome: "", nascimento: "", cpf: "", telefone: "", email: "", admin: false });
 
-  const [novoForm, setNovoForm] = useState({
-    nome: "", nascimento: "", cpf: "", telefone: "", email: "", admin: false,
-  });
+  // Procedimento states
+  const [showNovoProc, setShowNovoProc] = useState(false);
+  const [showEditarProc, setShowEditarProc] = useState(false);
+  const [editingProc, setEditingProc] = useState<Procedimento | null>(null);
+  const [novoProcForm, setNovoProcForm] = useState({ nome: "", duracao: "", intervalo: "", valor: "", trabalhando: true });
 
-  const handleEdit = (colab: Colaborador) => {
-    setEditingColab(colab);
-    setAdminToggle(colab.acessoAdministrativo === "Liberado");
-    setShowEditar(true);
+  const handleEditColab = (c: Colaborador) => {
+    setEditingColab(c);
+    setAdminToggle(c.acessoAdministrativo === "Liberado");
+    setShowEditarColab(true);
+  };
+
+  const handleEditProc = (p: Procedimento) => {
+    setEditingProc(p);
+    setShowEditarProc(true);
+  };
+
+  const handleMenuSelect = (view: GestaoView) => {
+    setCurrentView(view);
+    setShowMenu(false);
   };
 
   return (
-    <Layout title="Gestão - Colaborador">
-      <div className="flex flex-col gap-4">
+    <Layout title={`Gestão - ${viewLabels[currentView]}`}>
+      <div className="flex flex-col gap-4 relative">
         {/* Top bar */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <Select value={filterType} onValueChange={setFilterType}>
+            <button onClick={() => setShowMenu(!showMenu)} className="p-2 rounded-lg hover:bg-muted transition-colors">
+              <Menu className="w-5 h-5 text-foreground" />
+            </button>
+            <Select value={currentView} onValueChange={(v) => setCurrentView(v as GestaoView)}>
               <SelectTrigger className="w-[180px] bg-input border-border text-foreground h-9">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="colaborador">Colaborador</SelectItem>
-                <SelectItem value="procedimento">Procedimento</SelectItem>
+                {Object.entries(viewLabels).map(([k, v]) => (
+                  <SelectItem key={k} value={k}>{v}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all">
@@ -85,139 +130,175 @@ const Gestao = () => {
             </button>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Acesso a Plataforma</span>
-            <Select value={acessoFilter} onValueChange={setAcessoFilter}>
-              <SelectTrigger className="w-[140px] bg-input border-border text-foreground h-9">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="liberado">Liberado</SelectItem>
-                <SelectItem value="bloqueado">Bloqueado</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          {currentView === "colaborador" && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Acesso a Plataforma</span>
+              <Select value={acessoFilter} onValueChange={setAcessoFilter}>
+                <SelectTrigger className="w-[140px] bg-input border-border text-foreground h-9"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="liberado">Liberado</SelectItem>
+                  <SelectItem value="bloqueado">Bloqueado</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
-          <button
-            onClick={() => {
-              setNovoForm({ nome: "", nascimento: "", cpf: "", telefone: "", email: "", admin: false });
-              setShowNovo(true);
-            }}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            Novo Cadastro
-          </button>
+          {(currentView === "colaborador" || currentView === "procedimento") && (
+            <button
+              onClick={() => {
+                if (currentView === "colaborador") {
+                  setNovoColabForm({ nome: "", nascimento: "", cpf: "", telefone: "", email: "", admin: false });
+                  setShowNovoColab(true);
+                } else {
+                  setNovoProcForm({ nome: "", duracao: "", intervalo: "", valor: "", trabalhando: true });
+                  setShowNovoProc(true);
+                }
+              }}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all"
+            >
+              <Plus className="w-4 h-4" /> Novo Cadastro
+            </button>
+          )}
         </div>
 
-        {/* Collaborators Table */}
-        <div className="glass-panel p-4 gold-glow">
-          <Table>
-            <TableHeader>
-              <TableRow className="border-border hover:bg-transparent">
-                <TableHead className="text-gold text-xs">Nome Completo</TableHead>
-                <TableHead className="text-gold text-xs">CPF</TableHead>
-                <TableHead className="text-gold text-xs">Email</TableHead>
-                <TableHead className="text-gold text-xs">Telefone</TableHead>
-                <TableHead className="text-gold text-xs">Acesso Plataforma</TableHead>
-                <TableHead className="text-gold text-xs">Acesso Administrativo</TableHead>
-                <TableHead className="text-gold text-xs">Editar</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {mockColaboradores.map((colab) => (
-                <TableRow key={colab.id} className="border-border hover:bg-muted/30">
-                  <TableCell className="text-sm">{colab.nome}</TableCell>
-                  <TableCell className="text-sm">{colab.cpf}</TableCell>
-                  <TableCell className="text-sm text-xs">{colab.email}</TableCell>
-                  <TableCell className="text-sm">{colab.telefone}</TableCell>
-                  <TableCell className="text-sm">{colab.acessoPlataforma}</TableCell>
-                  <TableCell className="text-sm">{colab.acessoAdministrativo}</TableCell>
-                  <TableCell>
-                    <button
-                      onClick={() => handleEdit(colab)}
-                      className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors"
-                    >
-                      <Pencil className="w-4 h-4 text-accent-foreground" />
-                    </button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        {/* Side Menu */}
+        {showMenu && (
+          <>
+            <div className="fixed inset-0 z-[55]" onClick={() => setShowMenu(false)} />
+            <div className="absolute top-0 left-0 z-[60] w-64 glass-panel gold-glow animate-in slide-in-from-left-4 duration-200">
+              <div className="flex items-center justify-between p-4 border-b border-border">
+                <h3 className="text-sm font-semibold text-foreground">Menu da Gestão</h3>
+                <button onClick={() => setShowMenu(false)}><X className="w-4 h-4 text-foreground" /></button>
+              </div>
+              <div className="p-3 space-y-2">
+                {(Object.keys(viewLabels) as GestaoView[]).map((key) => (
+                  <button
+                    key={key}
+                    onClick={() => handleMenuSelect(key)}
+                    className={`w-full py-2.5 rounded-lg border text-sm font-semibold transition-all ${
+                      currentView === key
+                        ? "bg-gold text-primary-foreground border-gold"
+                        : "bg-gold/15 border-gold text-gold hover:bg-gold/25"
+                    }`}
+                  >
+                    {viewLabels[key]}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* ===== VIEWS ===== */}
+        {currentView === "colaborador" && (
+          <ColaboradorView colaboradores={mockColaboradores} onEdit={handleEditColab} />
+        )}
+        {currentView === "procedimento" && (
+          <ProcedimentoView procedimentos={mockProcedimentos} onEdit={handleEditProc} />
+        )}
+        {currentView === "anamnese" && <AnamneseView />}
+        {currentView === "estoque" && <PlaceholderView title="Estoque" />}
+        {currentView === "contas_pagar" && <PlaceholderView title="Contas a Pagar" />}
+        {currentView === "contas_receber" && <PlaceholderView title="Contas a Receber" />}
       </div>
 
-      {/* NOVO COLABORADOR */}
-      <Dialog open={showNovo} onOpenChange={setShowNovo}>
+      {/* ── MODAIS COLABORADOR ── */}
+      <Dialog open={showNovoColab} onOpenChange={setShowNovoColab}>
         <DialogContent className="max-w-2xl bg-card border-border p-0">
-          <DialogHeader className="p-5 pb-0">
-            <DialogTitle className="text-foreground">Novo Colaborador</DialogTitle>
-          </DialogHeader>
+          <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Novo Colaborador</DialogTitle></DialogHeader>
           <div className="p-5 space-y-4">
-            <Input placeholder="Nome Completo" value={novoForm.nome} onChange={(e) => setNovoForm((p) => ({ ...p, nome: e.target.value }))} className="bg-input border-border text-foreground h-10" />
+            <Input placeholder="Nome Completo" value={novoColabForm.nome} onChange={(e) => setNovoColabForm(p => ({ ...p, nome: e.target.value }))} className="bg-input border-border text-foreground h-10" />
             <div className="grid grid-cols-3 gap-3">
-              <Input type="date" value={novoForm.nascimento} onChange={(e) => setNovoForm((p) => ({ ...p, nascimento: e.target.value }))} className="bg-input border-border text-foreground h-10" />
-              <Input placeholder="CPF" value={novoForm.cpf} onChange={(e) => setNovoForm((p) => ({ ...p, cpf: e.target.value }))} className="bg-input border-border text-foreground h-10" />
-              <Input placeholder="Telefone" value={novoForm.telefone} onChange={(e) => setNovoForm((p) => ({ ...p, telefone: e.target.value }))} className="bg-input border-border text-foreground h-10" />
+              <Input type="date" value={novoColabForm.nascimento} onChange={(e) => setNovoColabForm(p => ({ ...p, nascimento: e.target.value }))} className="bg-input border-border text-foreground h-10" />
+              <Input placeholder="CPF" value={novoColabForm.cpf} onChange={(e) => setNovoColabForm(p => ({ ...p, cpf: e.target.value }))} className="bg-input border-border text-foreground h-10" />
+              <Input placeholder="Telefone" value={novoColabForm.telefone} onChange={(e) => setNovoColabForm(p => ({ ...p, telefone: e.target.value }))} className="bg-input border-border text-foreground h-10" />
             </div>
             <div className="grid grid-cols-2 gap-3 items-center">
-              <Input placeholder="Email" value={novoForm.email} onChange={(e) => setNovoForm((p) => ({ ...p, email: e.target.value }))} className="bg-input border-border text-foreground h-10" />
+              <Input placeholder="Email" value={novoColabForm.email} onChange={(e) => setNovoColabForm(p => ({ ...p, email: e.target.value }))} className="bg-input border-border text-foreground h-10" />
               <div className="flex items-center justify-center gap-3">
                 <span className="text-sm text-muted-foreground">Acesso Administrativo</span>
-                <span className="text-sm text-foreground">Não</span>
-                <Switch checked={novoForm.admin} onCheckedChange={(v) => setNovoForm((p) => ({ ...p, admin: v }))} />
-                <span className="text-sm text-foreground">Sim</span>
+                <span className="text-sm">Não</span>
+                <Switch checked={novoColabForm.admin} onCheckedChange={(v) => setNovoColabForm(p => ({ ...p, admin: v }))} />
+                <span className="text-sm">Sim</span>
               </div>
             </div>
             <div className="flex justify-center pt-2">
-              <button onClick={() => setShowNovo(false)} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button>
+              <button onClick={() => setShowNovoColab(false)} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* EDITAR COLABORADOR */}
-      <Dialog open={showEditar} onOpenChange={setShowEditar}>
+      <Dialog open={showEditarColab} onOpenChange={setShowEditarColab}>
         <DialogContent className="max-w-2xl bg-card border-border p-0">
-          <DialogHeader className="p-5 pb-0">
-            <DialogTitle className="text-foreground">Editar Cadastro do Colaborador</DialogTitle>
-          </DialogHeader>
+          <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Editar Cadastro do Colaborador</DialogTitle></DialogHeader>
           {editingColab && (
             <div className="p-5 space-y-4">
-              <div>
-                <label className="text-xs text-gold mb-1 block">Nome Completo</label>
-                <Input defaultValue={editingColab.nome} className="bg-input border-border text-foreground h-10" />
-              </div>
+              <div><label className="text-xs text-gold mb-1 block">Nome Completo</label><Input defaultValue={editingColab.nome} className="bg-input border-border text-foreground h-10" /></div>
               <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="text-xs text-gold mb-1 block">Data de Nascimento</label>
-                  <Input defaultValue={editingColab.nascimento || ""} className="bg-input border-border text-foreground h-10" />
-                </div>
-                <div>
-                  <label className="text-xs text-gold mb-1 block">CPF</label>
-                  <Input defaultValue={editingColab.cpf} className="bg-input border-border text-foreground h-10" />
-                </div>
-                <div>
-                  <label className="text-xs text-gold mb-1 block">Telefone</label>
-                  <Input defaultValue={editingColab.telefone} className="bg-input border-border text-foreground h-10" />
-                </div>
+                <div><label className="text-xs text-gold mb-1 block">Data de Nascimento</label><Input defaultValue={editingColab.nascimento || ""} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">CPF</label><Input defaultValue={editingColab.cpf} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Telefone</label><Input defaultValue={editingColab.telefone} className="bg-input border-border text-foreground h-10" /></div>
               </div>
               <div className="grid grid-cols-2 gap-3 items-center">
-                <div>
-                  <label className="text-xs text-gold mb-1 block">Email</label>
-                  <Input defaultValue={editingColab.email} className="bg-input border-border text-foreground h-10" />
-                </div>
+                <div><label className="text-xs text-gold mb-1 block">Email</label><Input defaultValue={editingColab.email} className="bg-input border-border text-foreground h-10" /></div>
                 <div className="flex items-center justify-center gap-3">
                   <span className="text-sm text-muted-foreground">Acesso Administrativo</span>
-                  <span className="text-sm text-foreground">Não</span>
-                  <Switch checked={adminToggle} onCheckedChange={setAdminToggle} />
-                  <span className="text-sm text-foreground">Sim</span>
+                  <span className="text-sm">Não</span><Switch checked={adminToggle} onCheckedChange={setAdminToggle} /><span className="text-sm">Sim</span>
                 </div>
               </div>
               <div className="flex justify-between pt-2">
                 <button className="px-8 py-2.5 rounded-lg bg-destructive text-destructive-foreground font-semibold text-sm hover:bg-destructive/90 transition-all">Bloquear</button>
-                <button onClick={() => setShowEditar(false)} className="px-12 py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all">Salvar</button>
+                <button onClick={() => setShowEditarColab(false)} className="px-12 py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all">Salvar</button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* ── MODAIS PROCEDIMENTO ── */}
+      <Dialog open={showNovoProc} onOpenChange={setShowNovoProc}>
+        <DialogContent className="max-w-2xl bg-card border-border p-0">
+          <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Novo Procedimento</DialogTitle></DialogHeader>
+          <div className="p-5 space-y-4">
+            <div><label className="text-xs text-gold mb-1 block">Procedimento</label><Input placeholder="Preencher" value={novoProcForm.nome} onChange={(e) => setNovoProcForm(p => ({ ...p, nome: e.target.value }))} className="bg-input border-border text-foreground h-10" /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><label className="text-xs text-gold mb-1 block">Duração da Sessão</label><Input placeholder="Preencher" value={novoProcForm.duracao} onChange={(e) => setNovoProcForm(p => ({ ...p, duracao: e.target.value }))} className="bg-input border-border text-foreground h-10" /></div>
+              <div><label className="text-xs text-gold mb-1 block">Intervalo Recomendado entre Sessões</label><Input placeholder="Preencher" value={novoProcForm.intervalo} onChange={(e) => setNovoProcForm(p => ({ ...p, intervalo: e.target.value }))} className="bg-input border-border text-foreground h-10" /></div>
+            </div>
+            <div className="grid grid-cols-2 gap-3 items-center">
+              <div><label className="text-xs text-gold mb-1 block">Valor do Procedimento</label><Input placeholder="Preencher" value={novoProcForm.valor} onChange={(e) => setNovoProcForm(p => ({ ...p, valor: e.target.value }))} className="bg-input border-border text-foreground h-10" /></div>
+              <div className="flex items-center justify-center gap-3">
+                <span className="text-sm text-muted-foreground">Você está trabalhando neste procedimento?</span>
+                <span className="text-sm">Não</span><Switch checked={novoProcForm.trabalhando} onCheckedChange={(v) => setNovoProcForm(p => ({ ...p, trabalhando: v }))} /><span className="text-sm">Sim</span>
+              </div>
+            </div>
+            <div className="flex justify-center pt-2">
+              <button onClick={() => setShowNovoProc(false)} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showEditarProc} onOpenChange={setShowEditarProc}>
+        <DialogContent className="max-w-2xl bg-card border-border p-0">
+          <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Editar Procedimento</DialogTitle></DialogHeader>
+          {editingProc && (
+            <div className="p-5 space-y-4">
+              <div><label className="text-xs text-gold mb-1 block">Procedimento</label><Input defaultValue={editingProc.nome} className="bg-input border-border text-foreground h-10" /></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="text-xs text-gold mb-1 block">Duração da Sessão</label><Input defaultValue={editingProc.duracao.replace(" Min", "")} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Intervalo Recomendado entre Sessões</label><Input defaultValue={editingProc.intervalo.replace(" dias", "")} className="bg-input border-border text-foreground h-10" /></div>
+              </div>
+              <div className="grid grid-cols-2 gap-3 items-center">
+                <div><label className="text-xs text-gold mb-1 block">Valor do Procedimento</label><Input defaultValue={editingProc.valor} className="bg-input border-border text-foreground h-10" /></div>
+                <div className="flex items-center justify-center gap-3">
+                  <span className="text-sm text-muted-foreground">Você está trabalhando neste procedimento?</span>
+                  <span className="text-sm">Não</span><Switch defaultChecked={editingProc.trabalhando} /><span className="text-sm">Sim</span>
+                </div>
+              </div>
+              <div className="flex justify-center pt-2">
+                <button onClick={() => setShowEditarProc(false)} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button>
               </div>
             </div>
           )}
@@ -226,5 +307,113 @@ const Gestao = () => {
     </Layout>
   );
 };
+
+// ── Sub-Views ──
+
+const ColaboradorView = ({ colaboradores, onEdit }: { colaboradores: Colaborador[]; onEdit: (c: Colaborador) => void }) => (
+  <div className="glass-panel p-4 gold-glow">
+    <Table>
+      <TableHeader>
+        <TableRow className="border-border hover:bg-transparent">
+          <TableHead className="text-gold text-xs">Nome Completo</TableHead>
+          <TableHead className="text-gold text-xs">CPF</TableHead>
+          <TableHead className="text-gold text-xs">Email</TableHead>
+          <TableHead className="text-gold text-xs">Telefone</TableHead>
+          <TableHead className="text-gold text-xs">Acesso Plataforma</TableHead>
+          <TableHead className="text-gold text-xs">Acesso Administrativo</TableHead>
+          <TableHead className="text-gold text-xs">Editar</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {colaboradores.map((c) => (
+          <TableRow key={c.id} className="border-border hover:bg-muted/30">
+            <TableCell className="text-sm">{c.nome}</TableCell>
+            <TableCell className="text-sm">{c.cpf}</TableCell>
+            <TableCell className="text-sm text-xs">{c.email}</TableCell>
+            <TableCell className="text-sm">{c.telefone}</TableCell>
+            <TableCell className="text-sm">{c.acessoPlataforma}</TableCell>
+            <TableCell className="text-sm">{c.acessoAdministrativo}</TableCell>
+            <TableCell>
+              <button onClick={() => onEdit(c)} className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors">
+                <Pencil className="w-4 h-4 text-accent-foreground" />
+              </button>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </div>
+);
+
+const ProcedimentoView = ({ procedimentos, onEdit }: { procedimentos: Procedimento[]; onEdit: (p: Procedimento) => void }) => (
+  <div className="glass-panel p-4 gold-glow">
+    <Table>
+      <TableHeader>
+        <TableRow className="border-border hover:bg-transparent">
+          <TableHead className="text-gold text-xs">Procedimento</TableHead>
+          <TableHead className="text-gold text-xs">Valor</TableHead>
+          <TableHead className="text-gold text-xs">Duração</TableHead>
+          <TableHead className="text-gold text-xs">Intervalo</TableHead>
+          <TableHead className="text-gold text-xs">Esta sendo trabalhado?</TableHead>
+          <TableHead className="text-gold text-xs"></TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {procedimentos.map((p) => (
+          <TableRow key={p.id} className="border-border hover:bg-muted/30">
+            <TableCell className="text-sm">{p.nome}</TableCell>
+            <TableCell className="text-sm">{p.valor}</TableCell>
+            <TableCell className="text-sm">{p.duracao}</TableCell>
+            <TableCell className="text-sm">{p.intervalo}</TableCell>
+            <TableCell className="text-sm">{p.trabalhando ? "Sendo Trabalhado" : "Inativo"}</TableCell>
+            <TableCell>
+              <button onClick={() => onEdit(p)} className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors">
+                <Pencil className="w-4 h-4 text-accent-foreground" />
+              </button>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </div>
+);
+
+const AnamneseView = () => (
+  <div className="glass-panel p-4 gold-glow">
+    <div className="flex items-center gap-2 mb-4">
+      <Select>
+        <SelectTrigger className="max-w-lg bg-input border-border text-foreground h-9"><SelectValue placeholder="Pergunta" /></SelectTrigger>
+        <SelectContent>
+          {anamnesePerguntas.map((q, i) => (<SelectItem key={i} value={String(i)}>{q.pergunta}</SelectItem>))}
+        </SelectContent>
+      </Select>
+      <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+    </div>
+    <h3 className="text-center text-foreground font-semibold mb-4">Questionário de Anamnese</h3>
+    <div className="space-y-1">
+      <div className="flex items-center justify-between px-4 py-2">
+        <span className="text-gold text-xs font-medium">Pergunta</span>
+        <span className="text-gold text-xs font-medium">Caso seja necessário complementar a pergunta</span>
+      </div>
+      {anamnesePerguntas.map((q, idx) => (
+        <div key={idx} className="flex items-center justify-between px-4 py-3 border-t border-border/50 hover:bg-muted/20 transition-colors">
+          <span className="text-sm text-foreground">{q.pergunta}</span>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-muted-foreground">{q.complemento}</span>
+            <button className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors">
+              <Pencil className="w-4 h-4 text-accent-foreground" />
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const PlaceholderView = ({ title }: { title: string }) => (
+  <div className="glass-panel p-8 gold-glow flex items-center justify-center min-h-[300px]">
+    <p className="text-muted-foreground text-sm">Módulo {title} — em desenvolvimento</p>
+  </div>
+);
 
 export default Gestao;
