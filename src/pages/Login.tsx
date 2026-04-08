@@ -136,7 +136,7 @@ const Login = () => {
             Não possui uma conta?{" "}
             <a
               id="botaoContatoWhatsApp"
-              href={`https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}`}
+              href={WHATSAPP_LINK}
               target="_blank"
               rel="noopener noreferrer"
               className="font-semibold tracking-wide transition-colors duration-200 hover:underline"
