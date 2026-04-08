@@ -3,10 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-const WHATSAPP_NUMBER = "5511999999999";
-const WHATSAPP_MESSAGE = encodeURIComponent(
-  "Olá, gostaria de saber mais informações sobre o Vision Smart Beauty!"
-);
+const WHATSAPP_LINK = "https://api.whatsapp.com/send?phone=5511951761388&text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20informa%C3%A7%C3%B5es%20sobre%20o%20Vision%20Smart%20Beauty!";
 
 const Login = () => {
   const [email, setEmail] = useState("");
