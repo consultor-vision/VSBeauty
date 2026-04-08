@@ -113,7 +113,19 @@ const Cadastro = () => {
   const [showNovoProcedimento, setShowNovoProcedimento] = useState(false);
   const [showEditPlano, setShowEditPlano] = useState(false);
   const [showHistorico, setShowHistorico] = useState(false);
+  const [showNovoCadastro, setShowNovoCadastro] = useState(false);
+  const [showNovoAgendamento, setShowNovoAgendamento] = useState(false);
   const [editingPlan, setEditingPlan] = useState<PlanData | null>(null);
+
+  // Novo Cadastro form
+  const [novoCadastro, setNovoCadastro] = useState({
+    nome: "", telefone: "", email: "", instagram: "", nascimento: "", genero: "", cpf: "", cep: "",
+  });
+
+  // Novo Agendamento form
+  const [novoAgendamento, setNovoAgendamento] = useState({
+    procedimento: "", profissional: "", data: "", horarioInicio: "", horarioFechamento: "",
+  });
 
   // Edit cadastro form
   const [editForm, setEditForm] = useState<ClientData | null>(null);
@@ -188,8 +200,15 @@ const Cadastro = () => {
             setNovoPlano({ procedimento: "", quantidadeSessoes: "", valorUnitario: "", formaPagamento: "", parcelas: "", valorEntrada: "" });
             setShowNovoProcedimento(true);
           }} />
-          <ActionButton icon={CalendarPlus} label="Agendamento" disabled={!selectedClient} />
+          <ActionButton icon={CalendarPlus} label="Agendamento" disabled={!selectedClient} onClick={() => {
+            setNovoAgendamento({ procedimento: "", profissional: "", data: "", horarioInicio: "", horarioFechamento: "" });
+            setShowNovoAgendamento(true);
+          }} />
           <ActionButton icon={Users} label="Clientes" onClick={() => setShowClientList(true)} />
+          <ActionButton icon={Plus} label="Novo Cadastro" onClick={() => {
+            setNovoCadastro({ nome: "", telefone: "", email: "", instagram: "", nascimento: "", genero: "", cpf: "", cep: "" });
+            setShowNovoCadastro(true);
+          }} />
           <ActionButton icon={Eraser} label="Limpar" onClick={handleClear} />
         </div>
 
