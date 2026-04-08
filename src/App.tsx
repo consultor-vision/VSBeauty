@@ -30,6 +30,32 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/esqueci-senha" element={<ForgotPassword />} />
+            <Route path="/dashboard" element={<Index />} />
+            <Route path="/cadastro" element={<Cadastro />} />
+            <Route path="/evolucao" element={<Evolucao />} />
+            <Route path="/gestao" element={<Gestao />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
+
+export default App;
+  }
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/cadastro" element={<Cadastro />} />
             <Route path="/evolucao" element={<Evolucao />} />
