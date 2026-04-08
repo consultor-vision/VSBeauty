@@ -845,7 +845,7 @@ const EstoqueView = ({ estoque, onEdit }: { estoque: EstoqueItem[]; onEdit: (e: 
   </div>
 );
 
-const ContasPagarView = ({ contas }: { contas: ContaPagar[] }) => (
+const ContasPagarView = ({ contas, onDescricao, onEdit }: { contas: ContaPagar[]; onDescricao: (c: ContaPagar) => void; onEdit: (c: ContaPagar) => void }) => (
   <div className="glass-panel p-4 gold-glow">
     <div className="flex gap-6 mb-4 text-xs">
       <span>Total Pago: <span className="text-gold">R$ 4.697,55</span></span>
@@ -867,13 +867,49 @@ const ContasPagarView = ({ contas }: { contas: ContaPagar[] }) => (
       <TableBody>
         {contas.map((c) => (
           <TableRow key={c.id} className="border-border hover:bg-muted/30">
-            <TableCell className={`text-sm font-semibold ${c.status === "Pago" ? "text-gold" : "text-destructive"}`}>{c.status}</TableCell>
+            <TableCell className={`text-sm font-semibold ${c.status === "Pago" ? "text-gold" : c.status === "Pendente" ? "text-foreground" : "text-destructive"}`}>{c.status}</TableCell>
             <TableCell className="text-sm">{c.dataVencimento}</TableCell>
             <TableCell className="text-sm">{c.categoria}</TableCell>
             <TableCell className="text-sm">{c.item}</TableCell>
             <TableCell className="text-sm">{c.valor}</TableCell>
-            <TableCell><button className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors"><Search className="w-4 h-4 text-accent-foreground" /></button></TableCell>
-            <TableCell><button className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors"><Pencil className="w-4 h-4 text-accent-foreground" /></button></TableCell>
+            <TableCell><button onClick={() => onDescricao(c)} className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors"><Search className="w-4 h-4 text-accent-foreground" /></button></TableCell>
+            <TableCell><button onClick={() => onEdit(c)} className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors"><Pencil className="w-4 h-4 text-accent-foreground" /></button></TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </div>
+);
+
+const ContasReceberView = ({ contas, onDescricao, onEdit }: { contas: ContaReceber[]; onDescricao: (c: ContaReceber) => void; onEdit: (c: ContaReceber) => void }) => (
+  <div className="glass-panel p-4 gold-glow">
+    <div className="flex gap-6 mb-4 text-xs">
+      <span>Total Recebido: <span className="text-gold">R$ 247.314,55</span></span>
+      <span>Total Pendente: <span className="text-foreground">R$ 15.000,00</span></span>
+      <span>Total Atrasado: <span className="text-destructive">R$ 76.195,00</span></span>
+    </div>
+    <Table>
+      <TableHeader>
+        <TableRow className="border-border hover:bg-transparent">
+          <TableHead className="text-gold text-xs"></TableHead>
+          <TableHead className="text-gold text-xs">Data do Vencimento</TableHead>
+          <TableHead className="text-gold text-xs">Procedimento</TableHead>
+          <TableHead className="text-gold text-xs">Cliente</TableHead>
+          <TableHead className="text-gold text-xs">Valor</TableHead>
+          <TableHead className="text-gold text-xs">Descrição</TableHead>
+          <TableHead className="text-gold text-xs">Editar</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {contas.map((c) => (
+          <TableRow key={c.id} className="border-border hover:bg-muted/30">
+            <TableCell className={`text-sm font-semibold ${c.status === "Pago" ? "text-gold" : c.status === "Pendente" ? "text-foreground" : "text-destructive"}`}>{c.status}</TableCell>
+            <TableCell className="text-sm">{c.dataVencimento}</TableCell>
+            <TableCell className="text-sm">{c.procedimento}</TableCell>
+            <TableCell className="text-sm">{c.cliente}</TableCell>
+            <TableCell className="text-sm">{c.valor}</TableCell>
+            <TableCell><button onClick={() => onDescricao(c)} className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors"><Search className="w-4 h-4 text-accent-foreground" /></button></TableCell>
+            <TableCell><button onClick={() => onEdit(c)} className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors"><Pencil className="w-4 h-4 text-accent-foreground" /></button></TableCell>
           </TableRow>
         ))}
       </TableBody>
