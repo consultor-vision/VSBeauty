@@ -470,7 +470,7 @@ const Index = () => {
             {/* Search Filters */}
             <div className="p-4 flex flex-wrap gap-3">
               <div className="flex items-center gap-2">
-                <Select>
+                <Select value={searchField} onValueChange={(v) => setSearchField(v as typeof searchField)}>
                   <SelectTrigger className="w-[140px] bg-input border-border">
                     <SelectValue placeholder="Nome" />
                   </SelectTrigger>
@@ -478,6 +478,9 @@ const Index = () => {
                     <SelectItem value="nome">Nome</SelectItem>
                     <SelectItem value="cpf">CPF</SelectItem>
                     <SelectItem value="telefone">Telefone</SelectItem>
+                    <SelectItem value="email">Email</SelectItem>
+                    <SelectItem value="cidade">Cidade</SelectItem>
+                    <SelectItem value="uf">UF</SelectItem>
                   </SelectContent>
                 </Select>
                 <div className="relative flex-1 min-w-[200px]">
