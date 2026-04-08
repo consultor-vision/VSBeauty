@@ -146,6 +146,7 @@ const Index = () => {
 
   // Client search
   const [clientSearch, setClientSearch] = useState("");
+  const [searchField, setSearchField] = useState<"nome" | "cpf" | "telefone" | "email" | "cidade" | "uf">("nome");
 
   const daysInMonth = getDaysInMonth(currentYear, currentMonth);
   const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
