@@ -281,8 +281,8 @@ const Gestao = () => {
         {currentView === "procedimento" && <ProcedimentoView procedimentos={mockProcedimentos} onEdit={handleEditProc} />}
         {currentView === "anamnese" && <AnamneseView onEdit={handleEditAnamnese} />}
         {currentView === "estoque" && <EstoqueView estoque={mockEstoque} onEdit={handleEditEstoque} />}
-        {currentView === "contas_pagar" && <ContasPagarView contas={mockContasPagar} />}
-        {currentView === "contas_receber" && <PlaceholderView title="Contas a Receber" />}
+        {currentView === "contas_pagar" && <ContasPagarView contas={mockContasPagar} onDescricao={(c) => { setDescricaoPagarConta(c); setShowDescricaoPagar(true); }} onEdit={(c) => { setEditingContaPagar(c); setShowEditarContaPagar(true); }} />}
+        {currentView === "contas_receber" && <ContasReceberView contas={mockContasReceber} onDescricao={(c) => { setDescricaoReceberConta(c); setShowDescricaoReceber(true); }} onEdit={(c) => { setEditingContaReceber(c); setShowEditarContaReceber(true); }} />}
       </div>
 
       {/* ── MODAIS COLABORADOR ── */}
