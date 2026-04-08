@@ -97,22 +97,14 @@ const Login = () => {
           <button
             id="botaoLogin"
             type="submit"
-            disabled={loading}
-            className="w-full h-12 rounded-xl text-sm font-semibold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60"
+            className="w-full h-12 rounded-xl text-sm font-semibold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
             style={{
               background: "linear-gradient(135deg, #B38B47 0%, #D4AF37 50%, #E5C15A 100%)",
               color: "#07111B",
               boxShadow: "0 4px 20px rgba(179,139,71,0.3)",
             }}
           >
-            {loading ? (
-              <span className="inline-flex items-center gap-2">
-                <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                Entrando...
-              </span>
-            ) : (
-              "Login"
-            )}
+            Login
           </button>
         </form>
 
