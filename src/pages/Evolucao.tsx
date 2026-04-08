@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Layout from "@/components/Layout";
-import { Trash2, FileText, Package, ClipboardList, Wrench, Play } from "lucide-react";
+import { Trash2, Package, ClipboardList, Wrench, Play, ImageIcon } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 
-// Mock data
 const mockProcedimentos = [
   { value: "botox_15052025", label: "Botox | 15/05/2025" },
   { value: "celulite_28112025", label: "Tratamentos para Celulite | 28/11/2025" },
@@ -26,16 +25,17 @@ const mockProcedimentos = [
 ];
 
 const mockSessions = [
-  { data: "17/10/2025", plano: "Botox | 15/05/2025", profissional: "Filipe Pereira da Silva" },
-  { data: "13/10/2025", plano: "Botox | 15/05/2025", profissional: "Filipe Pereira da Silva" },
-  { data: "11/9/2025", plano: "Botox | 15/05/2025", profissional: "Filipe Pereira da Silva" },
+  { data: "26/6/2025", plano: "Botox | 15/05/2025", profissional: "Eduardo Yto" },
+  { data: "26/6/2025", plano: "Botox | 15/05/2025", profissional: "Profissional" },
+  { data: "25/6/2025", plano: "Botox | 15/05/2025", profissional: "Profissional" },
 ];
 
 const Evolucao = () => {
   const [selectedProcedimento, setSelectedProcedimento] = useState<string>("");
-  const [observacao, setObservacao] = useState("");
+  const [observacao, setObservacao] = useState("Botox para teste plus");
+  const [photoView, setPhotoView] = useState<"antes" | "depois">("antes");
+  const [selectedSessionIdx, setSelectedSessionIdx] = useState<number>(0);
 
-  // Mock client - in real app this would come from context/state
   const clientInfo = {
     nome: "Eduardo Yto Cliente",
     nascimento: "14/5/2000",
@@ -43,11 +43,12 @@ const Evolucao = () => {
   };
 
   const hasSessions = selectedProcedimento !== "";
+  const selectedProcLabel = mockProcedimentos.find(p => p.value === selectedProcedimento)?.label || "";
 
   return (
     <Layout title="Evolução do Cliente">
       <div className="flex flex-col gap-4">
-        {/* Client Info Bar */}
+        {/* Client Info */}
         <div className="text-center text-sm text-foreground">
           <span className="text-muted-foreground">Nome: </span>
           <span className="text-gold font-medium">{clientInfo.nome}</span>
@@ -79,8 +80,9 @@ const Evolucao = () => {
           </button>
         </div>
 
-        {/* Two column layout: left panels, right empty space */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-4">
+        {/* Two column layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Left: sessions, observation, products */}
           <div className="flex flex-col gap-4">
             {/* Sessions Table */}
             <div className="glass-panel p-4 gold-glow">
@@ -97,7 +99,13 @@ const Evolucao = () => {
                 <TableBody>
                   {hasSessions ? (
                     mockSessions.map((s, idx) => (
-                      <TableRow key={idx} className="border-border hover:bg-muted/30">
+                      <TableRow
+                        key={idx}
+                        className={`border-border cursor-pointer transition-colors ${
+                          selectedSessionIdx === idx ? "bg-muted/50 border-l-2 border-l-gold" : "hover:bg-muted/30"
+                        }`}
+                        onClick={() => setSelectedSessionIdx(idx)}
+                      >
                         <TableCell className="text-sm">{s.data}</TableCell>
                         <TableCell className="text-sm">{s.plano}</TableCell>
                         <TableCell className="text-sm">{s.profissional}</TableCell>
@@ -129,9 +137,7 @@ const Evolucao = () => {
 
             {/* Observation */}
             <div className="glass-panel p-4 gold-glow">
-              <h3 className="text-center text-gold font-semibold text-base mb-3">
-                Observação
-              </h3>
+              <h3 className="text-center text-gold font-semibold text-base mb-3">Observação</h3>
               <Textarea
                 placeholder="Nenhuma observação registrada"
                 value={observacao}
@@ -140,7 +146,7 @@ const Evolucao = () => {
               />
             </div>
 
-            {/* Products Table */}
+            {/* Products */}
             <div className="glass-panel p-4 gold-glow">
               <Table>
                 <TableHeader>
@@ -164,8 +170,57 @@ const Evolucao = () => {
             </div>
           </div>
 
-          {/* Right side - empty for now (future: photos, details) */}
-          <div className="hidden lg:block" />
+          {/* Right: Photo area (Antes/Depois) */}
+          <div className="flex flex-col gap-4">
+            {hasSessions ? (
+              <>
+                {/* Procedure title */}
+                <p className="text-gold font-semibold text-center">{selectedProcLabel}</p>
+
+                {/* Photo label */}
+                <h3 className="text-center text-foreground font-semibold text-lg">
+                  {photoView === "antes" ? "Antes" : "Depois"}
+                </h3>
+
+                {/* Photo placeholder */}
+                <div className="glass-panel gold-glow aspect-[4/3] flex items-center justify-center">
+                  <div className="flex flex-col items-center gap-3 text-muted-foreground">
+                    <ImageIcon className="w-16 h-16 text-gold/30" />
+                    <p className="text-sm">Foto {photoView === "antes" ? "Antes" : "Depois"}</p>
+                    <p className="text-xs text-muted-foreground/60">Clique para adicionar foto</p>
+                  </div>
+                </div>
+
+                {/* Antes/Depois buttons */}
+                <div className="flex justify-between px-4">
+                  <button
+                    onClick={() => setPhotoView("antes")}
+                    className={`px-8 py-2.5 rounded-lg font-semibold text-sm transition-all border ${
+                      photoView === "antes"
+                        ? "bg-gold text-primary-foreground border-gold"
+                        : "bg-gold/15 text-gold border-gold hover:bg-gold/25"
+                    }`}
+                  >
+                    Antes
+                  </button>
+                  <button
+                    onClick={() => setPhotoView("depois")}
+                    className={`px-8 py-2.5 rounded-lg font-semibold text-sm transition-all border ${
+                      photoView === "depois"
+                        ? "bg-gold text-primary-foreground border-gold"
+                        : "bg-gold/15 text-gold border-gold hover:bg-gold/25"
+                    }`}
+                  >
+                    Depois
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="glass-panel gold-glow flex-1 flex items-center justify-center min-h-[300px]">
+                <p className="text-muted-foreground text-sm">Selecione um procedimento para visualizar fotos</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </Layout>
