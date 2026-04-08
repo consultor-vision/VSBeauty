@@ -178,13 +178,18 @@ const Index = () => {
   const filteredClients = useMemo(() => {
     if (!clientSearch.trim()) return mockClients;
     const term = clientSearch.toLowerCase();
-    return mockClients.filter(
-      (c) =>
-        c.nome.toLowerCase().includes(term) ||
-        c.cpf.includes(term) ||
-        c.telefone.includes(term)
-    );
-  }, [clientSearch]);
+    return mockClients.filter((c) => {
+      switch (searchField) {
+        case "nome": return c.nome.toLowerCase().includes(term);
+        case "cpf": return c.cpf.includes(term);
+        case "telefone": return c.telefone.includes(term);
+        case "email": return c.email.toLowerCase().includes(term);
+        case "cidade": return c.cidade.toLowerCase().includes(term);
+        case "uf": return c.uf.toLowerCase().includes(term);
+        default: return true;
+      }
+    });
+  }, [clientSearch, searchField]);
 
   // Birthdays this month
   const birthdaysThisMonth = useMemo(() => {
