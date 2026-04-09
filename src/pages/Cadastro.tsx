@@ -194,16 +194,20 @@ const Cadastro = () => {
             )}
           </div>
 
-          <ActionButton icon={Pencil} label="Editar Cadastro" disabled={!selectedClient} onClick={handleOpenEditCadastro} />
-          <ActionButton icon={FileText} label="Editar Ficha Anamnese" disabled={!selectedClient} onClick={() => setShowAnamnese(true)} />
-          <ActionButton icon={Plus} label="Novo Procedimento" disabled={!selectedClient} onClick={() => {
-            setNovoPlano({ procedimento: "", quantidadeSessoes: "", valorUnitario: "", formaPagamento: "", parcelas: "", valorEntrada: "" });
-            setShowNovoProcedimento(true);
-          }} />
-          <ActionButton icon={CalendarPlus} label="Agendamento" disabled={!selectedClient} onClick={() => {
-            setNovoAgendamento({ procedimento: "", profissional: "", data: "", horarioInicio: "", horarioFechamento: "" });
-            setShowNovoAgendamento(true);
-          }} />
+          {selectedClient && (
+            <>
+              <ActionButton icon={Pencil} label="Editar Cadastro" onClick={handleOpenEditCadastro} />
+              <ActionButton icon={FileText} label="Editar Ficha Anamnese" onClick={() => setShowAnamnese(true)} />
+              <ActionButton icon={Plus} label="Novo Procedimento" onClick={() => {
+                setNovoPlano({ procedimento: "", quantidadeSessoes: "", valorUnitario: "", formaPagamento: "", parcelas: "", valorEntrada: "" });
+                setShowNovoProcedimento(true);
+              }} />
+              <ActionButton icon={CalendarPlus} label="Agendamento" onClick={() => {
+                setNovoAgendamento({ procedimento: "", profissional: "", data: "", horarioInicio: "", horarioFechamento: "" });
+                setShowNovoAgendamento(true);
+              }} />
+            </>
+          )}
           <ActionButton icon={Users} label="Clientes" onClick={() => setShowClientList(true)} />
           <ActionButton icon={Plus} label="Novo Cadastro" onClick={() => {
             setNovoCadastro({ nome: "", telefone: "", email: "", instagram: "", nascimento: "", genero: "", cpf: "", cep: "" });
