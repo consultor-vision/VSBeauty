@@ -201,7 +201,7 @@ const Evolucao = () => {
           <div className="flex flex-col gap-4">
             {/* Sessions Table */}
             <div className="glass-panel p-4 gold-glow">
-              <h3 className="text-center text-gold font-semibold text-base mb-1">Relatório de Planos</h3>
+              <h3 className="text-center text-gold font-semibold text-sm mb-0.5">Relatório de Planos</h3>
               <Table>
                 <TableHeader>
                   <TableRow className="border-border hover:bg-transparent">
@@ -253,7 +253,7 @@ const Evolucao = () => {
 
             {/* Observation */}
             <div className="glass-panel p-4 gold-glow">
-              <h3 className="text-center text-gold font-semibold text-base mb-1">Observação</h3>
+              <h3 className="text-center text-gold font-semibold text-sm mb-0.5">Observação</h3>
               <Textarea
                 placeholder="Nenhuma observação registrada"
                 value={observacao}
@@ -264,7 +264,7 @@ const Evolucao = () => {
 
             {/* Products */}
             <div className="glass-panel p-4 gold-glow">
-              <h3 className="text-center text-gold font-semibold text-base mb-1">Produtos Utilizados</h3>
+              <h3 className="text-center text-gold font-semibold text-sm mb-0.5">Produtos Utilizados</h3>
               <Table>
                 <TableHeader>
                   <TableRow className="border-border hover:bg-transparent">
