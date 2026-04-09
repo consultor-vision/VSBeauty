@@ -42,9 +42,10 @@ Correções de bugs e ajustes para evitar inconsistências e duplicidades no sis
 interface LayoutProps {
   title: string;
   children: React.ReactNode;
+  headerRight?: React.ReactNode;
 }
 
-const Layout = ({ title, children }: LayoutProps) => {
+const Layout = ({ title, children, headerRight }: LayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
@@ -79,8 +80,9 @@ const Layout = ({ title, children }: LayoutProps) => {
   return (
     <div className="flex flex-col h-screen bg-background overflow-hidden">
       {/* Header */}
-      <header className="px-6 py-1.5 border-b border-border shrink-0">
+      <header className="px-6 py-1.5 border-b border-border shrink-0 flex items-center justify-between">
         <h1 className="text-lg font-semibold text-gold">{title}</h1>
+        {headerRight && <div>{headerRight}</div>}
       </header>
 
       {/* Main Content */}
