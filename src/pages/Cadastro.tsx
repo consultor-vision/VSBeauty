@@ -232,7 +232,7 @@ const Cadastro = () => {
         {/* Bottom Row - Buttons + Plans Panel */}
         <div className="flex flex-col lg:flex-row lg:items-start gap-4 pb-4">
           {/* Action Buttons */}
-          <div className="lg:w-[220px] flex flex-col items-center gap-4 pt-2">
+          <div className="lg:w-[220px] flex flex-col items-center gap-4 pt-5">
             {selectedClient && (
               <>
                 <ActionButton icon={Pencil} label="Editar Cadastro" onClick={handleOpenEditCadastro} />
