@@ -745,6 +745,28 @@ const Index = () => {
                   {app.statusProcedimento}
                 </span>
               </div>
+              {app.statusProcedimento === 'pendente' && (
+                <div className="flex items-center gap-2 pt-2 border-t border-border">
+                  <button
+                    onClick={() => {
+                      handleChangeStatus(app.id, 'confirmado');
+                      setDetailPopup(null);
+                    }}
+                    className="flex-1 text-xs font-medium px-3 py-1.5 rounded-md bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-600/30 transition-colors"
+                  >
+                    ✓ Confirmar
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleChangeStatus(app.id, 'cancelado');
+                      setDetailPopup(null);
+                    }}
+                    className="flex-1 text-xs font-medium px-3 py-1.5 rounded-md bg-red-600/20 text-red-400 border border-red-500/30 hover:bg-red-600/30 transition-colors"
+                  >
+                    ✗ Recusar
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         );
