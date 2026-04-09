@@ -320,7 +320,6 @@ const Cadastro = () => {
           </div>
         </div>
       </div>
-      </div>
 
       {/* ========== CLIENT LIST DIALOG ========== */}
       <Dialog open={showClientList} onOpenChange={setShowClientList}>
