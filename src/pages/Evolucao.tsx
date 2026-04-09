@@ -188,7 +188,7 @@ const Evolucao = () => {
             <span className="text-gold font-medium">{selectedClient.cpf}</span>
           </div>
           <button
-            onClick={() => { setSelectedClient(null); setShowClientModal(true); }}
+            onClick={() => setShowClientModal(true)}
             className="px-3 py-1.5 rounded-lg bg-gold/15 border border-gold text-gold text-xs font-semibold hover:bg-gold/25 transition-all"
           >
             Trocar Cliente
