@@ -82,14 +82,21 @@ const Evolucao = () => {
   const hasSessions = selectedProcedimento !== "";
   const selectedProcLabel = mockProcedimentos.find(p => p.value === selectedProcedimento)?.label || "";
 
-  // If no client selected, show only the modal
-  if (!selectedClient) {
+  const canCloseModal = selectedClient !== null;
+
+  if (!selectedClient || showClientModal) {
     return (
       <Layout title="Evolução do Cliente">
+        {selectedClient && !showClientModal ? null : (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 pb-20">
           <div className="glass-panel gold-glow w-full max-w-5xl max-h-[85vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between p-4 border-b border-border">
               <h2 className="text-lg font-semibold text-foreground">Cadastro Geral</h2>
+              {canCloseModal && (
+                <button onClick={() => setShowClientModal(false)} className="p-1 rounded hover:bg-muted transition-colors">
+                  <X className="w-5 h-5 text-foreground" />
+                </button>
+              )}
             </div>
             <div className="p-4 flex flex-wrap gap-3">
               <div className="flex items-center gap-2">
