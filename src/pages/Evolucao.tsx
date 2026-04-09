@@ -351,7 +351,6 @@ const Evolucao = () => {
           </div>
         </div>
       </div>
-      </div>
     </Layout>
   );
 };
