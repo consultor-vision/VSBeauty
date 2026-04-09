@@ -185,12 +185,12 @@ const Cadastro = () => {
     <Layout title="Consulta de Clientes">
       <div className="flex flex-col lg:flex-row gap-4 h-full">
         {/* Left Column - Avatar & Actions */}
-        <div className="lg:w-[220px] flex flex-col items-center gap-3">
-          <div className="w-40 h-40 rounded-full bg-card border-2 border-border flex items-center justify-center overflow-hidden">
+        <div className="lg:w-[220px] flex flex-col items-center gap-4 pt-4">
+          <div className="w-48 h-48 rounded-full bg-card border-2 border-border flex items-center justify-center overflow-hidden">
             {selectedClient?.foto ? (
               <img src={selectedClient.foto} alt={selectedClient.nome} className="w-full h-full object-cover" />
             ) : (
-              <User className="w-16 h-16 text-muted-foreground/40" />
+              <User className="w-20 h-20 text-muted-foreground/40" />
             )}
           </div>
 
@@ -258,6 +258,7 @@ const Cadastro = () => {
             <h2 className="text-center text-gold font-semibold text-base mb-4">
               Painel de Visualização de Planos
             </h2>
+            <ScrollArea className="max-h-[280px]">
             <Table>
               <TableHeader>
                 <TableRow className="border-border hover:bg-transparent">
@@ -309,6 +310,7 @@ const Cadastro = () => {
                 )}
               </TableBody>
             </Table>
+            </ScrollArea>
           </div>
         </div>
       </div>
