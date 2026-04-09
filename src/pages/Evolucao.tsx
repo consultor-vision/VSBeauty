@@ -283,6 +283,7 @@ const Evolucao = () => {
 
             {/* Products */}
             <div className="glass-panel p-4 gold-glow">
+              <h3 className="text-center text-gold font-semibold text-base mb-3">Produtos Utilizados</h3>
               <Table>
                 <TableHeader>
                   <TableRow className="border-border hover:bg-transparent">
