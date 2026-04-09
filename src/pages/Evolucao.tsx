@@ -239,7 +239,7 @@ const Evolucao = () => {
                     ))
                   ) : (
                     <TableRow className="hover:bg-transparent">
-                      <TableCell colSpan={5} className="h-20">
+                      <TableCell colSpan={5} className="h-24">
                         <div className="flex flex-col items-center justify-center text-muted-foreground gap-2">
                           <ClipboardList className="w-10 h-10 text-gold/30" />
                           <p className="text-sm">Nenhuma sessão registrada</p>
@@ -258,7 +258,7 @@ const Evolucao = () => {
                 placeholder="Nenhuma observação registrada"
                 value={observacao}
                 onChange={(e) => setObservacao(e.target.value)}
-                className="min-h-[80px] bg-transparent border-border text-foreground placeholder:text-muted-foreground/60 focus:border-gold resize-none"
+                className="min-h-[100px] bg-transparent border-border text-foreground placeholder:text-muted-foreground/60 focus:border-gold resize-none"
               />
             </div>
 
@@ -275,7 +275,7 @@ const Evolucao = () => {
                 </TableHeader>
                 <TableBody>
                   <TableRow className="hover:bg-transparent">
-                    <TableCell colSpan={3} className="h-20">
+                    <TableCell colSpan={3} className="h-24">
                       <div className="flex flex-col items-center justify-center text-muted-foreground gap-2">
                         <Package className="w-10 h-10 text-gold/30" />
                         <p className="text-sm">Nenhum produto registrado</p>
