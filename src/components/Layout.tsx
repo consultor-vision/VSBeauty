@@ -102,7 +102,7 @@ const Layout = ({ title, children }: LayoutProps) => {
             <div className="w-8 h-8 rounded-full bg-gold/20 border border-gold/40 flex items-center justify-center">
               <User className="w-4 h-4 text-gold" />
             </div>
-            <span className="text-sm text-foreground hidden sm:block">Lucas</span>
+            <span className="text-sm text-foreground hidden sm:block">Filipe Pereira da Silva</span>
           </div>
 
           {/* Center: nav buttons */}
@@ -143,7 +143,7 @@ const Layout = ({ title, children }: LayoutProps) => {
               <User className="w-5 h-5 text-gold" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">Lucas</p>
+              <p className="text-sm font-medium text-foreground truncate">Filipe Pereira da Silva</p>
               <p className="text-xs text-muted-foreground truncate">lucas@vsb.com</p>
             </div>
             <button onClick={() => setShowMenu(false)} className="p-1 rounded hover:bg-muted transition-colors">
