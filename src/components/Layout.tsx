@@ -106,7 +106,7 @@ const Layout = ({ title, children }: LayoutProps) => {
           </div>
 
           {/* Center: nav buttons */}
-          <div className="flex items-center gap-3 sm:gap-5">
+          <div className="flex items-center gap-5 sm:gap-8">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               const Icon = item.icon;
