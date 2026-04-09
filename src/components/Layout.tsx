@@ -129,7 +129,7 @@ const Layout = ({ title, children }: LayoutProps) => {
 
           {/* Right: logo */}
           <div className="hidden sm:flex items-center">
-            <img src="/LogoVSB.png" alt="Vision Smart Beauty" className="h-8 object-contain" />
+            <img src="/LogoVSB.png" alt="Vision Smart Beauty" className="h-12 object-contain" />
           </div>
         </div>
       </nav>
