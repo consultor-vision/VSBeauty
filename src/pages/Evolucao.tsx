@@ -200,7 +200,7 @@ const Evolucao = () => {
           {/* Left: sessions, observation, products */}
           <div className="flex flex-col gap-4">
             {/* Sessions Table */}
-            <div className="glass-panel p-6 gold-glow">
+            <div className="glass-panel p-3 gold-glow">
               <h3 className="text-center text-gold font-semibold text-sm mb-0.5">Relatório de Planos</h3>
               <Table>
                 <TableHeader>
@@ -239,7 +239,7 @@ const Evolucao = () => {
                     ))
                   ) : (
                     <TableRow className="hover:bg-transparent">
-                      <TableCell colSpan={5} className="h-40">
+                      <TableCell colSpan={5} className="h-20">
                         <div className="flex flex-col items-center justify-center text-muted-foreground gap-2">
                           <ClipboardList className="w-10 h-10 text-gold/30" />
                           <p className="text-sm">Nenhuma sessão registrada</p>
@@ -252,18 +252,18 @@ const Evolucao = () => {
             </div>
 
             {/* Observation */}
-            <div className="glass-panel p-6 gold-glow">
+            <div className="glass-panel p-3 gold-glow">
               <h3 className="text-center text-gold font-semibold text-sm mb-0.5">Observação</h3>
               <Textarea
                 placeholder="Nenhuma observação registrada"
                 value={observacao}
                 onChange={(e) => setObservacao(e.target.value)}
-                className="min-h-[160px] bg-transparent border-border text-foreground placeholder:text-muted-foreground/60 focus:border-gold resize-none"
+                className="min-h-[80px] bg-transparent border-border text-foreground placeholder:text-muted-foreground/60 focus:border-gold resize-none"
               />
             </div>
 
             {/* Products */}
-            <div className="glass-panel p-6 gold-glow">
+            <div className="glass-panel p-3 gold-glow">
               <h3 className="text-center text-gold font-semibold text-sm mb-0.5">Produtos Utilizados</h3>
               <Table>
                 <TableHeader>
@@ -275,7 +275,7 @@ const Evolucao = () => {
                 </TableHeader>
                 <TableBody>
                   <TableRow className="hover:bg-transparent">
-                    <TableCell colSpan={3} className="h-40">
+                    <TableCell colSpan={3} className="h-20">
                       <div className="flex flex-col items-center justify-center text-muted-foreground gap-2">
                         <Package className="w-10 h-10 text-gold/30" />
                         <p className="text-sm">Nenhum produto registrado</p>
