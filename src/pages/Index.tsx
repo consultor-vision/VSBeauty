@@ -559,7 +559,7 @@ const Index = () => {
                           const startMin = timeToMinutes(startingApp.startTime);
                           const endMin = timeToMinutes(startingApp.endTime);
                           const durationSlots = Math.max(1, Math.round((endMin - startMin) / 10));
-                          const heightPx = durationSlots * 28;
+                          const heightPx = durationSlots * 24;
                           const bgClass = statusBgColors[startingApp.statusProcedimento] || "bg-muted/30 border-border";
 
                           return (
@@ -613,7 +613,7 @@ const Index = () => {
                           const startMin = timeToMinutes(startingApp.startTime);
                           const endMin = timeToMinutes(startingApp.endTime);
                           const durationSlots = Math.max(1, Math.round((endMin - startMin) / 10));
-                          const heightPx = durationSlots * 28;
+                          const heightPx = durationSlots * 24;
                           const bgClass = statusBgColors[startingApp.statusProcedimento] || "bg-muted/30 border-border";
 
                           return (
