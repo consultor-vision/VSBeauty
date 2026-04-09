@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import Layout from "@/components/Layout";
 import {
   ChevronLeft,
@@ -13,6 +13,10 @@ import {
   Search,
   Edit,
   Play,
+  Phone,
+  User,
+  Scissors,
+  MessageSquare,
 } from "lucide-react";
 import {
   Select,
