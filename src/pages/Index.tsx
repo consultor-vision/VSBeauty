@@ -204,6 +204,52 @@ const Index = () => {
   const [showTimePickerModal, setShowTimePickerModal] = useState<"start" | "end" | null>(null);
   const [showBirthdayModal, setShowBirthdayModal] = useState(false);
 
+  // Appointment detail popup & context menu
+  const [detailPopup, setDetailPopup] = useState<{ app: Appointment; x: number; y: number } | null>(null);
+  const [contextMenu, setContextMenu] = useState<{ app: Appointment; x: number; y: number } | null>(null);
+  const [showStatusSubmenu, setShowStatusSubmenu] = useState(false);
+  const popupRef = useRef<HTMLDivElement>(null);
+  const contextRef = useRef<HTMLDivElement>(null);
+
+  // Close popups on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (popupRef.current && !popupRef.current.contains(e.target as Node)) setDetailPopup(null);
+      if (contextRef.current && !contextRef.current.contains(e.target as Node)) {
+        setContextMenu(null);
+        setShowStatusSubmenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const handleAppClick = (app: Appointment, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setContextMenu(null);
+    setDetailPopup({ app, x: e.clientX, y: e.clientY });
+  };
+
+  const handleAppContextMenu = (app: Appointment, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDetailPopup(null);
+    setShowStatusSubmenu(false);
+    setContextMenu({ app, x: e.clientX, y: e.clientY });
+  };
+
+  const handleChangeStatus = (appId: string, status: Appointment["statusProcedimento"]) => {
+    setAppointments((prev) => prev.map((a) => a.id === appId ? { ...a, statusProcedimento: status } : a));
+    setContextMenu(null);
+    setShowStatusSubmenu(false);
+  };
+
+  const handleDeleteAppointment = (appId: string) => {
+    setAppointments((prev) => prev.filter((a) => a.id !== appId));
+    setContextMenu(null);
+    setDetailPopup(null);
+  };
+
   // New appointment form
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [newProcedimento, setNewProcedimento] = useState("");
