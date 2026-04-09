@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Layout from "@/components/Layout";
-import { Trash2, Package, ClipboardList, Wrench, Play, ImageIcon } from "lucide-react";
+import { Trash2, Package, ClipboardList, Wrench, Play, ImageIcon, Search, ExternalLink, X } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -17,6 +17,28 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+
+interface Client {
+  id: string;
+  nome: string;
+  cpf: string;
+  telefone: string;
+  email: string;
+  cidade: string;
+  uf: string;
+  dataNascimento: string;
+}
+
+const mockClients: Client[] = [
+  { id: "1", nome: "Alana Silva", cpf: "325.215.852-33", telefone: "+55(11) 95176-3258", email: "alana@gmail.com", cidade: "São Paulo", uf: "SP", dataNascimento: "2002-01-05" },
+  { id: "2", nome: "Alfredo Nunes", cpf: "000.000.000-00", telefone: "+55(11) 95209-6182", email: "alfredo.nn@gmail.com", cidade: "Cidade", uf: "UF", dataNascimento: "1987-05-21" },
+  { id: "3", nome: "Ana Luz", cpf: "000.000.000-01", telefone: "+55(11) 95209-6182", email: "ana.luz@gmail.com", cidade: "Cidade", uf: "UF", dataNascimento: "1990-04-12" },
+  { id: "4", nome: "Ana Maria Pereira", cpf: "999.999.999-99", telefone: "+55(11) 99999-9999", email: "anamaria@gmail.com", cidade: "São Paulo", uf: "SP", dataNascimento: "1985-04-08" },
+  { id: "5", nome: "Angélica Lemes", cpf: "070.186.649-77", telefone: "+55(11) 99928-3182", email: "lemesangelica39@gmail.com", cidade: "Barueri", uf: "SP", dataNascimento: "1992-07-15" },
+  { id: "6", nome: "Barbara Fernandes", cpf: "093.765.184-20", telefone: "+55(31) 99829-8853", email: "luz_fernandes@ssp.com", cidade: "Belo Horizonte", uf: "MG", dataNascimento: "1988-12-03" },
+  { id: "7", nome: "Bianca Silva", cpf: "333.333.333-33", telefone: "+55(11) 33333-3333", email: "biancasilva@gmail.com", cidade: "Sertãozinho", uf: "SP", dataNascimento: "1995-04-22" },
+];
 
 const mockProcedimentos = [
   { value: "botox_15052025", label: "Botox | 15/05/2025" },
@@ -30,34 +52,139 @@ const mockSessions = [
   { data: "25/6/2025", plano: "Botox | 15/05/2025", profissional: "Profissional" },
 ];
 
+const formatDateBR = (dateStr: string) => {
+  const [y, m, d] = dateStr.split("-");
+  return `${d}/${m}/${y}`;
+};
+
 const Evolucao = () => {
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [showClientModal, setShowClientModal] = useState(true);
+  const [clientSearch, setClientSearch] = useState("");
+  const [searchField, setSearchField] = useState<"nome" | "cpf" | "telefone" | "email" | "cidade" | "uf">("nome");
+
   const [selectedProcedimento, setSelectedProcedimento] = useState<string>("");
   const [observacao, setObservacao] = useState("Botox para teste plus");
   const [photoView, setPhotoView] = useState<"antes" | "depois">("antes");
   const [selectedSessionIdx, setSelectedSessionIdx] = useState<number>(0);
 
-  const clientInfo = {
-    nome: "Eduardo Yto Cliente",
-    nascimento: "14/5/2000",
-    cpf: "352.802.318-77",
+  const filteredClients = mockClients.filter((c) => {
+    const term = clientSearch.toLowerCase();
+    if (!term) return true;
+    return c[searchField]?.toLowerCase().includes(term);
+  });
+
+  const handleSelectClient = (client: Client) => {
+    setSelectedClient(client);
+    setShowClientModal(false);
   };
 
   const hasSessions = selectedProcedimento !== "";
   const selectedProcLabel = mockProcedimentos.find(p => p.value === selectedProcedimento)?.label || "";
 
+  // If no client selected, show only the modal
+  if (!selectedClient) {
+    return (
+      <Layout title="Evolução do Cliente">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 pb-20">
+          <div className="glass-panel gold-glow w-full max-w-5xl max-h-[85vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between p-4 border-b border-border">
+              <h2 className="text-lg font-semibold text-foreground">Cadastro Geral</h2>
+            </div>
+            <div className="p-4 flex flex-wrap gap-3">
+              <div className="flex items-center gap-2">
+                <Select value={searchField} onValueChange={(v) => setSearchField(v as typeof searchField)}>
+                  <SelectTrigger className="w-[140px] bg-input border-border">
+                    <SelectValue placeholder="Nome" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="nome">Nome</SelectItem>
+                    <SelectItem value="cpf">CPF</SelectItem>
+                    <SelectItem value="telefone">Telefone</SelectItem>
+                    <SelectItem value="email">Email</SelectItem>
+                    <SelectItem value="cidade">Cidade</SelectItem>
+                    <SelectItem value="uf">UF</SelectItem>
+                  </SelectContent>
+                </Select>
+                <div className="relative flex-1 min-w-[200px]">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    value={clientSearch}
+                    onChange={(e) => setClientSearch(e.target.value)}
+                    placeholder="Buscar..."
+                    className="pl-9 bg-input border-border text-foreground focus:border-gold"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="flex-1 overflow-auto px-4 pb-4">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-border hover:bg-transparent">
+                    <TableHead className="text-gold text-xs">Foto</TableHead>
+                    <TableHead className="text-gold text-xs">Nome</TableHead>
+                    <TableHead className="text-gold text-xs">CPF</TableHead>
+                    <TableHead className="text-gold text-xs">Telefone</TableHead>
+                    <TableHead className="text-gold text-xs">Email</TableHead>
+                    <TableHead className="text-gold text-xs">Cidade</TableHead>
+                    <TableHead className="text-gold text-xs">UF</TableHead>
+                    <TableHead className="text-gold text-xs">Abrir</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredClients.map((client) => (
+                    <TableRow key={client.id} className="border-border hover:bg-muted/50 cursor-pointer">
+                      <TableCell>
+                        <div className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center">
+                          <span className="text-xs text-muted-foreground">{client.nome.charAt(0)}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm">{client.nome}</TableCell>
+                      <TableCell className="text-sm">{client.cpf}</TableCell>
+                      <TableCell className="text-sm">{client.telefone}</TableCell>
+                      <TableCell className="text-sm">{client.email}</TableCell>
+                      <TableCell className="text-sm">{client.cidade}</TableCell>
+                      <TableCell className="text-sm">{client.uf}</TableCell>
+                      <TableCell>
+                        <button
+                          onClick={() => handleSelectClient(client)}
+                          className="p-1.5 rounded hover:bg-muted transition-colors"
+                        >
+                          <ExternalLink className="w-4 h-4 text-gold" />
+                        </button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout title="Evolução do Cliente">
       <div className="flex flex-col gap-4">
-        {/* Client Info */}
-        <div className="text-center text-sm text-foreground">
-          <span className="text-muted-foreground">Nome: </span>
-          <span className="text-gold font-medium">{clientInfo.nome}</span>
-          <span className="text-muted-foreground mx-2">|</span>
-          <span className="text-muted-foreground">Data de Nascimento: </span>
-          <span className="text-gold font-medium">{clientInfo.nascimento}</span>
-          <span className="text-muted-foreground mx-2">|</span>
-          <span className="text-muted-foreground">CPF: </span>
-          <span className="text-gold font-medium">{clientInfo.cpf}</span>
+        {/* Client Info + change client button */}
+        <div className="flex items-center justify-center gap-4 text-sm text-foreground flex-wrap">
+          <div>
+            <span className="text-muted-foreground">Nome: </span>
+            <span className="text-gold font-medium">{selectedClient.nome}</span>
+            <span className="text-muted-foreground mx-2">|</span>
+            <span className="text-muted-foreground">Data de Nascimento: </span>
+            <span className="text-gold font-medium">{formatDateBR(selectedClient.dataNascimento)}</span>
+            <span className="text-muted-foreground mx-2">|</span>
+            <span className="text-muted-foreground">CPF: </span>
+            <span className="text-gold font-medium">{selectedClient.cpf}</span>
+          </div>
+          <button
+            onClick={() => { setSelectedClient(null); setShowClientModal(true); }}
+            className="px-3 py-1.5 rounded-lg bg-gold/15 border border-gold text-gold text-xs font-semibold hover:bg-gold/25 transition-all"
+          >
+            Trocar Cliente
+          </button>
         </div>
 
         {/* Procedure Filter */}
@@ -174,15 +301,10 @@ const Evolucao = () => {
           <div className="flex flex-col gap-4">
             {hasSessions ? (
               <>
-                {/* Procedure title */}
                 <p className="text-gold font-semibold text-center">{selectedProcLabel}</p>
-
-                {/* Photo label */}
                 <h3 className="text-center text-foreground font-semibold text-lg">
                   {photoView === "antes" ? "Antes" : "Depois"}
                 </h3>
-
-                {/* Photo placeholder */}
                 <div className="glass-panel gold-glow aspect-[4/3] flex items-center justify-center">
                   <div className="flex flex-col items-center gap-3 text-muted-foreground">
                     <ImageIcon className="w-16 h-16 text-gold/30" />
@@ -190,8 +312,6 @@ const Evolucao = () => {
                     <p className="text-xs text-muted-foreground/60">Clique para adicionar foto</p>
                   </div>
                 </div>
-
-                {/* Antes/Depois buttons */}
                 <div className="flex justify-between px-4">
                   <button
                     onClick={() => setPhotoView("antes")}
