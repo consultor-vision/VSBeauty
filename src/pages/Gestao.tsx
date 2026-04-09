@@ -218,15 +218,7 @@ const Gestao = () => {
                   </>
                 )}
               </>
-            ) : (
-              <>
-                <Select value={currentView} onValueChange={(v) => setCurrentView(v as GestaoView)}>
-                  <SelectTrigger className="w-[180px] bg-input border-border text-foreground h-9"><SelectValue /></SelectTrigger>
-                  <SelectContent>{Object.entries(viewLabels).map(([k, v]) => (<SelectItem key={k} value={k}>{v}</SelectItem>))}</SelectContent>
-                </Select>
-                <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
-              </>
-            )}
+            ) : null}
 
             {currentView === "colaborador" && (
               <div className="flex items-center gap-2">
