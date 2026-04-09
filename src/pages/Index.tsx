@@ -671,16 +671,18 @@ const Index = () => {
                           return (
                             <div className="flex-1 border-l border-border relative bg-gold/5">
                               <div
-                                className={`absolute left-1 right-1 z-10 rounded-md border px-2 py-1.5 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity ${bgClass}`}
+                                className={`absolute left-1 right-1 z-10 rounded-md border px-2 py-1.5 overflow-hidden cursor-pointer hover:brightness-125 transition-all ${bgClass}`}
                                 style={{ height: `${heightPx - 2}px`, top: 0 }}
+                                onClick={(e) => handleAppClick(startingApp, e)}
+                                onContextMenu={(e) => handleAppContextMenu(startingApp, e)}
                               >
-                                <p className="text-xs font-semibold text-foreground truncate">
+                                <p className="text-xs font-semibold text-white truncate">
                                   {startingApp.clientName}
                                 </p>
-                                <p className="text-[11px] text-muted-foreground truncate">
+                                <p className="text-[11px] text-white/70 truncate">
                                   {startingApp.procedimento}
                                 </p>
-                                <p className="text-[10px] text-muted-foreground">
+                                <p className="text-[10px] text-white/70">
                                   {startingApp.startTime} - {startingApp.endTime}
                                 </p>
                                 <p className={`text-[10px] capitalize ${statusTextColors[startingApp.statusProcedimento]}`}>
