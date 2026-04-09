@@ -230,7 +230,7 @@ const Cadastro = () => {
         </div>
 
         {/* Bottom Row - Buttons + Plans Panel */}
-        <div className="flex flex-col lg:flex-row gap-6 pb-4">
+        <div className="flex flex-col lg:flex-row gap-4 pb-4">
           {/* Action Buttons */}
           <div className="lg:w-[220px] flex flex-col items-center gap-4">
             {selectedClient && (
