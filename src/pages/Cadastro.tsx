@@ -187,7 +187,7 @@ const Cadastro = () => {
         {/* Top Row - Avatar + Client Panel */}
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Avatar */}
-          <div className="lg:w-[220px] flex flex-col items-center pt-4">
+          <div className="lg:w-[220px] flex flex-col items-center justify-center">
             <div className="w-48 h-48 rounded-full bg-card border-2 border-border flex items-center justify-center overflow-hidden">
               {selectedClient?.foto ? (
                 <img src={selectedClient.foto} alt={selectedClient.nome} className="w-full h-full object-cover" />
