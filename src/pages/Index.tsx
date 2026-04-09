@@ -618,9 +618,11 @@ const Index = () => {
                               className={`flex-1 border-l relative ${isT ? "border-border bg-gold/5" : "border-border"}`}
                             >
                               <div
-                                className={`absolute left-0.5 right-0.5 z-10 rounded-md border px-1.5 py-1 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity ${bgClass}`}
+                                className={`absolute left-0.5 right-0.5 z-10 rounded-md border px-1.5 py-1 overflow-hidden cursor-pointer hover:brightness-125 transition-all ${bgClass}`}
                                 style={{ height: `${heightPx - 2}px`, top: 0 }}
                                 title={`${startingApp.clientName} - ${startingApp.procedimento}`}
+                                onClick={(e) => handleAppClick(startingApp, e)}
+                                onContextMenu={(e) => handleAppContextMenu(startingApp, e)}
                               >
                                 <p className="text-[11px] font-semibold text-white truncate leading-tight">
                                   {startingApp.clientName}
