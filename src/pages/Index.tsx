@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import Layout from "@/components/Layout";
 import {
   ChevronLeft,
@@ -13,6 +13,10 @@ import {
   Search,
   Edit,
   Play,
+  Phone,
+  User,
+  Scissors,
+  MessageSquare,
 } from "lucide-react";
 import {
   Select,
@@ -199,6 +203,52 @@ const Index = () => {
   const [showAppointmentModal, setShowAppointmentModal] = useState(false);
   const [showTimePickerModal, setShowTimePickerModal] = useState<"start" | "end" | null>(null);
   const [showBirthdayModal, setShowBirthdayModal] = useState(false);
+
+  // Appointment detail popup & context menu
+  const [detailPopup, setDetailPopup] = useState<{ app: Appointment; x: number; y: number } | null>(null);
+  const [contextMenu, setContextMenu] = useState<{ app: Appointment; x: number; y: number } | null>(null);
+  const [showStatusSubmenu, setShowStatusSubmenu] = useState(false);
+  const popupRef = useRef<HTMLDivElement>(null);
+  const contextRef = useRef<HTMLDivElement>(null);
+
+  // Close popups on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (popupRef.current && !popupRef.current.contains(e.target as Node)) setDetailPopup(null);
+      if (contextRef.current && !contextRef.current.contains(e.target as Node)) {
+        setContextMenu(null);
+        setShowStatusSubmenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const handleAppClick = (app: Appointment, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setContextMenu(null);
+    setDetailPopup({ app, x: e.clientX, y: e.clientY });
+  };
+
+  const handleAppContextMenu = (app: Appointment, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDetailPopup(null);
+    setShowStatusSubmenu(false);
+    setContextMenu({ app, x: e.clientX, y: e.clientY });
+  };
+
+  const handleChangeStatus = (appId: string, status: Appointment["statusProcedimento"]) => {
+    setAppointments((prev) => prev.map((a) => a.id === appId ? { ...a, statusProcedimento: status } : a));
+    setContextMenu(null);
+    setShowStatusSubmenu(false);
+  };
+
+  const handleDeleteAppointment = (appId: string) => {
+    setAppointments((prev) => prev.filter((a) => a.id !== appId));
+    setContextMenu(null);
+    setDetailPopup(null);
+  };
 
   // New appointment form
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
@@ -568,9 +618,11 @@ const Index = () => {
                               className={`flex-1 border-l relative ${isT ? "border-border bg-gold/5" : "border-border"}`}
                             >
                               <div
-                                className={`absolute left-0.5 right-0.5 z-10 rounded-md border px-1.5 py-1 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity ${bgClass}`}
+                                className={`absolute left-0.5 right-0.5 z-10 rounded-md border px-1.5 py-1 overflow-hidden cursor-pointer hover:brightness-125 transition-all ${bgClass}`}
                                 style={{ height: `${heightPx - 2}px`, top: 0 }}
                                 title={`${startingApp.clientName} - ${startingApp.procedimento}`}
+                                onClick={(e) => handleAppClick(startingApp, e)}
+                                onContextMenu={(e) => handleAppContextMenu(startingApp, e)}
                               >
                                 <p className="text-[11px] font-semibold text-white truncate leading-tight">
                                   {startingApp.clientName}
@@ -619,16 +671,18 @@ const Index = () => {
                           return (
                             <div className="flex-1 border-l border-border relative bg-gold/5">
                               <div
-                                className={`absolute left-1 right-1 z-10 rounded-md border px-2 py-1.5 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity ${bgClass}`}
+                                className={`absolute left-1 right-1 z-10 rounded-md border px-2 py-1.5 overflow-hidden cursor-pointer hover:brightness-125 transition-all ${bgClass}`}
                                 style={{ height: `${heightPx - 2}px`, top: 0 }}
+                                onClick={(e) => handleAppClick(startingApp, e)}
+                                onContextMenu={(e) => handleAppContextMenu(startingApp, e)}
                               >
-                                <p className="text-xs font-semibold text-foreground truncate">
+                                <p className="text-xs font-semibold text-white truncate">
                                   {startingApp.clientName}
                                 </p>
-                                <p className="text-[11px] text-muted-foreground truncate">
+                                <p className="text-[11px] text-white/70 truncate">
                                   {startingApp.procedimento}
                                 </p>
-                                <p className="text-[10px] text-muted-foreground">
+                                <p className="text-[10px] text-white/70">
                                   {startingApp.startTime} - {startingApp.endTime}
                                 </p>
                                 <p className={`text-[10px] capitalize ${statusTextColors[startingApp.statusProcedimento]}`}>
@@ -651,6 +705,97 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      {/* ========== APPOINTMENT DETAIL POPUP ========== */}
+      {detailPopup && (() => {
+        const app = detailPopup.app;
+        const client = mockClients.find((c) => c.id === app.clientId);
+        return (
+          <div
+            ref={popupRef}
+            className="fixed z-[80] glass-panel gold-glow w-72 animate-in fade-in zoom-in-95 duration-150"
+            style={{ left: Math.min(detailPopup.x, window.innerWidth - 300), top: Math.min(detailPopup.y, window.innerHeight - 300) }}
+          >
+            <div className="p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold text-foreground">{app.clientName}</h3>
+                <button onClick={() => setDetailPopup(null)} className="p-0.5 rounded hover:bg-muted">
+                  <X className="w-4 h-4 text-foreground" />
+                </button>
+              </div>
+              <p className="text-xs text-gold font-semibold">{app.startTime} - {app.endTime}</p>
+              <div className="space-y-1.5">
+                {client?.telefone && (
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Phone className="w-3.5 h-3.5 text-gold" />
+                    <span>{client.telefone}</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <User className="w-3.5 h-3.5 text-gold" />
+                  <span>{app.profissional}</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Scissors className="w-3.5 h-3.5 text-gold" />
+                  <span>{app.procedimento}</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 pt-1">
+                <span className={`text-[10px] capitalize font-medium px-2 py-0.5 rounded-full border ${statusBgColors[app.statusProcedimento]} ${statusTextColors[app.statusProcedimento]}`}>
+                  {app.statusProcedimento}
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* ========== CONTEXT MENU ========== */}
+      {contextMenu && (
+        <div
+          ref={contextRef}
+          className="fixed z-[80] glass-panel gold-glow w-52 animate-in fade-in zoom-in-95 duration-100"
+          style={{ left: Math.min(contextMenu.x, window.innerWidth - 220), top: Math.min(contextMenu.y, window.innerHeight - 300) }}
+        >
+          <div className="py-1">
+            <button
+              onClick={() => { setDetailPopup({ app: contextMenu.app, x: contextMenu.x, y: contextMenu.y }); setContextMenu(null); }}
+              className="w-full text-left px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+            >
+              Ver Detalhes
+            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowStatusSubmenu(!showStatusSubmenu)}
+                className="w-full text-left px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors flex items-center justify-between"
+              >
+                Alterar Status
+                <ChevronRight className="w-4 h-4" />
+              </button>
+              {showStatusSubmenu && (
+                <div className="absolute left-full top-0 ml-1 glass-panel gold-glow w-48 py-1">
+                  {(["pendente", "confirmado", "cancelado", "concluido"] as const).map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => handleChangeStatus(contextMenu.app.id, s)}
+                      className={`w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors flex items-center justify-between ${statusTextColors[s]}`}
+                    >
+                      <span className="capitalize">{s === "concluido" ? "Finalizado" : s === "pendente" ? "Aguardando Confirmação" : s === "confirmado" ? "Confirmado" : "Cancelado"}</span>
+                      {contextMenu.app.statusProcedimento === s && <span className="text-gold">✓</span>}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button
+              onClick={() => { handleDeleteAppointment(contextMenu.app.id); }}
+              className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-muted transition-colors"
+            >
+              Cancelar Agendamento
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ========== CLIENT LIST MODAL (Cadastro Geral) ========== */}
       {showClientListModal && (
