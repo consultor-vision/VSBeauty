@@ -344,7 +344,7 @@ const Evolucao = () => {
                 </div>
               </>
             ) : (
-              <div className="glass-panel gold-glow flex items-center justify-center min-h-[750px]">
+              <div className="glass-panel gold-glow flex items-center justify-center min-h-[calc(100vh-280px)]">
                 <p className="text-muted-foreground text-sm">Selecione um procedimento para visualizar fotos</p>
               </div>
             )}
