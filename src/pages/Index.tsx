@@ -572,13 +572,13 @@ const Index = () => {
                                 style={{ height: `${heightPx - 2}px`, top: 0 }}
                                 title={`${startingApp.clientName} - ${startingApp.procedimento}`}
                               >
-                                <p className="text-[11px] font-semibold text-foreground truncate leading-tight">
+                                <p className="text-[11px] font-semibold text-white truncate leading-tight">
                                   {startingApp.clientName}
                                 </p>
-                                <p className="text-[10px] text-muted-foreground truncate leading-tight">
+                                <p className="text-[10px] text-white/70 truncate leading-tight">
                                   {startingApp.procedimento}
                                 </p>
-                                <p className="text-[9px] text-muted-foreground leading-tight">
+                                <p className="text-[9px] text-white/70 leading-tight">
                                   {startingApp.startTime} - {startingApp.endTime}
                                 </p>
                               </div>
