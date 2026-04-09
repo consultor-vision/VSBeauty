@@ -175,27 +175,45 @@ const Evolucao = () => {
   return (
     <Layout title="Evolução do Cliente">
       <div className="flex flex-col gap-3 pb-20 lg:pb-24">
-        {/* Client Info + Procedure Filter row */}
-        <div className="flex items-center gap-2 text-sm text-foreground flex-wrap">
-          <span className="text-muted-foreground">Nome: </span>
-          <span className="text-gold font-medium">{selectedClient.nome}</span>
-          <span className="text-muted-foreground">|</span>
-          <span className="text-muted-foreground">Data de Nascimento: </span>
-          <span className="text-gold font-medium">{formatDateBR(selectedClient.dataNascimento)}</span>
-          <span className="text-muted-foreground">|</span>
-          <span className="text-muted-foreground">CPF: </span>
-          <span className="text-gold font-medium">{selectedClient.cpf}</span>
-          <button
-            onClick={() => setShowClientModal(true)}
-            className="ml-2 px-3 py-1.5 rounded-lg bg-gold/15 border border-gold text-gold text-xs font-semibold hover:bg-gold/25 transition-all whitespace-nowrap"
-          >
-            Trocar Cliente
-          </button>
+        {/* Top row: Client info (left) + Procedure filter (right) */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-center">
+          <div className="flex items-center gap-2 text-sm text-foreground flex-wrap">
+            <span className="text-muted-foreground">Nome: </span>
+            <span className="text-gold font-medium">{selectedClient.nome}</span>
+            <span className="text-muted-foreground">|</span>
+            <span className="text-muted-foreground">Data de Nascimento: </span>
+            <span className="text-gold font-medium">{formatDateBR(selectedClient.dataNascimento)}</span>
+            <span className="text-muted-foreground">|</span>
+            <span className="text-muted-foreground">CPF: </span>
+            <span className="text-gold font-medium">{selectedClient.cpf}</span>
+            <button
+              onClick={() => setShowClientModal(true)}
+              className="ml-2 px-3 py-1.5 rounded-lg bg-gold/15 border border-gold text-gold text-xs font-semibold hover:bg-gold/25 transition-all whitespace-nowrap"
+            >
+              Trocar Cliente
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            <Select value={selectedProcedimento || undefined} onValueChange={setSelectedProcedimento}>
+              <SelectTrigger className="flex-1 bg-input border-border text-foreground focus:ring-gold">
+                <SelectValue placeholder="Selecione Procedimento" />
+              </SelectTrigger>
+              <SelectContent>
+                {mockProcedimentos.map((p) => (
+                  <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <button
+              onClick={() => setSelectedProcedimento("")}
+              className="p-2.5 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
-
-
-        {/* Two column layout */}
+        {/* Two column layout: Sessions/Obs/Products (left) + Photos (right) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-start">
           {/* Left: sessions, observation, products */}
           <div className="flex flex-col gap-3">
@@ -287,27 +305,8 @@ const Evolucao = () => {
             </div>
           </div>
 
-          {/* Right: Filter + Photo area (Antes/Depois) */}
+          {/* Right: Photo area (Antes/Depois) */}
           <div className="flex flex-col gap-4">
-            {/* Procedure Filter */}
-            <div className="flex items-center gap-2">
-              <Select value={selectedProcedimento || undefined} onValueChange={setSelectedProcedimento}>
-                <SelectTrigger className="flex-1 bg-input border-border text-foreground focus:ring-gold">
-                  <SelectValue placeholder="Selecione Procedimento" />
-                </SelectTrigger>
-                <SelectContent>
-                  {mockProcedimentos.map((p) => (
-                    <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <button
-                onClick={() => setSelectedProcedimento("")}
-                className="p-2.5 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
             {hasSessions ? (
               <>
                 <p className="text-gold font-semibold text-center">{selectedProcLabel}</p>
@@ -351,6 +350,7 @@ const Evolucao = () => {
             )}
           </div>
         </div>
+      </div>
       </div>
     </Layout>
   );
