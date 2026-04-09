@@ -706,6 +706,97 @@ const Index = () => {
         </div>
       </div>
 
+      {/* ========== APPOINTMENT DETAIL POPUP ========== */}
+      {detailPopup && (() => {
+        const app = detailPopup.app;
+        const client = mockClients.find((c) => c.id === app.clientId);
+        return (
+          <div
+            ref={popupRef}
+            className="fixed z-[80] glass-panel gold-glow w-72 animate-in fade-in zoom-in-95 duration-150"
+            style={{ left: Math.min(detailPopup.x, window.innerWidth - 300), top: Math.min(detailPopup.y, window.innerHeight - 300) }}
+          >
+            <div className="p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold text-foreground">{app.clientName}</h3>
+                <button onClick={() => setDetailPopup(null)} className="p-0.5 rounded hover:bg-muted">
+                  <X className="w-4 h-4 text-foreground" />
+                </button>
+              </div>
+              <p className="text-xs text-gold font-semibold">{app.startTime} - {app.endTime}</p>
+              <div className="space-y-1.5">
+                {client?.telefone && (
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Phone className="w-3.5 h-3.5 text-gold" />
+                    <span>{client.telefone}</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <User className="w-3.5 h-3.5 text-gold" />
+                  <span>{app.profissional}</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Scissors className="w-3.5 h-3.5 text-gold" />
+                  <span>{app.procedimento}</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 pt-1">
+                <span className={`text-[10px] capitalize font-medium px-2 py-0.5 rounded-full border ${statusBgColors[app.statusProcedimento]} ${statusTextColors[app.statusProcedimento]}`}>
+                  {app.statusProcedimento}
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* ========== CONTEXT MENU ========== */}
+      {contextMenu && (
+        <div
+          ref={contextRef}
+          className="fixed z-[80] glass-panel gold-glow w-52 animate-in fade-in zoom-in-95 duration-100"
+          style={{ left: Math.min(contextMenu.x, window.innerWidth - 220), top: Math.min(contextMenu.y, window.innerHeight - 300) }}
+        >
+          <div className="py-1">
+            <button
+              onClick={() => { setDetailPopup({ app: contextMenu.app, x: contextMenu.x, y: contextMenu.y }); setContextMenu(null); }}
+              className="w-full text-left px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+            >
+              Ver Detalhes
+            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowStatusSubmenu(!showStatusSubmenu)}
+                className="w-full text-left px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors flex items-center justify-between"
+              >
+                Alterar Status
+                <ChevronRight className="w-4 h-4" />
+              </button>
+              {showStatusSubmenu && (
+                <div className="absolute left-full top-0 ml-1 glass-panel gold-glow w-48 py-1">
+                  {(["pendente", "confirmado", "cancelado", "concluido"] as const).map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => handleChangeStatus(contextMenu.app.id, s)}
+                      className={`w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors flex items-center justify-between ${statusTextColors[s]}`}
+                    >
+                      <span className="capitalize">{s === "concluido" ? "Finalizado" : s === "pendente" ? "Aguardando Confirmação" : s === "confirmado" ? "Confirmado" : "Cancelado"}</span>
+                      {contextMenu.app.statusProcedimento === s && <span className="text-gold">✓</span>}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button
+              onClick={() => { handleDeleteAppointment(contextMenu.app.id); }}
+              className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-muted transition-colors"
+            >
+              Cancelar Agendamento
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* ========== CLIENT LIST MODAL (Cadastro Geral) ========== */}
       {showClientListModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 pb-20">
