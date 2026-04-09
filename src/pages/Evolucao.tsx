@@ -175,30 +175,10 @@ const Evolucao = () => {
   return (
     <Layout title="Evolução do Cliente">
       <div className="flex flex-col gap-4 pb-24 lg:pb-28">
-        {/* Client Info + change client button */}
-        <div className="flex items-center justify-center gap-4 text-sm text-foreground flex-wrap">
-          <div>
-            <span className="text-muted-foreground">Nome: </span>
-            <span className="text-gold font-medium">{selectedClient.nome}</span>
-            <span className="text-muted-foreground mx-2">|</span>
-            <span className="text-muted-foreground">Data de Nascimento: </span>
-            <span className="text-gold font-medium">{formatDateBR(selectedClient.dataNascimento)}</span>
-            <span className="text-muted-foreground mx-2">|</span>
-            <span className="text-muted-foreground">CPF: </span>
-            <span className="text-gold font-medium">{selectedClient.cpf}</span>
-          </div>
-          <button
-            onClick={() => setShowClientModal(true)}
-            className="px-3 py-1.5 rounded-lg bg-gold/15 border border-gold text-gold text-xs font-semibold hover:bg-gold/25 transition-all"
-          >
-            Trocar Cliente
-          </button>
-        </div>
-
-        {/* Procedure Filter */}
-        <div className="flex items-center gap-2">
+        {/* Procedure Filter + Client Info row */}
+        <div className="flex items-center gap-3 flex-wrap">
           <Select value={selectedProcedimento || undefined} onValueChange={setSelectedProcedimento}>
-            <SelectTrigger className="max-w-lg bg-input border-border text-foreground focus:ring-gold">
+            <SelectTrigger className="max-w-xs bg-input border-border text-foreground focus:ring-gold">
               <SelectValue placeholder="Selecione Procedimento" />
             </SelectTrigger>
             <SelectContent>
@@ -213,6 +193,22 @@ const Evolucao = () => {
           >
             <Trash2 className="w-4 h-4" />
           </button>
+          <div className="ml-auto flex items-center gap-2 text-sm text-foreground">
+            <span className="text-muted-foreground">Nome: </span>
+            <span className="text-gold font-medium">{selectedClient.nome}</span>
+            <span className="text-muted-foreground">|</span>
+            <span className="text-muted-foreground">Nasc.: </span>
+            <span className="text-gold font-medium">{formatDateBR(selectedClient.dataNascimento)}</span>
+            <span className="text-muted-foreground">|</span>
+            <span className="text-muted-foreground">CPF: </span>
+            <span className="text-gold font-medium">{selectedClient.cpf}</span>
+            <button
+              onClick={() => setShowClientModal(true)}
+              className="ml-2 px-3 py-1.5 rounded-lg bg-gold/15 border border-gold text-gold text-xs font-semibold hover:bg-gold/25 transition-all"
+            >
+              Trocar Cliente
+            </button>
+          </div>
         </div>
 
         {/* Two column layout */}
