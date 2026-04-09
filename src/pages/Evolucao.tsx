@@ -174,7 +174,7 @@ const Evolucao = () => {
 
   return (
     <Layout title="Evolução do Cliente">
-      <div className="flex flex-col gap-4 pb-24 lg:pb-28">
+      <div className="flex flex-col gap-2 pb-16 lg:pb-20">
         {/* Client Info + Procedure Filter row */}
         <div className="flex items-center gap-2 text-sm text-foreground flex-wrap">
           <span className="text-muted-foreground">Nome: </span>
@@ -196,9 +196,9 @@ const Evolucao = () => {
 
 
         {/* Two column layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 items-start">
           {/* Left: sessions, observation, products */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
             {/* Sessions Table */}
             <div className="glass-panel p-3 gold-glow">
               <h3 className="text-center text-gold font-semibold text-sm mb-0.5">Relatório de Planos</h3>
