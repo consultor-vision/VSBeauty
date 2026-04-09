@@ -105,19 +105,19 @@ const Analytics = () => {
     { name: "Masculino", value: clients.masculino },
   ];
 
+  const yearSelector = (
+    <Select value={year} onValueChange={setYear}>
+      <SelectTrigger className="w-[100px] bg-input border-border text-foreground h-9"><SelectValue /></SelectTrigger>
+      <SelectContent>
+        <SelectItem value="2026">2026</SelectItem>
+        <SelectItem value="2025">2025</SelectItem>
+      </SelectContent>
+    </Select>
+  );
+
   return (
-    <Layout title="Visão Analítica">
+    <Layout title="Visão Analítica" headerRight={yearSelector}>
       <div className="flex flex-col gap-4">
-        {/* Year selector */}
-        <div className="flex justify-end">
-          <Select value={year} onValueChange={setYear}>
-            <SelectTrigger className="w-[100px] bg-input border-border text-foreground h-9"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="2026">2026</SelectItem>
-              <SelectItem value="2025">2025</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
 
         {/* Row 1: Financial + Monthly Chart */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
