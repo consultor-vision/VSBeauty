@@ -380,12 +380,12 @@ const Index = () => {
 
   return (
     <Layout title="Agendamento">
-      <div className="flex flex-col lg:flex-row gap-4 h-full">
+      <div className="flex flex-col lg:flex-row gap-3 h-full">
         {/* Left Column - Calendar + Actions */}
-        <div className="lg:w-[280px] flex flex-col gap-3 shrink-0">
+        <div className="lg:w-[240px] flex flex-col gap-2 shrink-0">
           {/* Mini Calendar */}
-          <div className="glass-panel p-3 gold-glow">
-            <div className="flex items-center justify-between mb-3">
+          <div className="glass-panel p-2 gold-glow">
+            <div className="flex items-center justify-between mb-2">
               <button onClick={prevMonth} className="p-1 rounded-md hover:bg-muted transition-colors">
                 <ChevronLeft className="w-4 h-4 text-gold" />
               </button>
@@ -440,24 +440,24 @@ const Index = () => {
           {/* Action Buttons */}
           <button
             onClick={handleNewAppointment}
-            className="w-full py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all flex items-center justify-center gap-2"
+            className="w-full py-2 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-xs hover:bg-gold/25 transition-all flex items-center justify-center gap-2"
           >
-            <CalendarCheck className="w-4 h-4" />
+            <CalendarCheck className="w-3.5 h-3.5" />
             Agendamento
           </button>
           <button
             onClick={() => setShowBirthdayModal(true)}
-            className="w-full py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all flex items-center justify-center gap-2"
+            className="w-full py-2 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-xs hover:bg-gold/25 transition-all flex items-center justify-center gap-2"
           >
-            <Cake className="w-4 h-4" />
+            <Cake className="w-3.5 h-3.5" />
             Aniversariantes
           </button>
         </div>
 
         {/* Right Column - Weekly Grid */}
-        <div className="flex-1 glass-panel gold-glow flex flex-col overflow-hidden">
+        <div className="flex-1 glass-panel gold-glow flex flex-col overflow-hidden min-h-0">
           {/* Week Navigation Header */}
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border">
+          <div className="flex items-center justify-between px-3 py-1.5 border-b border-border shrink-0">
             <div className="flex items-center gap-3">
               <button
                 onClick={goToToday}
@@ -525,7 +525,7 @@ const Index = () => {
               {TIME_SLOTS.map((time) => {
                 const isHour = time.endsWith(":00");
                 return (
-                  <div key={time} className="flex" style={{ minHeight: "28px" }}>
+                  <div key={time} className="flex" style={{ minHeight: "24px" }}>
                     {/* Time label */}
                     <div className="w-16 shrink-0 text-right pr-2 flex items-start justify-end">
                       {isHour && (
