@@ -208,11 +208,15 @@ const Cadastro = () => {
               }} />
             </>
           )}
-          <ActionButton icon={Users} label="Clientes" onClick={() => setShowClientList(true)} />
-          <ActionButton icon={Plus} label="Novo Cadastro" onClick={() => {
-            setNovoCadastro({ nome: "", telefone: "", email: "", instagram: "", nascimento: "", genero: "", cpf: "", cep: "" });
-            setShowNovoCadastro(true);
-          }} />
+          {!selectedClient && (
+            <>
+              <ActionButton icon={Users} label="Clientes" onClick={() => setShowClientList(true)} />
+              <ActionButton icon={Plus} label="Novo Cadastro" onClick={() => {
+                setNovoCadastro({ nome: "", telefone: "", email: "", instagram: "", nascimento: "", genero: "", cpf: "", cep: "" });
+                setShowNovoCadastro(true);
+              }} />
+            </>
+          )}
           <ActionButton icon={Eraser} label="Limpar" onClick={handleClear} />
         </div>
 
