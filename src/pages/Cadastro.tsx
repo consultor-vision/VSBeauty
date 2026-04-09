@@ -230,9 +230,9 @@ const Cadastro = () => {
         </div>
 
         {/* Bottom Row - Buttons + Plans Panel */}
-        <div className="flex flex-col lg:flex-row gap-4 pb-4">
+        <div className="flex flex-col lg:flex-row lg:items-start gap-4 pb-4">
           {/* Action Buttons */}
-          <div className="lg:w-[220px] flex flex-col items-center gap-4">
+          <div className="lg:w-[220px] flex flex-col items-center gap-4 pt-2">
             {selectedClient && (
               <>
                 <ActionButton icon={Pencil} label="Editar Cadastro" onClick={handleOpenEditCadastro} />
@@ -264,7 +264,7 @@ const Cadastro = () => {
             <h2 className="text-center text-gold font-semibold text-base mb-4">
               Painel de Visualização de Planos
             </h2>
-            <ScrollArea className="max-h-[280px]">
+            <ScrollArea className="h-[250px]">
               <Table>
                 <TableHeader>
                   <TableRow className="border-border hover:bg-transparent">
