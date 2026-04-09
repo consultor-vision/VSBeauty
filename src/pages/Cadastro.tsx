@@ -232,7 +232,7 @@ const Cadastro = () => {
         {/* Bottom Row - Buttons + Plans Panel */}
         <div className="flex flex-col lg:flex-row lg:items-stretch gap-4 pb-4">
           {/* Action Buttons */}
-          <div className="lg:w-[220px] flex flex-col items-center gap-4">
+          <div className="lg:w-[220px] flex flex-col items-center justify-between h-full">
             {selectedClient && (
               <>
                 <ActionButton icon={Pencil} label="Editar Cadastro" onClick={handleOpenEditCadastro} />
@@ -256,9 +256,7 @@ const Cadastro = () => {
                 }} />
               </>
             )}
-            <div className="mt-auto">
-              <ActionButton icon={Eraser} label="Limpar" onClick={handleClear} />
-            </div>
+            <ActionButton icon={Eraser} label="Limpar" onClick={handleClear} />
           </div>
 
           {/* Plans Panel */}
