@@ -201,6 +201,7 @@ const Evolucao = () => {
           <div className="flex flex-col gap-4">
             {/* Sessions Table */}
             <div className="glass-panel p-4 gold-glow">
+              <h3 className="text-center text-gold font-semibold text-base mb-3">Relatório de Planos</h3>
               <Table>
                 <TableHeader>
                   <TableRow className="border-border hover:bg-transparent">
