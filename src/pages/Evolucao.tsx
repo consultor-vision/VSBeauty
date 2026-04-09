@@ -175,25 +175,9 @@ const Evolucao = () => {
   return (
     <Layout title="Evolução do Cliente">
       <div className="flex flex-col gap-4 pb-24 lg:pb-28">
-        {/* Procedure Filter + Client Info row */}
+        {/* Client Info + Procedure Filter row */}
         <div className="flex items-center gap-3 flex-wrap">
-          <Select value={selectedProcedimento || undefined} onValueChange={setSelectedProcedimento}>
-            <SelectTrigger className="max-w-xs bg-input border-border text-foreground focus:ring-gold">
-              <SelectValue placeholder="Selecione Procedimento" />
-            </SelectTrigger>
-            <SelectContent>
-              {mockProcedimentos.map((p) => (
-                <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <button
-            onClick={() => setSelectedProcedimento("")}
-            className="p-2.5 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
-          <div className="ml-auto flex items-center gap-2 text-sm text-foreground">
+          <div className="flex items-center gap-2 text-sm text-foreground">
             <span className="text-muted-foreground">Nome: </span>
             <span className="text-gold font-medium">{selectedClient.nome}</span>
             <span className="text-muted-foreground">|</span>
@@ -207,6 +191,24 @@ const Evolucao = () => {
               className="ml-2 px-3 py-1.5 rounded-lg bg-gold/15 border border-gold text-gold text-xs font-semibold hover:bg-gold/25 transition-all"
             >
               Trocar Cliente
+            </button>
+          </div>
+          <div className="ml-auto flex items-center gap-2">
+            <Select value={selectedProcedimento || undefined} onValueChange={setSelectedProcedimento}>
+              <SelectTrigger className="max-w-xs bg-input border-border text-foreground focus:ring-gold">
+                <SelectValue placeholder="Selecione Procedimento" />
+              </SelectTrigger>
+              <SelectContent>
+                {mockProcedimentos.map((p) => (
+                  <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <button
+              onClick={() => setSelectedProcedimento("")}
+              className="p-2.5 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"
+            >
+              <Trash2 className="w-4 h-4" />
             </button>
           </div>
         </div>
