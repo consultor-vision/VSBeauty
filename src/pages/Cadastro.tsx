@@ -230,9 +230,9 @@ const Cadastro = () => {
         </div>
 
         {/* Bottom Row - Buttons + Plans Panel */}
-        <div className="flex flex-col lg:flex-row lg:items-start gap-4 pb-4">
+        <div className="flex flex-col lg:flex-row lg:items-stretch gap-4 pb-4">
           {/* Action Buttons */}
-          <div className="lg:w-[220px] flex flex-col items-center justify-start gap-4 self-start">
+          <div className="lg:w-[220px] flex flex-col items-center gap-4">
             {selectedClient && (
               <>
                 <ActionButton icon={Pencil} label="Editar Cadastro" onClick={handleOpenEditCadastro} />
@@ -256,7 +256,9 @@ const Cadastro = () => {
                 }} />
               </>
             )}
-            <ActionButton icon={Eraser} label="Limpar" onClick={handleClear} />
+            <div className="mt-auto">
+              <ActionButton icon={Eraser} label="Limpar" onClick={handleClear} />
+            </div>
           </div>
 
           {/* Plans Panel */}
