@@ -214,7 +214,7 @@ const Evolucao = () => {
         </div>
 
         {/* Two column layout: Sessions/Obs/Products (left) + Photos (right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-stretch">
           {/* Left: sessions, observation, products */}
           <div className="flex flex-col gap-3">
             {/* Sessions Table */}
