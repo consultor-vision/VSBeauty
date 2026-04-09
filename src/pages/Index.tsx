@@ -32,6 +32,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 const daysOfWeek = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
+const daysOfWeekShort = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
 const getDaysInMonth = (year: number, month: number) =>
   new Date(year, month + 1, 0).getDate();
@@ -93,13 +94,59 @@ const formatDate = (date: Date): string => {
   return `${y}-${m}-${d}`;
 };
 
-const statusColors: Record<string, string> = {
+// Generate time slots from 07:00 to 21:00 in 10-minute intervals
+const generateTimeSlots = (): string[] => {
+  const slots: string[] = [];
+  for (let h = 7; h <= 21; h++) {
+    for (let m = 0; m < 60; m += 10) {
+      if (h === 21 && m > 0) break;
+      slots.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
+    }
+  }
+  return slots;
+};
+
+const TIME_SLOTS = generateTimeSlots();
+
+// Get the week dates (Mon-Sun) that contain a given date
+const getWeekDates = (date: Date): Date[] => {
+  const d = new Date(date);
+  const day = d.getDay(); // 0=Sun
+  const diff = day === 0 ? -6 : 1 - day; // Monday start
+  const monday = new Date(d);
+  monday.setDate(d.getDate() + diff);
+  const week: Date[] = [];
+  for (let i = 0; i < 7; i++) {
+    const wd = new Date(monday);
+    wd.setDate(monday.getDate() + i);
+    week.push(wd);
+  }
+  return week;
+};
+
+const statusBgColors: Record<string, string> = {
+  pendente: "bg-yellow-500/20 border-yellow-500/40",
+  confirmado: "bg-emerald-500/20 border-emerald-500/40",
+  cancelado: "bg-red-500/20 border-red-500/40",
+  concluido: "bg-blue-500/20 border-blue-500/40",
+};
+
+const statusTextColors: Record<string, string> = {
   pendente: "text-yellow-400",
   confirmado: "text-emerald-400",
   cancelado: "text-red-400",
   concluido: "text-blue-400",
+};
+
+const statusFinColors: Record<string, string> = {
   pago: "text-emerald-400",
+  pendente: "text-yellow-400",
   parcial: "text-yellow-400",
+};
+
+const timeToMinutes = (t: string) => {
+  const [h, m] = t.split(":").map(Number);
+  return h * 60 + m;
 };
 
 // --- Component ---
@@ -109,22 +156,41 @@ const Index = () => {
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [selectedDay, setSelectedDay] = useState(today.getDate());
   const [filterClient, setFilterClient] = useState<string>("");
+  const [viewMode, setViewMode] = useState<"semana" | "dia">("semana");
 
   // Appointments state
   const [appointments, setAppointments] = useState<Appointment[]>([
     {
-      id: "1",
-      clientId: "1",
-      clientName: "Alana Silva",
-      date: formatDate(today),
-      startTime: "09:00",
-      endTime: "10:00",
-      profissional: "Dra. Maria",
-      procedimento: "Limpeza de Pele",
-      plano: "Plano Mensal",
-      statusProcedimento: "confirmado",
-      statusFinanceiro: "pago",
-      valor: 250,
+      id: "1", clientId: "1", clientName: "Alana Silva",
+      date: formatDate(today), startTime: "09:00", endTime: "10:00",
+      profissional: "Dra. Maria", procedimento: "Limpeza de Pele", plano: "Plano Mensal",
+      statusProcedimento: "confirmado", statusFinanceiro: "pago", valor: 250,
+    },
+    {
+      id: "2", clientId: "4", clientName: "Ana Maria Pereira",
+      date: formatDate(today), startTime: "10:30", endTime: "11:00",
+      profissional: "Dra. Juliana", procedimento: "Botox", plano: "Avulso",
+      statusProcedimento: "pendente", statusFinanceiro: "pendente", valor: 450,
+    },
+    {
+      id: "3", clientId: "5", clientName: "Angélica Lemes",
+      date: formatDate(today), startTime: "14:00", endTime: "15:00",
+      profissional: "Dr. Carlos", procedimento: "Peeling", plano: "Plano Trimestral",
+      statusProcedimento: "confirmado", statusFinanceiro: "pago", valor: 380,
+    },
+    {
+      id: "4", clientId: "6", clientName: "Barbara Fernandes",
+      date: formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)),
+      startTime: "09:30", endTime: "10:30",
+      profissional: "Dra. Fernanda", procedimento: "Preenchimento", plano: "Avulso",
+      statusProcedimento: "pendente", statusFinanceiro: "pendente", valor: 600,
+    },
+    {
+      id: "5", clientId: "7", clientName: "Bianca Silva",
+      date: formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 2)),
+      startTime: "11:00", endTime: "12:00",
+      profissional: "Dra. Maria", procedimento: "Microagulhamento", plano: "Plano Mensal",
+      statusProcedimento: "confirmado", statusFinanceiro: "parcial", valor: 320,
     },
   ]);
 
@@ -151,7 +217,9 @@ const Index = () => {
   const daysInMonth = getDaysInMonth(currentYear, currentMonth);
   const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
 
-  const selectedDateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(selectedDay).padStart(2, "0")}`;
+  const selectedDate = new Date(currentYear, currentMonth, selectedDay);
+  const selectedDateStr = formatDate(selectedDate);
+  const weekDates = useMemo(() => getWeekDates(selectedDate), [selectedDateStr]);
 
   // Days with appointments
   const daysWithAppointments = useMemo(() => {
@@ -164,15 +232,6 @@ const Index = () => {
     });
     return days;
   }, [appointments, currentMonth, currentYear]);
-
-  // Filtered appointments for selected day
-  const filteredAppointments = useMemo(() => {
-    let filtered = appointments.filter((a) => a.date === selectedDateStr);
-    if (filterClient) {
-      filtered = filtered.filter((a) => a.clientId === filterClient);
-    }
-    return filtered;
-  }, [appointments, selectedDateStr, filterClient]);
 
   // Filtered clients for modal
   const filteredClients = useMemo(() => {
@@ -202,27 +261,42 @@ const Index = () => {
   }, [currentMonth]);
 
   const prevMonth = () => {
-    if (currentMonth === 0) {
-      setCurrentMonth(11);
-      setCurrentYear(currentYear - 1);
-    } else {
-      setCurrentMonth(currentMonth - 1);
-    }
+    if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(currentYear - 1); }
+    else setCurrentMonth(currentMonth - 1);
   };
 
   const nextMonth = () => {
-    if (currentMonth === 11) {
-      setCurrentMonth(0);
-      setCurrentYear(currentYear + 1);
-    } else {
-      setCurrentMonth(currentMonth + 1);
-    }
+    if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(currentYear + 1); }
+    else setCurrentMonth(currentMonth + 1);
+  };
+
+  const prevWeek = () => {
+    const d = new Date(selectedDate);
+    d.setDate(d.getDate() - 7);
+    setSelectedDay(d.getDate());
+    setCurrentMonth(d.getMonth());
+    setCurrentYear(d.getFullYear());
+  };
+
+  const nextWeek = () => {
+    const d = new Date(selectedDate);
+    d.setDate(d.getDate() + 7);
+    setSelectedDay(d.getDate());
+    setCurrentMonth(d.getMonth());
+    setCurrentYear(d.getFullYear());
+  };
+
+  const goToToday = () => {
+    setSelectedDay(today.getDate());
+    setCurrentMonth(today.getMonth());
+    setCurrentYear(today.getFullYear());
   };
 
   const isToday = (day: number) =>
-    day === today.getDate() &&
-    currentMonth === today.getMonth() &&
-    currentYear === today.getFullYear();
+    day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear();
+
+  const isTodayDate = (d: Date) =>
+    d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
 
   // Open client list to start new appointment
   const handleNewAppointment = () => {
@@ -263,20 +337,16 @@ const Index = () => {
     setShowTimePickerModal(null);
   };
 
-  // Check time availability
   const isTimeAvailable = (date: string, startTime: string) => {
     return !appointments.some((a) => a.date === date && a.startTime === startTime);
   };
 
-  // Save appointment
   const handleSaveAppointment = () => {
     if (!selectedClient || !newProcedimento || !newProfissional || !newDate || !newStartTime || !newEndTime) return;
-
     if (!isTimeAvailable(newDate, newStartTime)) {
       alert("Este horário já está ocupado!");
       return;
     }
-
     const newApp: Appointment = {
       id: String(Date.now()),
       clientId: selectedClient.id,
@@ -291,41 +361,53 @@ const Index = () => {
       statusFinanceiro: "pendente",
       valor: 0,
     };
-
     setAppointments((prev) => [...prev, newApp]);
     setShowAppointmentModal(false);
   };
 
+  // Get appointments for a specific date
+  const getAppointmentsForDate = (dateStr: string) => {
+    return appointments.filter((a) => a.date === dateStr);
+  };
+
+  // Week header date range
+  const weekRangeLabel = useMemo(() => {
+    if (weekDates.length === 0) return "";
+    const first = weekDates[0];
+    const last = weekDates[6];
+    return `${first.getDate()} - ${last.getDate()} ${monthNames[last.getMonth()].charAt(0).toUpperCase() + monthNames[last.getMonth()].slice(1)} ${last.getFullYear()}`;
+  }, [weekDates]);
+
   return (
     <Layout title="Agendamento">
       <div className="flex flex-col lg:flex-row gap-4 h-full">
-        {/* Left Column - Calendar */}
-        <div className="lg:w-[380px] flex flex-col gap-4">
-          {/* Calendar Panel */}
-          <div className="glass-panel p-4 gold-glow">
-            <div className="flex items-center justify-between mb-4">
-              <button onClick={prevMonth} className="p-1.5 rounded-md hover:bg-muted transition-colors">
-                <ChevronLeft className="w-5 h-5 text-gold" />
+        {/* Left Column - Calendar + Actions */}
+        <div className="lg:w-[280px] flex flex-col gap-3 shrink-0">
+          {/* Mini Calendar */}
+          <div className="glass-panel p-3 gold-glow">
+            <div className="flex items-center justify-between mb-3">
+              <button onClick={prevMonth} className="p-1 rounded-md hover:bg-muted transition-colors">
+                <ChevronLeft className="w-4 h-4 text-gold" />
               </button>
-              <h2 className="text-base font-semibold text-gold">
-                {String(selectedDay).padStart(2, "0")} / {monthNames[currentMonth]} / {currentYear}
+              <h2 className="text-sm font-semibold text-gold capitalize">
+                {monthNames[currentMonth]} {currentYear}
               </h2>
-              <button onClick={nextMonth} className="p-1.5 rounded-md hover:bg-muted transition-colors">
-                <ChevronRight className="w-5 h-5 text-gold" />
+              <button onClick={nextMonth} className="p-1 rounded-md hover:bg-muted transition-colors">
+                <ChevronRight className="w-4 h-4 text-gold" />
               </button>
             </div>
 
-            <div className="grid grid-cols-7 gap-1 mb-1">
+            <div className="grid grid-cols-7 gap-0.5 mb-1">
               {daysOfWeek.map((day) => (
-                <div key={day} className="text-center text-xs font-medium text-muted-foreground py-1">
+                <div key={day} className="text-center text-[10px] font-medium text-muted-foreground py-0.5">
                   {day}
                 </div>
               ))}
             </div>
 
-            <div className="grid grid-cols-7 gap-1">
+            <div className="grid grid-cols-7 gap-0.5">
               {Array.from({ length: firstDay }).map((_, i) => (
-                <div key={`empty-${i}`} className="h-10" />
+                <div key={`empty-${i}`} className="h-7" />
               ))}
               {Array.from({ length: daysInMonth }).map((_, i) => {
                 const day = i + 1;
@@ -337,17 +419,17 @@ const Index = () => {
                   <button
                     key={day}
                     onClick={() => setSelectedDay(day)}
-                    className={`relative h-10 rounded-md text-sm font-medium transition-all border ${
+                    className={`relative h-7 rounded text-xs font-medium transition-all border ${
                       selected
                         ? "bg-gold/20 border-gold text-gold"
                         : todayClass
                         ? "border-gold/50 text-gold"
-                        : "border-border/50 text-foreground hover:border-gold/40 hover:bg-muted"
+                        : "border-transparent text-foreground hover:border-gold/40 hover:bg-muted"
                     }`}
                   >
                     {day}
                     {hasAppointment && (
-                      <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                      <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-emerald-400" />
                     )}
                   </button>
                 );
@@ -358,101 +440,214 @@ const Index = () => {
           {/* Action Buttons */}
           <button
             onClick={handleNewAppointment}
-            className="w-full py-3 rounded-lg bg-gold/15 border border-gold text-gold font-semibold hover:bg-gold/25 transition-all flex items-center justify-center gap-2"
+            className="w-full py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all flex items-center justify-center gap-2"
           >
-            <CalendarCheck className="w-5 h-5" />
+            <CalendarCheck className="w-4 h-4" />
             Agendamento
           </button>
           <button
             onClick={() => setShowBirthdayModal(true)}
-            className="w-full py-3 rounded-lg bg-gold/15 border border-gold text-gold font-semibold hover:bg-gold/25 transition-all flex items-center justify-center gap-2"
+            className="w-full py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all flex items-center justify-center gap-2"
           >
-            <Cake className="w-5 h-5" />
+            <Cake className="w-4 h-4" />
             Aniversariantes
           </button>
         </div>
 
-        {/* Right Column - Appointments Table */}
-        <div className="flex-1 glass-panel p-4 gold-glow flex flex-col">
-          <div className="flex items-center gap-2 mb-4">
-            <Select value={filterClient} onValueChange={setFilterClient}>
-              <SelectTrigger className="flex-1 bg-input border-border text-foreground focus:ring-gold">
-                <SelectValue placeholder="Selecione o cliente" />
+        {/* Right Column - Weekly Grid */}
+        <div className="flex-1 glass-panel gold-glow flex flex-col overflow-hidden">
+          {/* Week Navigation Header */}
+          <div className="flex items-center justify-between px-4 py-2 border-b border-border">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={goToToday}
+                className="px-3 py-1 rounded-md bg-gold/15 border border-gold text-gold text-xs font-semibold hover:bg-gold/25 transition-all"
+              >
+                Hoje
+              </button>
+              <div className="flex items-center gap-1">
+                <button onClick={prevWeek} className="p-1 rounded hover:bg-muted transition-colors">
+                  <ChevronLeft className="w-4 h-4 text-gold" />
+                </button>
+                <button onClick={nextWeek} className="p-1 rounded hover:bg-muted transition-colors">
+                  <ChevronRight className="w-4 h-4 text-gold" />
+                </button>
+              </div>
+              <span className="text-sm font-medium text-foreground">{weekRangeLabel}</span>
+            </div>
+            <Select value={viewMode} onValueChange={(v) => setViewMode(v as "semana" | "dia")}>
+              <SelectTrigger className="w-[120px] bg-input border-border text-xs">
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                {mockClients.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
-                ))}
+                <SelectItem value="semana">Semana</SelectItem>
+                <SelectItem value="dia">Dia</SelectItem>
               </SelectContent>
             </Select>
-            <button
-              onClick={() => setFilterClient("")}
-              className="p-2.5 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
           </div>
 
+          {/* Time Grid */}
           <div className="flex-1 overflow-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="border-border hover:bg-transparent">
-                  <TableHead className="text-gold text-xs">Horário Início</TableHead>
-                  <TableHead className="text-gold text-xs">Horário Término</TableHead>
-                  <TableHead className="text-gold text-xs">Paciente</TableHead>
-                  <TableHead className="text-gold text-xs">Plano</TableHead>
-                  <TableHead className="text-gold text-xs">Profissional</TableHead>
-                  <TableHead className="text-gold text-xs">Status Proc.</TableHead>
-                  <TableHead className="text-gold text-xs">Status Fin.</TableHead>
-                  <TableHead className="text-gold text-xs">Valor</TableHead>
-                  <TableHead className="text-gold text-xs">Editar</TableHead>
-                  <TableHead className="text-gold text-xs">Iniciar Sessão</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredAppointments.length === 0 ? (
-                  <TableRow className="hover:bg-transparent">
-                    <TableCell colSpan={10} className="h-48">
-                      <div className="flex flex-col items-center justify-center text-muted-foreground gap-3">
-                        <CalendarDays className="w-12 h-12 text-gold/30" />
-                        <p className="text-sm">Nenhum agendamento encontrado</p>
-                        <p className="text-xs text-muted-foreground/60">
-                          Selecione uma data ou cliente para visualizar
-                        </p>
+            <div className="min-w-[700px]">
+              {/* Day Headers */}
+              <div className="flex sticky top-0 z-10 bg-card border-b border-border">
+                <div className="w-16 shrink-0" /> {/* time column */}
+                {viewMode === "semana" ? (
+                  weekDates.map((wd, i) => {
+                    const isT = isTodayDate(wd);
+                    return (
+                      <div
+                        key={i}
+                        className={`flex-1 text-center py-2 border-l border-border ${isT ? "bg-gold/10" : ""}`}
+                      >
+                        <div className={`text-[10px] uppercase ${isT ? "text-gold" : "text-muted-foreground"}`}>
+                          {daysOfWeekShort[(wd.getDay() + 6) % 7 + 1 > 6 ? 0 : (wd.getDay())]}
+                        </div>
+                        <div className={`text-lg font-bold ${isT ? "text-gold" : "text-foreground"}`}>
+                          {wd.getDate()}
+                        </div>
                       </div>
-                    </TableCell>
-                  </TableRow>
+                    );
+                  })
                 ) : (
-                  filteredAppointments.map((app) => (
-                    <TableRow key={app.id} className="border-border">
-                      <TableCell className="text-sm">{app.startTime}</TableCell>
-                      <TableCell className="text-sm">{app.endTime}</TableCell>
-                      <TableCell className="text-sm">{app.clientName}</TableCell>
-                      <TableCell className="text-sm">{app.plano}</TableCell>
-                      <TableCell className="text-sm">{app.profissional}</TableCell>
-                      <TableCell className={`text-sm capitalize ${statusColors[app.statusProcedimento] || ""}`}>
-                        {app.statusProcedimento}
-                      </TableCell>
-                      <TableCell className={`text-sm capitalize ${statusColors[app.statusFinanceiro] || ""}`}>
-                        {app.statusFinanceiro}
-                      </TableCell>
-                      <TableCell className="text-sm">R$ {app.valor.toFixed(2)}</TableCell>
-                      <TableCell>
-                        <button className="p-1.5 rounded hover:bg-muted transition-colors">
-                          <Edit className="w-4 h-4 text-gold" />
-                        </button>
-                      </TableCell>
-                      <TableCell>
-                        <button className="p-1.5 rounded hover:bg-muted transition-colors">
-                          <Play className="w-4 h-4 text-emerald-400" />
-                        </button>
-                      </TableCell>
-                    </TableRow>
-                  ))
+                  <div className="flex-1 text-center py-2 border-l border-border bg-gold/10">
+                    <div className="text-[10px] uppercase text-gold">
+                      {daysOfWeekShort[selectedDate.getDay()]}
+                    </div>
+                    <div className="text-lg font-bold text-gold">
+                      {selectedDate.getDate()}
+                    </div>
+                  </div>
                 )}
-              </TableBody>
-            </Table>
+              </div>
+
+              {/* Time Rows */}
+              {TIME_SLOTS.map((time) => {
+                const isHour = time.endsWith(":00");
+                return (
+                  <div key={time} className="flex" style={{ minHeight: "28px" }}>
+                    {/* Time label */}
+                    <div className="w-16 shrink-0 text-right pr-2 flex items-start justify-end">
+                      {isHour && (
+                        <span className="text-[10px] text-muted-foreground -mt-1">{time}</span>
+                      )}
+                    </div>
+
+                    {/* Day columns */}
+                    {viewMode === "semana" ? (
+                      weekDates.map((wd, i) => {
+                        const dateStr = formatDate(wd);
+                        const dayApps = getAppointmentsForDate(dateStr);
+                        const isT = isTodayDate(wd);
+
+                        // Find appointment that starts at this time
+                        const startingApp = dayApps.find((a) => a.startTime === time);
+
+                        // Check if a slot is occupied by an ongoing appointment
+                        const currentMinutes = timeToMinutes(time);
+                        const isOccupied = dayApps.some((a) => {
+                          const startMin = timeToMinutes(a.startTime);
+                          const endMin = timeToMinutes(a.endTime);
+                          return currentMinutes > startMin && currentMinutes < endMin;
+                        });
+
+                        if (isOccupied && !startingApp) {
+                          return <div key={i} className="flex-1 border-l border-border" />;
+                        }
+
+                        if (startingApp) {
+                          const startMin = timeToMinutes(startingApp.startTime);
+                          const endMin = timeToMinutes(startingApp.endTime);
+                          const durationSlots = Math.max(1, Math.round((endMin - startMin) / 10));
+                          const heightPx = durationSlots * 28;
+                          const bgClass = statusBgColors[startingApp.statusProcedimento] || "bg-muted/30 border-border";
+
+                          return (
+                            <div
+                              key={i}
+                              className={`flex-1 border-l relative ${isT ? "border-border bg-gold/5" : "border-border"}`}
+                            >
+                              <div
+                                className={`absolute left-0.5 right-0.5 z-10 rounded-md border px-1.5 py-1 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity ${bgClass}`}
+                                style={{ height: `${heightPx - 2}px`, top: 0 }}
+                                title={`${startingApp.clientName} - ${startingApp.procedimento}`}
+                              >
+                                <p className="text-[11px] font-semibold text-foreground truncate leading-tight">
+                                  {startingApp.clientName}
+                                </p>
+                                <p className="text-[10px] text-muted-foreground truncate leading-tight">
+                                  {startingApp.procedimento}
+                                </p>
+                                <p className="text-[9px] text-muted-foreground leading-tight">
+                                  {startingApp.startTime} - {startingApp.endTime}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        }
+
+                        return (
+                          <div
+                            key={i}
+                            className={`flex-1 border-l ${isHour ? "border-t border-border/60" : "border-border/30"} ${isT ? "bg-gold/5" : ""} border-border`}
+                          />
+                        );
+                      })
+                    ) : (
+                      (() => {
+                        const dateStr = selectedDateStr;
+                        const dayApps = getAppointmentsForDate(dateStr);
+                        const startingApp = dayApps.find((a) => a.startTime === time);
+                        const currentMinutes = timeToMinutes(time);
+                        const isOccupied = dayApps.some((a) => {
+                          const startMin = timeToMinutes(a.startTime);
+                          const endMin = timeToMinutes(a.endTime);
+                          return currentMinutes > startMin && currentMinutes < endMin;
+                        });
+
+                        if (isOccupied && !startingApp) {
+                          return <div className="flex-1 border-l border-border" />;
+                        }
+
+                        if (startingApp) {
+                          const startMin = timeToMinutes(startingApp.startTime);
+                          const endMin = timeToMinutes(startingApp.endTime);
+                          const durationSlots = Math.max(1, Math.round((endMin - startMin) / 10));
+                          const heightPx = durationSlots * 28;
+                          const bgClass = statusBgColors[startingApp.statusProcedimento] || "bg-muted/30 border-border";
+
+                          return (
+                            <div className="flex-1 border-l border-border relative bg-gold/5">
+                              <div
+                                className={`absolute left-1 right-1 z-10 rounded-md border px-2 py-1.5 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity ${bgClass}`}
+                                style={{ height: `${heightPx - 2}px`, top: 0 }}
+                              >
+                                <p className="text-xs font-semibold text-foreground truncate">
+                                  {startingApp.clientName}
+                                </p>
+                                <p className="text-[11px] text-muted-foreground truncate">
+                                  {startingApp.procedimento}
+                                </p>
+                                <p className="text-[10px] text-muted-foreground">
+                                  {startingApp.startTime} - {startingApp.endTime}
+                                </p>
+                                <p className={`text-[10px] capitalize ${statusTextColors[startingApp.statusProcedimento]}`}>
+                                  {startingApp.statusProcedimento}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        }
+
+                        return (
+                          <div className={`flex-1 border-l ${isHour ? "border-t border-border/60" : "border-border/30"} border-border bg-gold/5`} />
+                        );
+                      })()
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
@@ -461,15 +656,12 @@ const Index = () => {
       {showClientListModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 pb-20">
           <div className="glass-panel gold-glow w-full max-w-5xl max-h-[85vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
-            {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-border">
               <h2 className="text-lg font-semibold text-foreground">Cadastro Geral</h2>
               <button onClick={() => setShowClientListModal(false)} className="p-1 rounded hover:bg-muted transition-colors">
                 <X className="w-5 h-5 text-foreground" />
               </button>
             </div>
-
-            {/* Search Filters */}
             <div className="p-4 flex flex-wrap gap-3">
               <div className="flex items-center gap-2">
                 <Select value={searchField} onValueChange={(v) => setSearchField(v as typeof searchField)}>
@@ -496,8 +688,6 @@ const Index = () => {
                 </div>
               </div>
             </div>
-
-            {/* Client Table */}
             <div className="flex-1 overflow-auto px-4 pb-4">
               <Table>
                 <TableHeader>
@@ -547,16 +737,13 @@ const Index = () => {
       {showAppointmentModal && selectedClient && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="glass-panel gold-glow w-full max-w-3xl animate-in fade-in zoom-in-95 duration-200">
-            {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-border">
               <h2 className="text-lg font-semibold text-foreground">Novo Agendamento</h2>
               <button onClick={() => setShowAppointmentModal(false)} className="p-1 rounded hover:bg-muted transition-colors">
                 <X className="w-5 h-5 text-foreground" />
               </button>
             </div>
-
             <div className="p-6 space-y-6">
-              {/* Client Info */}
               <div className="text-center text-sm">
                 <span className="text-muted-foreground">Nome: </span>
                 <span className="text-gold font-medium">{selectedClient.nome}</span>
@@ -565,8 +752,6 @@ const Index = () => {
                 <span className="text-muted-foreground"> | CPF: </span>
                 <span className="text-gold">{selectedClient.cpf}</span>
               </div>
-
-              {/* Procedimento + Profissional */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs text-muted-foreground mb-1 block">Escolha o Procedimento do Cliente</label>
@@ -595,8 +780,6 @@ const Index = () => {
                   </Select>
                 </div>
               </div>
-
-              {/* Date + Times */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="text-xs text-muted-foreground mb-1 block">Data para o agendamento</label>
@@ -628,8 +811,6 @@ const Index = () => {
                   </button>
                 </div>
               </div>
-
-              {/* Save */}
               <div className="flex justify-center">
                 <button
                   onClick={handleSaveAppointment}
@@ -653,55 +834,34 @@ const Index = () => {
                 <X className="w-5 h-5 text-foreground" />
               </button>
             </div>
-
             <div className="p-6">
               <div className="flex items-center justify-center gap-4 mb-6">
-                {/* Hour */}
                 <div className="flex flex-col items-center">
-                  <button
-                    onClick={() => setTimePickerHour(String(Math.min(23, parseInt(timePickerHour) + 1)))}
-                    className="p-2 rounded hover:bg-muted transition-colors text-gold"
-                  >
+                  <button onClick={() => setTimePickerHour(String(Math.min(23, parseInt(timePickerHour) + 1)))} className="p-2 rounded hover:bg-muted transition-colors text-gold">
                     <ChevronLeft className="w-5 h-5 rotate-90" />
                   </button>
                   <div className="w-20 h-20 rounded-lg border border-border bg-input flex items-center justify-center">
                     <span className="text-4xl font-bold text-foreground">{timePickerHour}</span>
                   </div>
-                  <button
-                    onClick={() => setTimePickerHour(String(Math.max(0, parseInt(timePickerHour) - 1)))}
-                    className="p-2 rounded hover:bg-muted transition-colors text-gold"
-                  >
+                  <button onClick={() => setTimePickerHour(String(Math.max(0, parseInt(timePickerHour) - 1)))} className="p-2 rounded hover:bg-muted transition-colors text-gold">
                     <ChevronLeft className="w-5 h-5 -rotate-90" />
                   </button>
                 </div>
-
                 <span className="text-4xl font-bold text-foreground">:</span>
-
-                {/* Minute */}
                 <div className="flex flex-col items-center">
-                  <button
-                    onClick={() => setTimePickerMinute(String(Math.min(59, parseInt(timePickerMinute) + 5)))}
-                    className="p-2 rounded hover:bg-muted transition-colors text-gold"
-                  >
+                  <button onClick={() => setTimePickerMinute(String(Math.min(59, parseInt(timePickerMinute) + 5)))} className="p-2 rounded hover:bg-muted transition-colors text-gold">
                     <ChevronLeft className="w-5 h-5 rotate-90" />
                   </button>
                   <div className="w-20 h-20 rounded-lg border border-border bg-input flex items-center justify-center">
                     <span className="text-4xl font-bold text-foreground">{timePickerMinute}</span>
                   </div>
-                  <button
-                    onClick={() => setTimePickerMinute(String(Math.max(0, parseInt(timePickerMinute) - 5)))}
-                    className="p-2 rounded hover:bg-muted transition-colors text-gold"
-                  >
+                  <button onClick={() => setTimePickerMinute(String(Math.max(0, parseInt(timePickerMinute) - 5)))} className="p-2 rounded hover:bg-muted transition-colors text-gold">
                     <ChevronLeft className="w-5 h-5 -rotate-90" />
                   </button>
                 </div>
               </div>
-
               <div className="flex justify-center">
-                <button
-                  onClick={confirmTimePicker}
-                  className="px-10 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold hover:bg-gold-light transition-all"
-                >
+                <button onClick={confirmTimePicker} className="px-10 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold hover:bg-gold-light transition-all">
                   OK
                 </button>
               </div>
@@ -723,7 +883,6 @@ const Index = () => {
                 <X className="w-5 h-5 text-foreground" />
               </button>
             </div>
-
             <div className="p-4 max-h-[60vh] overflow-auto">
               {birthdaysThisMonth.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 text-muted-foreground gap-2">
