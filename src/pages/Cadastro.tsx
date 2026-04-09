@@ -183,47 +183,22 @@ const Cadastro = () => {
 
   return (
     <Layout title="Consulta de Clientes">
-      <div className="flex flex-col lg:flex-row gap-4 h-full">
-        {/* Left Column - Avatar & Actions */}
-        <div className="lg:w-[220px] flex flex-col items-center gap-4 pt-4">
-          <div className="w-48 h-48 rounded-full bg-card border-2 border-border flex items-center justify-center overflow-hidden">
-            {selectedClient?.foto ? (
-              <img src={selectedClient.foto} alt={selectedClient.nome} className="w-full h-full object-cover" />
-            ) : (
-              <User className="w-20 h-20 text-muted-foreground/40" />
-            )}
+      <div className="flex flex-col gap-4 h-full">
+        {/* Top Row - Avatar + Client Panel */}
+        <div className="flex flex-col lg:flex-row gap-4">
+          {/* Avatar */}
+          <div className="lg:w-[220px] flex flex-col items-center pt-4">
+            <div className="w-48 h-48 rounded-full bg-card border-2 border-border flex items-center justify-center overflow-hidden">
+              {selectedClient?.foto ? (
+                <img src={selectedClient.foto} alt={selectedClient.nome} className="w-full h-full object-cover" />
+              ) : (
+                <User className="w-20 h-20 text-muted-foreground/40" />
+              )}
+            </div>
           </div>
 
-          {selectedClient && (
-            <>
-              <ActionButton icon={Pencil} label="Editar Cadastro" onClick={handleOpenEditCadastro} />
-              <ActionButton icon={FileText} label="Editar Ficha Anamnese" onClick={() => setShowAnamnese(true)} />
-              <ActionButton icon={Plus} label="Novo Procedimento" onClick={() => {
-                setNovoPlano({ procedimento: "", quantidadeSessoes: "", valorUnitario: "", formaPagamento: "", parcelas: "", valorEntrada: "" });
-                setShowNovoProcedimento(true);
-              }} />
-              <ActionButton icon={CalendarPlus} label="Agendamento" onClick={() => {
-                setNovoAgendamento({ procedimento: "", profissional: "", data: "", horarioInicio: "", horarioFechamento: "" });
-                setShowNovoAgendamento(true);
-              }} />
-            </>
-          )}
-          {!selectedClient && (
-            <>
-              <ActionButton icon={Users} label="Clientes" onClick={() => setShowClientList(true)} />
-              <ActionButton icon={Plus} label="Novo Cadastro" onClick={() => {
-                setNovoCadastro({ nome: "", telefone: "", email: "", instagram: "", nascimento: "", genero: "", cpf: "", cep: "" });
-                setShowNovoCadastro(true);
-              }} />
-            </>
-          )}
-          <ActionButton icon={Eraser} label="Limpar" onClick={handleClear} />
-        </div>
-
-        {/* Right Column */}
-        <div className="flex-1 flex flex-col gap-4">
           {/* Client Details Panel */}
-          <div className="glass-panel p-5 gold-glow">
+          <div className="flex-1 glass-panel p-5 gold-glow">
             <h2 className="text-center text-gold font-semibold text-base mb-5">
               Painel de Visualização de Cliente
             </h2>
@@ -252,67 +227,99 @@ const Cadastro = () => {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Bottom Row - Buttons + Plans Panel */}
+        <div className="flex flex-col lg:flex-row gap-4">
+          {/* Action Buttons */}
+          <div className="lg:w-[220px] flex flex-col items-center gap-4">
+            {selectedClient && (
+              <>
+                <ActionButton icon={Pencil} label="Editar Cadastro" onClick={handleOpenEditCadastro} />
+                <ActionButton icon={FileText} label="Editar Ficha Anamnese" onClick={() => setShowAnamnese(true)} />
+                <ActionButton icon={Plus} label="Novo Procedimento" onClick={() => {
+                  setNovoPlano({ procedimento: "", quantidadeSessoes: "", valorUnitario: "", formaPagamento: "", parcelas: "", valorEntrada: "" });
+                  setShowNovoProcedimento(true);
+                }} />
+                <ActionButton icon={CalendarPlus} label="Agendamento" onClick={() => {
+                  setNovoAgendamento({ procedimento: "", profissional: "", data: "", horarioInicio: "", horarioFechamento: "" });
+                  setShowNovoAgendamento(true);
+                }} />
+              </>
+            )}
+            {!selectedClient && (
+              <>
+                <ActionButton icon={Users} label="Clientes" onClick={() => setShowClientList(true)} />
+                <ActionButton icon={Plus} label="Novo Cadastro" onClick={() => {
+                  setNovoCadastro({ nome: "", telefone: "", email: "", instagram: "", nascimento: "", genero: "", cpf: "", cep: "" });
+                  setShowNovoCadastro(true);
+                }} />
+              </>
+            )}
+            <ActionButton icon={Eraser} label="Limpar" onClick={handleClear} />
+          </div>
 
           {/* Plans Panel */}
-          <div className="glass-panel p-5 gold-glow">
+          <div className="flex-1 glass-panel p-5 gold-glow">
             <h2 className="text-center text-gold font-semibold text-base mb-4">
               Painel de Visualização de Planos
             </h2>
             <ScrollArea className="max-h-[280px]">
-            <Table>
-              <TableHeader>
-                <TableRow className="border-border hover:bg-transparent">
-                  <TableHead className="text-gold text-xs">Data da Compra</TableHead>
-                  <TableHead className="text-gold text-xs">Nome do Procedimento</TableHead>
-                  <TableHead className="text-gold text-xs">Sessões Previstas | Realizadas</TableHead>
-                  <TableHead className="text-gold text-xs">Responsável por</TableHead>
-                  <TableHead className="text-gold text-xs">Status do Procedimento</TableHead>
-                  <TableHead className="text-gold text-xs">Status Financeiro</TableHead>
-                  <TableHead className="text-gold text-xs">Histórico de Agendamento</TableHead>
-                  <TableHead className="text-gold text-xs">Editar o Plano</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {selectedClient && mockPlans.length > 0 ? (
-                  mockPlans.map((plan, idx) => (
-                    <TableRow key={idx} className="border-border hover:bg-muted/30">
-                      <TableCell className="text-sm">{plan.dataCompra}</TableCell>
-                      <TableCell className="text-sm">{plan.procedimento}</TableCell>
-                      <TableCell className="text-sm text-center">{plan.sessoesPrevistas} | {plan.sessoesRealizadas}</TableCell>
-                      <TableCell className="text-sm">{plan.responsavel}</TableCell>
-                      <TableCell className="text-sm">
-                        <span className={plan.statusProcedimento === "Concluído" ? "text-green-400" : "text-gold"}>
-                          {plan.statusProcedimento}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-sm">{plan.statusFinanceiro}</TableCell>
-                      <TableCell className="text-center">
-                        <button onClick={handleOpenHistorico} className="p-1 hover:bg-muted rounded transition-colors">
-                          <Clock className="w-4 h-4 text-gold" />
-                        </button>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <button onClick={() => handleOpenEditPlano(plan)} className="p-1 hover:bg-muted rounded transition-colors">
-                          <Edit className="w-4 h-4 text-gold" />
-                        </button>
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-border hover:bg-transparent">
+                    <TableHead className="text-gold text-xs">Data da Compra</TableHead>
+                    <TableHead className="text-gold text-xs">Nome do Procedimento</TableHead>
+                    <TableHead className="text-gold text-xs">Sessões Previstas | Realizadas</TableHead>
+                    <TableHead className="text-gold text-xs">Responsável por</TableHead>
+                    <TableHead className="text-gold text-xs">Status do Procedimento</TableHead>
+                    <TableHead className="text-gold text-xs">Status Financeiro</TableHead>
+                    <TableHead className="text-gold text-xs">Histórico de Agendamento</TableHead>
+                    <TableHead className="text-gold text-xs">Editar o Plano</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {selectedClient && mockPlans.length > 0 ? (
+                    mockPlans.map((plan, idx) => (
+                      <TableRow key={idx} className="border-border hover:bg-muted/30">
+                        <TableCell className="text-sm">{plan.dataCompra}</TableCell>
+                        <TableCell className="text-sm">{plan.procedimento}</TableCell>
+                        <TableCell className="text-sm text-center">{plan.sessoesPrevistas} | {plan.sessoesRealizadas}</TableCell>
+                        <TableCell className="text-sm">{plan.responsavel}</TableCell>
+                        <TableCell className="text-sm">
+                          <span className={plan.statusProcedimento === "Concluído" ? "text-green-400" : "text-gold"}>
+                            {plan.statusProcedimento}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-sm">{plan.statusFinanceiro}</TableCell>
+                        <TableCell className="text-center">
+                          <button onClick={handleOpenHistorico} className="p-1 hover:bg-muted rounded transition-colors">
+                            <Clock className="w-4 h-4 text-gold" />
+                          </button>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <button onClick={() => handleOpenEditPlano(plan)} className="p-1 hover:bg-muted rounded transition-colors">
+                            <Edit className="w-4 h-4 text-gold" />
+                          </button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow className="hover:bg-transparent">
+                      <TableCell colSpan={8} className="h-32">
+                        <div className="flex flex-col items-center justify-center text-muted-foreground gap-2">
+                          <Users className="w-10 h-10 text-gold/30" />
+                          <p className="text-sm">Nenhum plano encontrado</p>
+                        </div>
                       </TableCell>
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow className="hover:bg-transparent">
-                    <TableCell colSpan={8} className="h-32">
-                      <div className="flex flex-col items-center justify-center text-muted-foreground gap-2">
-                        <Users className="w-10 h-10 text-gold/30" />
-                        <p className="text-sm">Nenhum plano encontrado</p>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+                  )}
+                </TableBody>
+              </Table>
             </ScrollArea>
           </div>
         </div>
+      </div>
       </div>
 
       {/* ========== CLIENT LIST DIALOG ========== */}
