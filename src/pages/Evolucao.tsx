@@ -174,7 +174,7 @@ const Evolucao = () => {
 
   return (
     <Layout title="Evolução do Cliente">
-      <div className="flex flex-col gap-3 pb-20 lg:pb-24">
+      <div className="flex flex-col gap-3 pb-4 lg:pb-6">
         {/* Top row: Client info (left) + Procedure filter (right) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-center">
           <div className="flex items-center gap-2 text-sm text-foreground flex-wrap">
