@@ -180,7 +180,7 @@ const Evolucao = () => {
           <span className="text-muted-foreground">Nome: </span>
           <span className="text-gold font-medium">{selectedClient.nome}</span>
           <span className="text-muted-foreground">|</span>
-          <span className="text-muted-foreground">Nasc.: </span>
+          <span className="text-muted-foreground">Data de Nascimento: </span>
           <span className="text-gold font-medium">{formatDateBR(selectedClient.dataNascimento)}</span>
           <span className="text-muted-foreground">|</span>
           <span className="text-muted-foreground">CPF: </span>
