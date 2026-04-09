@@ -197,25 +197,7 @@ const Evolucao = () => {
           </div>
         </div>
 
-        {/* Procedure Filter */}
-        <div className="flex items-center gap-2">
-          <Select value={selectedProcedimento || undefined} onValueChange={setSelectedProcedimento}>
-            <SelectTrigger className="max-w-lg bg-input border-border text-foreground focus:ring-gold">
-              <SelectValue placeholder="Selecione Procedimento" />
-            </SelectTrigger>
-            <SelectContent>
-              {mockProcedimentos.map((p) => (
-                <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <button
-            onClick={() => setSelectedProcedimento("")}
-            className="p-2.5 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
-        </div>
+
 
         {/* Two column layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
