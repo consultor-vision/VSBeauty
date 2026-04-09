@@ -85,7 +85,9 @@ const Layout = ({ title, children }: LayoutProps) => {
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto p-4 pb-24">
-        {children}
+        <div className="max-w-7xl mx-auto w-full">
+          {children}
+        </div>
       </main>
 
       {/* Bottom Navigation */}
