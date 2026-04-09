@@ -174,7 +174,7 @@ const Evolucao = () => {
 
   return (
     <Layout title="Evolução do Cliente">
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 pb-6">
         {/* Client Info + change client button */}
         <div className="flex items-center justify-center gap-4 text-sm text-foreground flex-wrap">
           <div>
