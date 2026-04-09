@@ -310,6 +310,7 @@ const Cadastro = () => {
                 )}
               </TableBody>
             </Table>
+            </ScrollArea>
           </div>
         </div>
       </div>
