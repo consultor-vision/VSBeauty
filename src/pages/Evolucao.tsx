@@ -167,6 +167,7 @@ const Evolucao = () => {
             </div>
           </div>
         </div>
+        )}
       </Layout>
     );
   }
