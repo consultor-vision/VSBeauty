@@ -79,8 +79,8 @@ const Layout = ({ title, children }: LayoutProps) => {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       {/* Header */}
-      <header className="px-6 py-4 border-b border-border">
-        <h1 className="text-xl font-semibold text-gold">{title}</h1>
+      <header className="px-6 py-1.5 border-b border-border">
+        <h1 className="text-lg font-semibold text-gold">{title}</h1>
       </header>
 
       {/* Main Content */}
