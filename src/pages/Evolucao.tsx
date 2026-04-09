@@ -176,25 +176,21 @@ const Evolucao = () => {
     <Layout title="Evolução do Cliente">
       <div className="flex flex-col gap-4 pb-24 lg:pb-28">
         {/* Client Info + Procedure Filter row */}
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex-1 flex items-center justify-between gap-2 text-sm text-foreground">
-            <div className="flex items-center gap-2">
-              <span className="text-muted-foreground">Nome: </span>
-              <span className="text-gold font-medium">{selectedClient.nome}</span>
-              <span className="text-muted-foreground">|</span>
-              <span className="text-muted-foreground">Nasc.: </span>
-              <span className="text-gold font-medium">{formatDateBR(selectedClient.dataNascimento)}</span>
-              <span className="text-muted-foreground">|</span>
-              <span className="text-muted-foreground">CPF: </span>
-              <span className="text-gold font-medium">{selectedClient.cpf}</span>
-            </div>
-            <button
-              onClick={() => setShowClientModal(true)}
-              className="px-3 py-1.5 rounded-lg bg-gold/15 border border-gold text-gold text-xs font-semibold hover:bg-gold/25 transition-all whitespace-nowrap"
-            >
-              Trocar Cliente
-            </button>
-          </div>
+        <div className="flex items-center gap-2 text-sm text-foreground flex-wrap">
+          <span className="text-muted-foreground">Nome: </span>
+          <span className="text-gold font-medium">{selectedClient.nome}</span>
+          <span className="text-muted-foreground">|</span>
+          <span className="text-muted-foreground">Nasc.: </span>
+          <span className="text-gold font-medium">{formatDateBR(selectedClient.dataNascimento)}</span>
+          <span className="text-muted-foreground">|</span>
+          <span className="text-muted-foreground">CPF: </span>
+          <span className="text-gold font-medium">{selectedClient.cpf}</span>
+          <button
+            onClick={() => setShowClientModal(true)}
+            className="ml-2 px-3 py-1.5 rounded-lg bg-gold/15 border border-gold text-gold text-xs font-semibold hover:bg-gold/25 transition-all whitespace-nowrap"
+          >
+            Trocar Cliente
+          </button>
         </div>
 
 
