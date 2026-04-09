@@ -183,9 +183,9 @@ const Cadastro = () => {
 
   return (
     <Layout title="Consulta de Clientes">
-      <div className="flex flex-col gap-4 h-full lg:min-h-0">
+      <div className="flex flex-col gap-4">
         {/* Top Row - Avatar + Client Panel */}
-        <div className="flex flex-col lg:flex-row gap-4 shrink-0">
+        <div className="flex flex-col lg:flex-row gap-4">
           {/* Avatar */}
           <div className="lg:w-[220px] flex flex-col items-center justify-center">
             <div className="w-48 h-48 rounded-full bg-card border-2 border-border flex items-center justify-center overflow-hidden">
@@ -230,7 +230,7 @@ const Cadastro = () => {
         </div>
 
         {/* Bottom Row - Buttons + Plans Panel */}
-        <div className="flex flex-col lg:flex-row gap-4 lg:flex-1 lg:min-h-0">
+        <div className="flex flex-col lg:flex-row gap-4">
           {/* Action Buttons */}
           <div className="lg:w-[220px] lg:shrink-0 flex flex-col items-center justify-between self-stretch">
             {selectedClient && (
@@ -260,11 +260,11 @@ const Cadastro = () => {
           </div>
 
           {/* Plans Panel */}
-          <div className="flex-1 glass-panel p-5 gold-glow flex flex-col min-h-0">
+          <div className="flex-1 glass-panel p-5 gold-glow">
             <h2 className="text-center text-gold font-semibold text-base mb-4">
               Painel de Visualização de Planos
             </h2>
-            <ScrollArea className="flex-1 min-h-0">
+            <ScrollArea className="h-[250px]">
               <Table>
                 <TableHeader>
                   <TableRow className="border-border hover:bg-transparent">
