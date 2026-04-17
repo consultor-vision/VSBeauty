@@ -128,7 +128,7 @@ const Analytics = () => {
               <div className="pl-16"><span className="text-lg font-bold text-gold">{data.despesas}</span><p className="text-xs text-gold">Despesas</p></div>
             </div>
           </div>
-          <div className="glass-panel p-3 gold-glow flex flex-col w-[1100px] h-[250px] justify-self-start self-start">
+          <div className="glass-panel p-3 gold-glow flex flex-col w-[1000px] h-[250px] justify-self-start self-start">
             <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Desempenho Financeiro por Mês</h3>
             <div className="flex-1 min-h-0">
               <ResponsiveContainer width="100%" height="100%">
@@ -169,7 +169,7 @@ const Analytics = () => {
               </div>
             </div>
           </div>
-          <div className="glass-panel p-3 gold-glow flex flex-col w-[1100px] h-[250px] justify-self-start self-start">
+          <div className="glass-panel p-3 gold-glow flex flex-col w-[1000px] h-[250px] justify-self-start self-start">
             <div className="flex items-center justify-between border-b border-gold/30 pb-1.5 mb-2">
               <h3 className="text-gold text-sm font-semibold">Desempenho dos Procedimentos</h3>
               <div className="flex items-center gap-3">
