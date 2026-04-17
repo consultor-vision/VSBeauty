@@ -313,7 +313,7 @@ const Evolucao = () => {
                 <h3 className="text-center text-foreground font-semibold text-lg">
                   {photoView === "antes" ? "Antes" : "Depois"}
                 </h3>
-                <div className="glass-panel gold-glow aspect-[4/3] flex items-center justify-center">
+                <div className="glass-panel gold-glow aspect-[10/9] flex items-center justify-center">
                   <div className="flex flex-col items-center gap-3 text-muted-foreground">
                     <ImageIcon className="w-16 h-16 text-gold/30" />
                     <p className="text-sm">Foto {photoView === "antes" ? "Antes" : "Depois"}</p>
