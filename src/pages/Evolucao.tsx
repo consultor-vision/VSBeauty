@@ -276,7 +276,7 @@ const Evolucao = () => {
                 placeholder="Nenhuma observação registrada"
                 value={observacao}
                 onChange={(e) => setObservacao(e.target.value)}
-                className="min-h-[200px] h-full bg-transparent border-border text-foreground placeholder:text-muted-foreground/60 focus:border-gold resize-none"
+                className="min-h-[170px] h-full bg-transparent border-border text-foreground placeholder:text-muted-foreground/60 focus:border-gold resize-none"
               />
             </div>
 
