@@ -135,6 +135,16 @@
 .light .bg-blue-500\/20 { background-color: hsl(215 80% 55% / 0.5); }
 .light .border-blue-500\/40 { border-color: hsl(215 75% 45% / 0.9); }
 
+/* Black text inside appointment cards in light mode */
+.light .bg-yellow-500\/20 .text-white,
+.light .bg-emerald-500\/20 .text-white,
+.light .bg-red-500\/20 .text-white,
+.light .bg-blue-500\/20 .text-white { color: hsl(0 0% 8%); }
+.light .bg-yellow-500\/20 .text-white\/70,
+.light .bg-emerald-500\/20 .text-white\/70,
+.light .bg-red-500\/20 .text-white\/70,
+.light .bg-blue-500\/20 .text-white\/70 { color: hsl(0 0% 15% / 0.85); }
+
 @layer utilities {
   .glass-panel {
     @apply bg-card/80 backdrop-blur-sm border border-border rounded-lg;
