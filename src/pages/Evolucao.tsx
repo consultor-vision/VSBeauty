@@ -205,7 +205,12 @@ const Evolucao = () => {
               </SelectContent>
             </Select>
             <button
-              onClick={() => setSelectedProcedimento("")}
+              onClick={() => {
+                setSelectedProcedimento("");
+                setObservacao("");
+                setPhotoView("antes");
+                setSelectedSessionIdx(0);
+              }}
               className="p-2.5 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"
             >
               <Trash2 className="w-4 h-4" />
