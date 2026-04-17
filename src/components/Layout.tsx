@@ -87,7 +87,7 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto px-3 py-2 pb-20 min-h-0">
-        <div className="max-w-7xl mx-auto w-full h-full">
+        <div className="w-full h-full">
           {children}
         </div>
       </main>
