@@ -86,7 +86,11 @@ const semanaByYear: Record<string, { dia: string; qtd: number }[]> = {
   ],
 };
 
-const PIE_COLORS = ["hsl(var(--chart-2))", "hsl(var(--chart-1))"];
+const GENDER_COLORS: Record<string, string> = {
+  Feminino: "hsl(330 80% 60%)",
+  Masculino: "hsl(210 80% 55%)",
+};
+const OUTROS_COLOR = "hsl(var(--gold))";
 
 const Analytics = () => {
   const [year, setYear] = useState("2026");
@@ -159,8 +163,10 @@ const Analytics = () => {
                 <div className="flex-1 w-[180px] min-h-0">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
-                      <Pie data={pieData} cx="50%" cy="50%" outerRadius="70%" dataKey="value" label={({ value }) => value}>
-                        {pieData.map((_, idx) => (<Cell key={idx} fill={PIE_COLORS[idx]} />))}
+                      <Pie data={pieData} cx="50%" cy="50%" outerRadius="70%" dataKey="value" label={{ fill: "hsl(var(--gold))", fontSize: 12 }}>
+                        {pieData.map((entry, idx) => (
+                          <Cell key={idx} fill={GENDER_COLORS[entry.name] ?? OUTROS_COLOR} />
+                        ))}
                       </Pie>
                       <Legend verticalAlign="bottom" iconSize={10} wrapperStyle={{ fontSize: 11 }} />
                     </PieChart>
