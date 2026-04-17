@@ -309,7 +309,7 @@ const Evolucao = () => {
           <div className="flex flex-col gap-4">
             {hasSessions ? (
               <>
-                <p className="text-gold font-semibold text-center">{selectedProcLabel}</p>
+                
                 <h3 className="text-center text-foreground font-semibold text-lg">
                   {photoView === "antes" ? "Antes" : "Depois"}
                 </h3>
