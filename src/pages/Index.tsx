@@ -432,14 +432,14 @@ const Index = () => {
     <Layout title="Agendamento">
       <div className="flex flex-col lg:flex-row gap-3 h-full">
         {/* Left Column - Calendar + Actions */}
-        <div className="lg:w-[240px] flex flex-col gap-2 shrink-0">
+        <div className="lg:w-[300px] flex flex-col gap-3 shrink-0">
           {/* Mini Calendar */}
-          <div className="glass-panel p-2 gold-glow">
+          <div className="glass-panel p-3 gold-glow">
             <div className="flex items-center justify-between mb-2">
               <button onClick={prevMonth} className="p-1 rounded-md hover:bg-muted transition-colors">
                 <ChevronLeft className="w-4 h-4 text-gold" />
               </button>
-              <h2 className="text-sm font-semibold text-gold capitalize">
+              <h2 className="text-base font-semibold text-gold capitalize">
                 {monthNames[currentMonth]} {currentYear}
               </h2>
               <button onClick={nextMonth} className="p-1 rounded-md hover:bg-muted transition-colors">
@@ -449,7 +449,7 @@ const Index = () => {
 
             <div className="grid grid-cols-7 gap-0.5 mb-1">
               {daysOfWeek.map((day) => (
-                <div key={day} className="text-center text-[10px] font-medium text-muted-foreground py-0.5">
+                <div key={day} className="text-center text-xs font-medium text-muted-foreground py-1">
                   {day}
                 </div>
               ))}
@@ -457,7 +457,7 @@ const Index = () => {
 
             <div className="grid grid-cols-7 gap-0.5">
               {Array.from({ length: firstDay }).map((_, i) => (
-                <div key={`empty-${i}`} className="h-7" />
+                <div key={`empty-${i}`} className="h-9" />
               ))}
               {Array.from({ length: daysInMonth }).map((_, i) => {
                 const day = i + 1;
@@ -469,7 +469,7 @@ const Index = () => {
                   <button
                     key={day}
                     onClick={() => setSelectedDay(day)}
-                    className={`relative h-7 rounded text-xs font-medium transition-all border ${
+                    className={`relative h-9 rounded text-sm font-medium transition-all border ${
                       selected
                         ? "bg-gold/20 border-gold text-gold"
                         : todayClass
@@ -490,16 +490,16 @@ const Index = () => {
           {/* Action Buttons */}
           <button
             onClick={handleNewAppointment}
-            className="w-full py-2 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-xs hover:bg-gold/25 transition-all flex items-center justify-center gap-2"
+            className="w-full py-3 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all flex items-center justify-center gap-2"
           >
-            <CalendarCheck className="w-3.5 h-3.5" />
+            <CalendarCheck className="w-4 h-4" />
             Agendamento
           </button>
           <button
             onClick={() => setShowBirthdayModal(true)}
-            className="w-full py-2 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-xs hover:bg-gold/25 transition-all flex items-center justify-center gap-2"
+            className="w-full py-3 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all flex items-center justify-center gap-2"
           >
-            <Cake className="w-3.5 h-3.5" />
+            <Cake className="w-4 h-4" />
             Aniversariantes
           </button>
         </div>
