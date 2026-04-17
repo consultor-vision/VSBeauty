@@ -647,7 +647,7 @@ const Index = () => {
           <div className="flex-1 overflow-auto">
             <div className="min-w-[700px]">
               {/* Day Headers */}
-              <div className="flex sticky top-0 z-10 bg-card border-b border-border h-[60px] items-stretch">
+              <div className="flex sticky top-0 z-10 bg-card border-b border-border h-[68px] items-stretch">
                 <div className="w-16 shrink-0" /> {/* time column */}
                 {viewMode === "semana" ? (
                   weekDates.map((wd, i) => {
