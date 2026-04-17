@@ -218,7 +218,7 @@ const Evolucao = () => {
           {/* Left: sessions, observation, products */}
           <div className="flex flex-col gap-3 min-h-0 overflow-hidden">
             {/* Sessions Table */}
-            <div className="glass-panel p-4 gold-glow h-[300px] overflow-auto">
+            <div className="glass-panel p-4 gold-glow h-[270px] overflow-auto">
               <h3 className="text-center text-gold font-semibold text-sm mb-0.5">Relatório de Planos</h3>
               <Table>
                 <TableHeader>
@@ -270,7 +270,7 @@ const Evolucao = () => {
             </div>
 
             {/* Observation */}
-            <div className="glass-panel p-4 gold-glow h-[300px]">
+            <div className="glass-panel p-4 gold-glow h-[270px]">
               <h3 className="text-center text-gold font-semibold text-sm mb-0.5">Observação</h3>
               <Textarea
                 placeholder="Nenhuma observação registrada"
@@ -281,7 +281,7 @@ const Evolucao = () => {
             </div>
 
             {/* Products */}
-            <div className="glass-panel p-4 gold-glow h-[300px] overflow-auto">
+            <div className="glass-panel p-4 gold-glow h-[270px] overflow-auto">
               <h3 className="text-center text-gold font-semibold text-sm mb-0.5">Produtos Utilizados</h3>
               <Table>
                 <TableHeader>
