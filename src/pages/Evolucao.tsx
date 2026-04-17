@@ -216,7 +216,7 @@ const Evolucao = () => {
         {/* Two column layout: Sessions/Obs/Products (left) + Photos (right) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-stretch">
           {/* Left: sessions, observation, products */}
-          <div className="flex flex-col gap-3 lg:h-[calc(100vh-180px)]">
+          <div className="flex flex-col gap-3 lg:h-[calc(100vh-120px)]">
             {/* Sessions Table */}
             <div className="glass-panel p-4 gold-glow flex-1">
               <h3 className="text-center text-gold font-semibold text-sm mb-0.5">Relatório de Planos</h3>
@@ -276,7 +276,7 @@ const Evolucao = () => {
                 placeholder="Nenhuma observação registrada"
                 value={observacao}
                 onChange={(e) => setObservacao(e.target.value)}
-                className="min-h-[140px] bg-transparent border-border text-foreground placeholder:text-muted-foreground/60 focus:border-gold resize-none"
+                className="min-h-[200px] h-full bg-transparent border-border text-foreground placeholder:text-muted-foreground/60 focus:border-gold resize-none"
               />
             </div>
 
@@ -344,7 +344,7 @@ const Evolucao = () => {
                 </div>
               </>
             ) : (
-              <div className="glass-panel gold-glow flex items-center justify-center min-h-[calc(100vh-180px)]">
+              <div className="glass-panel gold-glow flex items-center justify-center min-h-[calc(100vh-120px)]">
                 <p className="text-muted-foreground text-sm">Selecione um procedimento para visualizar fotos</p>
               </div>
             )}
