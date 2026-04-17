@@ -120,7 +120,7 @@ const Analytics = () => {
 
         {/* Row 1 */}
         <div className="flex flex-wrap gap-2 min-h-0">
-          <div className="glass-panel p-3 gold-glow flex flex-col h-[250px] basis-[32%] flex-shrink-0">
+          <div className="glass-panel p-3 gold-glow flex flex-col w-[550px] h-[250px] justify-self-start self-start">
             <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Painel de Desempenho Financeiro</h3>
             <div className="flex-1 flex flex-col justify-around min-h-0">
               <div><span className="text-2xl font-bold text-[hsl(var(--chart-2))]">{data.faturamento}</span><p className="text-xs text-gold">Faturamento</p></div>
@@ -128,7 +128,7 @@ const Analytics = () => {
               <div className="pl-16"><span className="text-lg font-bold text-gold">{data.despesas}</span><p className="text-xs text-gold">Despesas</p></div>
             </div>
           </div>
-          <div className="glass-panel p-3 gold-glow flex flex-col h-[250px] flex-1 min-w-0">
+          <div className="glass-panel p-3 gold-glow flex flex-col w-[1000px] h-[250px] justify-self-start self-start">
             <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Desempenho Financeiro por Mês</h3>
             <div className="flex-1 min-h-0">
               <ResponsiveContainer width="100%" height="100%">
@@ -147,7 +147,7 @@ const Analytics = () => {
 
         {/* Row 2 */}
         <div className="flex flex-wrap gap-2 min-h-0">
-          <div className="glass-panel p-3 gold-glow flex flex-col h-[250px] basis-[32%] flex-shrink-0">
+          <div className="glass-panel p-3 gold-glow flex flex-col w-[550px] h-[250px] justify-self-start self-start">
             <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Painel de Indicadores de Clientes</h3>
             <div className="flex-1 flex items-center justify-around min-h-0">
               <div className="text-center">
@@ -169,7 +169,7 @@ const Analytics = () => {
               </div>
             </div>
           </div>
-          <div className="glass-panel p-3 gold-glow flex flex-col h-[250px] flex-1 min-w-0">
+          <div className="glass-panel p-3 gold-glow flex flex-col w-[1000px] h-[250px] justify-self-start self-start">
             <div className="flex items-center justify-between border-b border-gold/30 pb-1.5 mb-2">
               <h3 className="text-gold text-sm font-semibold">Desempenho dos Procedimentos</h3>
               <div className="flex items-center gap-3">
@@ -192,7 +192,7 @@ const Analytics = () => {
 
         {/* Row 3 */}
         <div className="flex flex-wrap gap-2 min-h-0">
-          <div className="glass-panel p-3 gold-glow flex flex-col h-[250px] basis-[32%] flex-shrink-0">
+          <div className="glass-panel p-3 gold-glow flex flex-col h-[250px] flex-1 min-w-0">
             <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Painel de Performance dos Atendimentos</h3>
             <div className="flex-1 flex items-center justify-around min-h-0">
               <div className="text-center">
@@ -209,7 +209,7 @@ const Analytics = () => {
               </div>
             </div>
           </div>
-          <div className="glass-panel p-3 gold-glow flex flex-col h-[250px] basis-[32%] flex-shrink-0">
+          <div className="glass-panel p-3 gold-glow flex flex-col h-[250px] flex-1 min-w-0">
             <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Análise do Melhor Período do Dia</h3>
             <div className="flex-1 min-h-0">
               <ResponsiveContainer width="100%" height="100%">
@@ -222,7 +222,7 @@ const Analytics = () => {
               </ResponsiveContainer>
             </div>
           </div>
-          <div className="glass-panel p-3 gold-glow flex flex-col h-[250px] basis-[32%] flex-shrink-0">
+          <div className="glass-panel p-3 gold-glow flex flex-col h-[250px] flex-1 min-w-0">
             <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Ranking de Desempenho por Dia da Semana</h3>
             <div className="flex-1 min-h-0">
               <ResponsiveContainer width="100%" height="100%">
