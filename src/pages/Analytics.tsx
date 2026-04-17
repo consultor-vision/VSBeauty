@@ -224,7 +224,7 @@ const Analytics = () => {
 
         {/* Row 3 */}
         <div className="flex flex-wrap gap-2 min-h-0">
-          <div className="glass-panel p-3 gold-glow flex flex-col h-[250px] flex-1 min-w-0">
+          <div className="glass-panel p-3 gold-glow flex flex-col w-[550px] h-[250px] justify-self-start self-start">
             <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Painel de Performance dos Atendimentos</h3>
             <div className="flex-1 grid grid-cols-2 items-center min-h-0">
               <div className="text-center">
