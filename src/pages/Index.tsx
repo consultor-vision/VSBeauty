@@ -542,7 +542,18 @@ const Index = () => {
               <PopoverTrigger asChild>
                 <button type="button" className="w-full flex items-center justify-between bg-input border border-border rounded-md px-3 h-8 text-xs text-foreground hover:bg-muted/50 transition-colors">
                   <span>{filterClient === "all" ? "Todos os clientes" : mockClients.find((c) => c.id === filterClient)?.nome}</span>
-                  <ChevronsUpDown className="w-3 h-3 opacity-50 shrink-0" />
+                  <span className="flex items-center gap-1 shrink-0">
+                    {filterClient !== "all" && (
+                      <span
+                        role="button"
+                        onClick={(e) => { e.stopPropagation(); setFilterClient("all"); }}
+                        className="p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="w-3 h-3" />
+                      </span>
+                    )}
+                    <ChevronsUpDown className="w-3 h-3 opacity-50" />
+                  </span>
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-popover border-border z-50" align="start">
@@ -572,7 +583,18 @@ const Index = () => {
               <PopoverTrigger asChild>
                 <button type="button" className="w-full flex items-center justify-between bg-input border border-border rounded-md px-3 h-8 text-xs text-foreground hover:bg-muted/50 transition-colors">
                   <span>{filterProcedimento === "all" ? "Todos os procedimentos" : filterProcedimento}</span>
-                  <ChevronsUpDown className="w-3 h-3 opacity-50 shrink-0" />
+                  <span className="flex items-center gap-1 shrink-0">
+                    {filterProcedimento !== "all" && (
+                      <span
+                        role="button"
+                        onClick={(e) => { e.stopPropagation(); setFilterProcedimento("all"); }}
+                        className="p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="w-3 h-3" />
+                      </span>
+                    )}
+                    <ChevronsUpDown className="w-3 h-3 opacity-50" />
+                  </span>
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-popover border-border z-50" align="start">
@@ -602,7 +624,18 @@ const Index = () => {
               <PopoverTrigger asChild>
                 <button type="button" className="w-full flex items-center justify-between bg-input border border-border rounded-md px-3 h-8 text-xs text-foreground hover:bg-muted/50 transition-colors">
                   <span>{filterStatus === "all" ? "Todos os status" : filterStatus.charAt(0).toUpperCase() + filterStatus.slice(1)}</span>
-                  <ChevronsUpDown className="w-3 h-3 opacity-50 shrink-0" />
+                  <span className="flex items-center gap-1 shrink-0">
+                    {filterStatus !== "all" && (
+                      <span
+                        role="button"
+                        onClick={(e) => { e.stopPropagation(); setFilterStatus("all"); }}
+                        className="p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="w-3 h-3" />
+                      </span>
+                    )}
+                    <ChevronsUpDown className="w-3 h-3 opacity-50" />
+                  </span>
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-popover border-border z-50" align="start">
