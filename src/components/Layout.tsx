@@ -93,7 +93,7 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-md border-t border-border z-50">
+      <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-md border-t border-border z-50 pt-[10px]">
         <div className="flex items-center justify-between px-4 py-2">
           {/* Left: hamburger + avatar + name */}
           <div className="flex items-center gap-3">
