@@ -145,6 +145,13 @@
 .light .bg-red-500\/20 .text-white\/70,
 .light .bg-blue-500\/20 .text-white\/70 { color: hsl(0 0% 15% / 0.85); }
 
+/* Black text in inputs in light mode */
+.light input,
+.light textarea,
+.light select { color: hsl(0 0% 8%); }
+.light input::placeholder,
+.light textarea::placeholder { color: hsl(0 0% 25% / 0.7); }
+
 @layer utilities {
   .glass-panel {
     @apply bg-card/80 backdrop-blur-sm border border-border rounded-lg;
