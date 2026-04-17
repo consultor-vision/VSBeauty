@@ -98,12 +98,11 @@ const formatDate = (date: Date): string => {
   return `${y}-${m}-${d}`;
 };
 
-// Generate time slots from 07:00 to 21:00 in 10-minute intervals
+// Generate time slots from 00:00 to 23:00 in 10-minute intervals
 const generateTimeSlots = (): string[] => {
   const slots: string[] = [];
-  for (let h = 7; h <= 21; h++) {
+  for (let h = 0; h <= 23; h++) {
     for (let m = 0; m < 60; m += 10) {
-      if (h === 21 && m > 0) break;
       slots.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
     }
   }
