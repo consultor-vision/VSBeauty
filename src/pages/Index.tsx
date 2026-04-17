@@ -551,10 +551,10 @@ const Index = () => {
                         key={i}
                         className={`flex-1 text-center py-2 border-l border-border ${isT ? "bg-gold/10" : ""}`}
                       >
-                        <div className={`text-[10px] uppercase ${isT ? "text-gold" : "text-muted-foreground"}`}>
+                        <div className={`text-sm uppercase ${isT ? "text-gold" : "text-muted-foreground"}`}>
                           {daysOfWeekShort[(wd.getDay() + 6) % 7 + 1 > 6 ? 0 : (wd.getDay())]}
                         </div>
-                        <div className={`text-lg font-bold ${isT ? "text-gold" : "text-foreground"}`}>
+                        <div className={`text-xl font-bold ${isT ? "text-gold" : "text-foreground"}`}>
                           {wd.getDate()}
                         </div>
                       </div>
@@ -562,10 +562,10 @@ const Index = () => {
                   })
                 ) : (
                   <div className="flex-1 text-center py-2 border-l border-border bg-gold/10">
-                    <div className="text-[10px] uppercase text-gold">
+                    <div className="text-sm uppercase text-gold">
                       {daysOfWeekShort[selectedDate.getDay()]}
                     </div>
-                    <div className="text-lg font-bold text-gold">
+                    <div className="text-xl font-bold text-gold">
                       {selectedDate.getDate()}
                     </div>
                   </div>
@@ -580,7 +580,7 @@ const Index = () => {
                     {/* Time label */}
                     <div className="w-16 shrink-0 text-right pr-2 flex items-start justify-end">
                       {isHour && (
-                        <span className="text-[10px] text-muted-foreground -mt-1">{time}</span>
+                        <span className="text-xs text-muted-foreground -mt-1">{time}</span>
                       )}
                     </div>
 
@@ -625,13 +625,13 @@ const Index = () => {
                                 onClick={(e) => handleAppClick(startingApp, e)}
                                 onContextMenu={(e) => handleAppContextMenu(startingApp, e)}
                               >
-                                <p className="text-[11px] font-semibold text-white truncate leading-tight">
+                                <p className="text-sm font-semibold text-white truncate leading-tight">
                                   {startingApp.clientName}
                                 </p>
-                                <p className="text-[10px] text-white/70 truncate leading-tight">
+                                <p className="text-xs text-white/70 truncate leading-tight">
                                   {startingApp.procedimento}
                                 </p>
-                                <p className="text-[9px] text-white/70 leading-tight">
+                                <p className="text-xs text-white/70 leading-tight">
                                   {startingApp.startTime} - {startingApp.endTime}
                                 </p>
                               </div>
