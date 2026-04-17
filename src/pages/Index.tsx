@@ -505,22 +505,22 @@ const Index = () => {
 
           {/* Week Navigation */}
           <div className="glass-panel p-2 gold-glow flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2 min-w-0">
-              <button
-                onClick={goToToday}
-                className="h-8 px-2 rounded-md bg-gold/15 border border-gold text-gold text-xs font-semibold hover:bg-gold/25 transition-all shrink-0 flex items-center"
-              >
-                Hoje
-              </button>
+            <button
+              onClick={goToToday}
+              className="h-8 px-2 rounded-md bg-gold/15 border border-gold text-gold text-xs font-semibold hover:bg-gold/25 transition-all shrink-0 flex items-center"
+            >
+              Hoje
+            </button>
+            <div className="flex items-center gap-2 flex-1 justify-center min-w-0">
               <button onClick={prevWeek} className="h-8 w-8 rounded hover:bg-muted transition-colors shrink-0 flex items-center justify-center">
                 <ChevronLeft className="w-4 h-4 text-gold" />
               </button>
+              <span className="font-medium text-foreground truncate leading-none text-center" style={{ fontSize: "14px" }}>
+                {weekRangeLabel}
+              </span>
               <button onClick={nextWeek} className="h-8 w-8 rounded hover:bg-muted transition-colors shrink-0 flex items-center justify-center">
                 <ChevronRight className="w-4 h-4 text-gold" />
               </button>
-              <span className="font-medium text-foreground truncate leading-none" style={{ fontSize: "14px" }}>
-                {weekRangeLabel}
-              </span>
             </div>
             <Select value={viewMode} onValueChange={(v) => setViewMode(v as "semana" | "dia")}>
               <SelectTrigger className="w-[100px] bg-input border-border text-xs h-8 shrink-0">
