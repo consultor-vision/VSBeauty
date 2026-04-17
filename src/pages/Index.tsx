@@ -495,6 +495,43 @@ const Index = () => {
             </div>
           </div>
 
+          {/* Filters */}
+          <div className="glass-panel p-3 gold-glow space-y-2">
+            <h3 className="text-xs font-semibold text-gold uppercase tracking-wide mb-1">Filtros</h3>
+            <Select value={filterClient} onValueChange={setFilterClient}>
+              <SelectTrigger className="w-full bg-input border-border text-xs h-8">
+                <SelectValue placeholder="Cliente" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os clientes</SelectItem>
+                {mockClients.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={filterProcedimento} onValueChange={setFilterProcedimento}>
+              <SelectTrigger className="w-full bg-input border-border text-xs h-8">
+                <SelectValue placeholder="Procedimento" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os procedimentos</SelectItem>
+                {mockProcedimentos.map((p) => (
+                  <SelectItem key={p} value={p}>{p}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <SelectTrigger className="w-full bg-input border-border text-xs h-8">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os status</SelectItem>
+                <SelectItem value="confirmado">Confirmado</SelectItem>
+                <SelectItem value="pendente">Pendente</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Action Buttons */}
           <button
             onClick={handleNewAppointment}
