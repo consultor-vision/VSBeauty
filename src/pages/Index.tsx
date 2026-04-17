@@ -625,7 +625,7 @@ const Index = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="mt-auto flex flex-col gap-3">
+          <div className="flex flex-col gap-3">
             <button
               onClick={handleNewAppointment}
               className="w-full py-3 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all flex items-center justify-center gap-2"
