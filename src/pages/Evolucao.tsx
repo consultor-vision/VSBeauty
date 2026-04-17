@@ -218,7 +218,7 @@ const Evolucao = () => {
           {/* Left: sessions, observation, products */}
           <div className="flex flex-col gap-3 min-h-0 overflow-hidden">
             {/* Sessions Table */}
-            <div className="glass-panel p-4 gold-glow flex-1">
+            <div className="glass-panel p-4 gold-glow flex-[0.7]">
               <h3 className="text-center text-gold font-semibold text-sm mb-0.5">Relatório de Planos</h3>
               <Table>
                 <TableHeader>
