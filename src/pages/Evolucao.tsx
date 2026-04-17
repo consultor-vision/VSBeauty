@@ -174,7 +174,7 @@ const Evolucao = () => {
 
   return (
     <Layout title="Evolução do Cliente">
-      <div className="flex flex-col gap-3 pb-4 lg:pb-6">
+      <div className="flex flex-col gap-3 h-[calc(100vh-110px)] overflow-hidden">
         {/* Top row: Client info (left) + Procedure filter (right) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-center">
           <div className="flex items-center gap-2 text-sm text-foreground flex-wrap">
@@ -214,9 +214,9 @@ const Evolucao = () => {
         </div>
 
         {/* Two column layout: Sessions/Obs/Products (left) + Photos (right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-stretch flex-1 min-h-0">
           {/* Left: sessions, observation, products */}
-          <div className="flex flex-col gap-3 lg:h-[calc(100vh-120px)]">
+          <div className="flex flex-col gap-3 min-h-0 overflow-hidden">
             {/* Sessions Table */}
             <div className="glass-panel p-4 gold-glow flex-1">
               <h3 className="text-center text-gold font-semibold text-sm mb-0.5">Relatório de Planos</h3>
@@ -276,7 +276,7 @@ const Evolucao = () => {
                 placeholder="Nenhuma observação registrada"
                 value={observacao}
                 onChange={(e) => setObservacao(e.target.value)}
-                className="min-h-[170px] h-full bg-transparent border-border text-foreground placeholder:text-muted-foreground/60 focus:border-gold resize-none"
+                className="min-h-0 h-full bg-transparent border-border text-foreground placeholder:text-muted-foreground/60 focus:border-gold resize-none"
               />
             </div>
 
@@ -306,7 +306,7 @@ const Evolucao = () => {
           </div>
 
           {/* Right: Photo area (Antes/Depois) */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3 min-h-0 overflow-hidden">
             {hasSessions ? (
               <>
                 
