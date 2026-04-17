@@ -157,7 +157,7 @@ const Analytics = () => {
                 <p className="text-4xl font-bold text-foreground mt-2">{clients.total}</p>
               </div>
               <div className="h-full flex flex-col items-center py-1">
-                <p className="text-xs text-gold text-center mb-1">Distribuição por Gênero</p>
+                <p className="text-base text-gold text-center mb-1">Distribuição por Gênero</p>
                 <div className="flex-1 w-[200px] min-h-0">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart margin={{ top: 16, right: 24, bottom: 8, left: 24 }}>
@@ -203,7 +203,7 @@ const Analytics = () => {
                 <p className="text-4xl font-bold text-foreground mt-2">{perf.volume}</p>
               </div>
               <div>
-                <p className="text-xs text-gold mb-2">Status dos Atendimentos</p>
+                <p className="text-base text-gold mb-2">Status dos Atendimentos</p>
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[hsl(170,60%,50%)]" /><span className="text-sm text-foreground">Concluído: {perf.concluido}</span></div>
                   <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-gold" /><span className="text-sm text-foreground">Pendente: {perf.pendente}</span></div>
