@@ -58,47 +58,44 @@ const topProcByYear: Record<string, { nome: string; qtd: number }[]> = {
   ],
   "2025": [
     { nome: "Botox", qtd: 25 },
-    { nome: "Botox premium", qtd: 18 },
-    { nome: "Preenchimento Labial", qtd: 15 },
-    { nome: "Dreno Detox", qtd: 12 },
-    { nome: "Depilação a Laser", qtd: 10 },
-    { nome: "Laser4", qtd: 8 },
-    { nome: "Peeling Químico", qtd: 7 },
-    { nome: "Criolipólise", qtd: 6 },
-    { nome: "Massagem com Bambu", qtd: 5 },
-    { nome: "Laser Body", qtd: 4 },
+    { nome: "Peeling Químico", qtd: 18 },
+    { nome: "Limpeza de Pele", qtd: 14 },
+    { nome: "Preenchimento", qtd: 10 },
+    { nome: "Microagulhamento", qtd: 8 },
   ],
 };
 
 const perfByYear: Record<string, { volume: number; concluido: number; pendente: number; cancelado: number }> = {
   "2026": { volume: 37, concluido: 8, pendente: 29, cancelado: 0 },
-  "2025": { volume: 125, concluido: 102, pendente: 23, cancelado: 0 },
+  "2025": { volume: 240, concluido: 200, pendente: 30, cancelado: 10 },
 };
 
-const periodoData = [
-  { periodo: "Tarde", qtd: 5 },
-  { periodo: "Manhã", qtd: 4 },
-  { periodo: "Noite", qtd: 2 },
-];
+const periodoByYear: Record<string, { periodo: string; qtd: number }[]> = {
+  "2026": [{ periodo: "Tarde", qtd: 5 }, { periodo: "Manhã", qtd: 4 }, { periodo: "Noite", qtd: 2 }],
+  "2025": [{ periodo: "Tarde", qtd: 95 }, { periodo: "Manhã", qtd: 80 }, { periodo: "Noite", qtd: 65 }],
+};
 
-const semanaData = [
-  { dia: "Domingo", qtd: 0 },
-  { dia: "Segunda", qtd: 3 },
-  { dia: "Terça", qtd: 4 },
-  { dia: "Quarta", qtd: 5 },
-  { dia: "Quinta", qtd: 3 },
-  { dia: "Sexta", qtd: 2 },
-  { dia: "Sábado", qtd: 1 },
-];
+const semanaByYear: Record<string, { dia: string; qtd: number }[]> = {
+  "2026": [
+    { dia: "Domingo", qtd: 0 }, { dia: "Segunda", qtd: 3 }, { dia: "Terça", qtd: 4 },
+    { dia: "Quarta", qtd: 5 }, { dia: "Quinta", qtd: 3 }, { dia: "Sexta", qtd: 2 }, { dia: "Sábado", qtd: 1 },
+  ],
+  "2025": [
+    { dia: "Domingo", qtd: 5 }, { dia: "Segunda", qtd: 30 }, { dia: "Terça", qtd: 40 },
+    { dia: "Quarta", qtd: 50 }, { dia: "Quinta", qtd: 38 }, { dia: "Sexta", qtd: 45 }, { dia: "Sábado", qtd: 22 },
+  ],
+};
 
-const PIE_COLORS = ["hsl(280, 70%, 60%)", "hsl(210, 70%, 60%)"];
+const PIE_COLORS = ["hsl(var(--chart-2))", "hsl(var(--chart-1))"];
 
 const Analytics = () => {
   const [year, setYear] = useState("2026");
-  const data = financialByYear[year] || financialByYear["2026"];
-  const clients = clientsByYear[year] || clientsByYear["2026"];
-  const topProc = topProcByYear[year] || [];
-  const perf = perfByYear[year] || perfByYear["2026"];
+  const data = financialByYear[year];
+  const clients = clientsByYear[year];
+  const topProc = topProcByYear[year];
+  const perf = perfByYear[year];
+  const periodoData = periodoByYear[year];
+  const semanaData = semanaByYear[year];
 
   const pieData = [
     { name: "Feminino", value: clients.feminino },
@@ -107,7 +104,9 @@ const Analytics = () => {
 
   const yearSelector = (
     <Select value={year} onValueChange={setYear}>
-      <SelectTrigger className="w-[100px] bg-input border-border text-foreground h-9"><SelectValue /></SelectTrigger>
+      <SelectTrigger className="w-[100px] h-8 bg-input border-border text-foreground text-sm">
+        <SelectValue />
+      </SelectTrigger>
       <SelectContent>
         <SelectItem value="2026">2026</SelectItem>
         <SelectItem value="2025">2025</SelectItem>
@@ -117,95 +116,92 @@ const Analytics = () => {
 
   return (
     <Layout title="Visão Analítica" headerRight={yearSelector}>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2 h-full min-h-0">
 
-        {/* Row 1: Financial + Monthly Chart */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="glass-panel p-4 gold-glow">
-            <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-2 mb-4">Painel de Desempenho Financeiro</h3>
-            <div className="space-y-4">
+        {/* Row 1 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 flex-1 min-h-0">
+          <div className="glass-panel p-3 gold-glow flex flex-col min-h-0">
+            <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Painel de Desempenho Financeiro</h3>
+            <div className="flex-1 flex flex-col justify-around min-h-0">
               <div><span className="text-2xl font-bold text-[hsl(var(--chart-2))]">{data.faturamento}</span><p className="text-xs text-gold">Faturamento</p></div>
               <div className="pl-8"><span className="text-xl font-bold text-[hsl(var(--chart-1))]">{data.lucro}</span><p className="text-xs text-gold">Lucro</p></div>
               <div className="pl-16"><span className="text-lg font-bold text-gold">{data.despesas}</span><p className="text-xs text-gold">Despesas</p></div>
             </div>
           </div>
-          <div className="glass-panel p-4 gold-glow">
-            <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-2 mb-4">Desempenho Financeiro por Mês</h3>
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={data.monthly}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="mes" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} />
-                <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} />
-                <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
-                <Bar dataKey="faturamento" fill="hsl(var(--chart-1))" radius={[2, 2, 0, 0]} />
-                <Bar dataKey="despesas" fill="hsl(var(--chart-4))" radius={[2, 2, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-            <div className="flex justify-center gap-4 mt-2">
-              {data.monthly.map((m) => (
-                <div key={m.mes} className="flex flex-col items-center gap-0.5">
-                  {m.recebido > 0 && <div className="w-2 h-2 rounded-full bg-[hsl(var(--chart-1))]" />}
-                  {m.pendente > 0 && <div className="w-2 h-2 rounded-full bg-gold" />}
-                  {m.atrasado > 0 && <div className="w-2 h-2 rounded-full bg-destructive" />}
-                </div>
-              ))}
+          <div className="glass-panel p-3 gold-glow flex flex-col min-h-0">
+            <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Desempenho Financeiro por Mês</h3>
+            <div className="flex-1 min-h-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={data.monthly}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="mes" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
+                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
+                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
+                  <Bar dataKey="faturamento" fill="hsl(var(--chart-1))" radius={[2, 2, 0, 0]} />
+                  <Bar dataKey="despesas" fill="hsl(var(--chart-4))" radius={[2, 2, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>
 
-        {/* Row 2: Clients + Top Procedures */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="glass-panel p-4 gold-glow">
-            <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-2 mb-4">Painel de Indicadores de Clientes</h3>
-            <div className="flex items-center justify-around">
+        {/* Row 2 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 flex-1 min-h-0">
+          <div className="glass-panel p-3 gold-glow flex flex-col min-h-0">
+            <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Painel de Indicadores de Clientes</h3>
+            <div className="flex-1 flex items-center justify-around min-h-0">
               <div className="text-center">
                 <p className="text-xs text-[hsl(var(--chart-1))]">Total de Clientes</p>
                 <p className="text-4xl font-bold text-foreground mt-2">{clients.total}</p>
               </div>
-              <div>
-                <p className="text-xs text-gold text-center mb-2">Distribuição por Gênero</p>
-                <ResponsiveContainer width={180} height={150}>
-                  <PieChart>
-                    <Pie data={pieData} cx="50%" cy="50%" outerRadius={60} dataKey="value" label={({ value }) => value}>
-                      {pieData.map((_, idx) => (<Cell key={idx} fill={PIE_COLORS[idx]} />))}
-                    </Pie>
-                    <Legend verticalAlign="bottom" iconSize={10} wrapperStyle={{ fontSize: 11 }} />
-                  </PieChart>
-                </ResponsiveContainer>
+              <div className="h-full flex flex-col items-center py-1">
+                <p className="text-xs text-gold text-center mb-1">Distribuição por Gênero</p>
+                <div className="flex-1 w-[180px] min-h-0">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={pieData} cx="50%" cy="50%" outerRadius="70%" dataKey="value" label={({ value }) => value}>
+                        {pieData.map((_, idx) => (<Cell key={idx} fill={PIE_COLORS[idx]} />))}
+                      </Pie>
+                      <Legend verticalAlign="bottom" iconSize={10} wrapperStyle={{ fontSize: 11 }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
             </div>
           </div>
-          <div className="glass-panel p-4 gold-glow">
-            <div className="flex items-center justify-between border-b border-gold/30 pb-2 mb-4">
+          <div className="glass-panel p-3 gold-glow flex flex-col min-h-0">
+            <div className="flex items-center justify-between border-b border-gold/30 pb-1.5 mb-2">
               <h3 className="text-gold text-sm font-semibold">Desempenho dos Procedimentos</h3>
               <div className="flex items-center gap-3">
                 <span className="text-foreground font-bold text-sm">Top 10 Procedimento Realizados</span>
                 <button className="px-3 py-1 rounded-md bg-accent text-accent-foreground text-xs font-semibold hover:bg-accent/80 transition-colors">Lista Completa</button>
               </div>
             </div>
-            <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={topProc}>
-                <XAxis dataKey="nome" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }} interval={0} angle={-15} textAnchor="end" height={50} />
-                <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} />
-                <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
-                <Bar dataKey="qtd" fill="hsl(var(--chart-4))" radius={[2, 2, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="flex-1 min-h-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={topProc}>
+                  <XAxis dataKey="nome" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }} interval={0} angle={-15} textAnchor="end" height={45} />
+                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
+                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
+                  <Bar dataKey="qtd" fill="hsl(var(--chart-4))" radius={[2, 2, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
 
-        {/* Row 3: Performance + Period + Weekly */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="glass-panel p-4 gold-glow">
-            <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-2 mb-4">Painel de Performance dos Atendimentos</h3>
-            <div className="flex items-start justify-around">
+        {/* Row 3 */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 flex-1 min-h-0">
+          <div className="glass-panel p-3 gold-glow flex flex-col min-h-0">
+            <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Painel de Performance dos Atendimentos</h3>
+            <div className="flex-1 flex items-center justify-around min-h-0">
               <div className="text-center">
                 <p className="text-xs text-gold">Volume de Atendimentos</p>
                 <p className="text-4xl font-bold text-foreground mt-2">{perf.volume}</p>
               </div>
               <div>
-                <p className="text-xs text-gold mb-3">Status dos Atendimentos</p>
-                <div className="space-y-2">
+                <p className="text-xs text-gold mb-2">Status dos Atendimentos</p>
+                <div className="space-y-1.5">
                   <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[hsl(170,60%,50%)]" /><span className="text-sm text-foreground">Concluído: {perf.concluido}</span></div>
                   <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-gold" /><span className="text-sm text-foreground">Pendente: {perf.pendente}</span></div>
                   <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-destructive" /><span className="text-sm text-foreground">Cancelado: {perf.cancelado}</span></div>
@@ -213,27 +209,31 @@ const Analytics = () => {
               </div>
             </div>
           </div>
-          <div className="glass-panel p-4 gold-glow">
-            <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-2 mb-4">Análise do Melhor Período do Dia</h3>
-            <ResponsiveContainer width="100%" height={150}>
-              <BarChart data={periodoData}>
-                <XAxis dataKey="periodo" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} />
-                <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} />
-                <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
-                <Bar dataKey="qtd" fill="hsl(var(--chart-4))" radius={[2, 2, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="glass-panel p-3 gold-glow flex flex-col min-h-0">
+            <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Análise do Melhor Período do Dia</h3>
+            <div className="flex-1 min-h-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={periodoData}>
+                  <XAxis dataKey="periodo" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
+                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
+                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
+                  <Bar dataKey="qtd" fill="hsl(var(--chart-4))" radius={[2, 2, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
-          <div className="glass-panel p-4 gold-glow">
-            <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-2 mb-4">Ranking de Desempenho por Dia da Semana</h3>
-            <ResponsiveContainer width="100%" height={150}>
-              <BarChart data={semanaData}>
-                <XAxis dataKey="dia" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }} />
-                <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} />
-                <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
-                <Bar dataKey="qtd" fill="hsl(var(--chart-4))" radius={[2, 2, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="glass-panel p-3 gold-glow flex flex-col min-h-0">
+            <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Ranking de Desempenho por Dia da Semana</h3>
+            <div className="flex-1 min-h-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={semanaData}>
+                  <XAxis dataKey="dia" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }} />
+                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
+                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
+                  <Bar dataKey="qtd" fill="hsl(var(--chart-4))" radius={[2, 2, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
       </div>
