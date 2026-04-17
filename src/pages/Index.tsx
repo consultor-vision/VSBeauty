@@ -535,7 +535,18 @@ const Index = () => {
 
           {/* Filters */}
           <div className="glass-panel p-5 gold-glow space-y-4">
-            <h3 className="text-base font-semibold text-gold uppercase tracking-wide mb-1">Filtros</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-semibold text-gold uppercase tracking-wide">Filtros</h3>
+              {(filterClient !== "all" || filterProcedimento !== "all" || filterStatus !== "all") && (
+                <button
+                  type="button"
+                  onClick={() => { setFilterClient("all"); setFilterProcedimento("all"); setFilterStatus("all"); }}
+                  className="text-xs text-gold hover:underline flex items-center gap-1"
+                >
+                  <X className="w-3 h-3" /> Limpar
+                </button>
+              )}
+            </div>
 
             {/* Cliente */}
             <Popover open={openClient} onOpenChange={setOpenClient}>
