@@ -120,7 +120,7 @@ const Analytics = () => {
 
         {/* Row 1 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 flex-1 min-h-0">
-          <div className="glass-panel p-3 gold-glow flex flex-col w-[800px] h-[250px] justify-self-start self-start">
+          <div className="glass-panel p-3 gold-glow flex flex-col w-[400px] h-[250px] justify-self-start self-start">
             <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Painel de Desempenho Financeiro</h3>
             <div className="flex-1 flex flex-col justify-around min-h-0">
               <div><span className="text-2xl font-bold text-[hsl(var(--chart-2))]">{data.faturamento}</span><p className="text-xs text-gold">Faturamento</p></div>
@@ -147,7 +147,7 @@ const Analytics = () => {
 
         {/* Row 2 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 flex-1 min-h-0">
-          <div className="glass-panel p-3 gold-glow flex flex-col w-[800px] h-[250px] justify-self-start self-start">
+          <div className="glass-panel p-3 gold-glow flex flex-col w-[400px] h-[250px] justify-self-start self-start">
             <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Painel de Indicadores de Clientes</h3>
             <div className="flex-1 flex items-center justify-around min-h-0">
               <div className="text-center">
@@ -192,7 +192,7 @@ const Analytics = () => {
 
         {/* Row 3 */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 flex-1 min-h-0">
-          <div className="glass-panel p-3 gold-glow flex flex-col w-[800px] h-[250px] justify-self-start self-start">
+          <div className="glass-panel p-3 gold-glow flex flex-col w-[400px] h-[250px] justify-self-start self-start">
             <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Painel de Performance dos Atendimentos</h3>
             <div className="flex-1 flex items-center justify-around min-h-0">
               <div className="text-center">
