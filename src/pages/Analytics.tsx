@@ -151,14 +151,14 @@ const Analytics = () => {
         <div className="flex flex-wrap gap-2 min-h-0">
           <div className="glass-panel p-3 gold-glow flex flex-col w-[550px] h-[250px] justify-self-start self-start">
             <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Painel de Indicadores de Clientes</h3>
-            <div className="flex-1 flex items-center justify-around min-h-0">
+            <div className="flex-1 grid grid-cols-2 items-center min-h-0">
               <div className="text-center">
                 <p className="text-base text-gold">Total de Clientes</p>
                 <p className="text-4xl font-bold text-foreground mt-2">{clients.total}</p>
               </div>
               <div className="h-full flex flex-col items-center py-1">
                 <p className="text-base text-gold text-center mb-1">Distribuição por Gênero</p>
-                <div className="flex-1 w-[200px] min-h-0">
+                <div className="flex-1 w-full min-h-0">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart margin={{ top: 16, right: 24, bottom: 8, left: 24 }}>
                       <Pie data={pieData} cx="50%" cy="50%" outerRadius="55%" dataKey="value" label={{ fill: "hsl(var(--gold))", fontSize: 11 }}>
@@ -197,12 +197,12 @@ const Analytics = () => {
         <div className="flex flex-wrap gap-2 min-h-0">
           <div className="glass-panel p-3 gold-glow flex flex-col h-[250px] flex-1 min-w-0">
             <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Painel de Performance dos Atendimentos</h3>
-            <div className="flex-1 flex items-center justify-around min-h-0">
+            <div className="flex-1 grid grid-cols-2 items-center min-h-0">
               <div className="text-center">
                 <p className="text-base text-gold">Volume de Atendimentos</p>
                 <p className="text-4xl font-bold text-foreground mt-2">{perf.volume}</p>
               </div>
-              <div>
+              <div className="flex flex-col items-start">
                 <p className="text-base text-gold mb-2">Status dos Atendimentos</p>
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[hsl(170,60%,50%)]" /><span className="text-sm text-foreground">Concluído: {perf.concluido}</span></div>
