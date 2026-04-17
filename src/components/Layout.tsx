@@ -118,13 +118,13 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
                 <button
                   key={item.path}
                   onClick={() => navigate(item.path)}
-                  className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  className={`flex flex-col items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     isActive
                       ? "bg-gold text-primary-foreground"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className="w-[22px] h-[22px]" />
                   <span>{item.label}</span>
                 </button>
               );
