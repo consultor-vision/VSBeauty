@@ -613,36 +613,6 @@ const Index = () => {
 
         {/* Right Column - Weekly Grid */}
         <div className="flex-1 glass-panel gold-glow flex flex-col overflow-hidden min-h-0">
-          {/* Week Navigation Header */}
-          <div className="flex items-center justify-between px-3 py-1.5 border-b border-border shrink-0">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={goToToday}
-                className="px-3 py-1 rounded-md bg-gold/15 border border-gold text-gold text-xs font-semibold hover:bg-gold/25 transition-all"
-              >
-                Hoje
-              </button>
-              <div className="flex items-center gap-1">
-                <button onClick={prevWeek} className="p-1 rounded hover:bg-muted transition-colors">
-                  <ChevronLeft className="w-4 h-4 text-gold" />
-                </button>
-                <button onClick={nextWeek} className="p-1 rounded hover:bg-muted transition-colors">
-                  <ChevronRight className="w-4 h-4 text-gold" />
-                </button>
-              </div>
-              <span className="text-sm font-medium text-foreground">{weekRangeLabel}</span>
-            </div>
-            <Select value={viewMode} onValueChange={(v) => setViewMode(v as "semana" | "dia")}>
-              <SelectTrigger className="w-[120px] bg-input border-border text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="semana">Semana</SelectItem>
-                <SelectItem value="dia">Dia</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
           {/* Time Grid */}
           <div className="flex-1 overflow-auto">
             <div className="min-w-[700px]">
