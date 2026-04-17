@@ -281,7 +281,7 @@ const Evolucao = () => {
             </div>
 
             {/* Products */}
-            <div className="glass-panel p-4 gold-glow h-[200px] overflow-auto">
+            <div className="glass-panel p-4 gold-glow h-[240px] overflow-auto">
               <h3 className="text-center text-gold font-semibold text-sm mb-0.5">Produtos Utilizados</h3>
               <Table>
                 <TableHeader>
