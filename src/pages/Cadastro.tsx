@@ -264,7 +264,7 @@ const Cadastro = () => {
             <h2 className="text-center text-gold font-semibold text-base mb-4">
               Painel de Visualização de Planos
             </h2>
-            <ScrollArea className="h-[337px]">
+            <ScrollArea className="h-[339px]">
               <Table>
                 <TableHeader>
                   <TableRow className="border-border hover:bg-transparent">
