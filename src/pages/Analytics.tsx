@@ -158,10 +158,10 @@ const Analytics = () => {
               </div>
               <div className="h-full flex flex-col items-center py-1">
                 <p className="text-xs text-gold text-center mb-1">Distribuição por Gênero</p>
-                <div className="flex-1 w-[180px] min-h-0">
+                <div className="flex-1 w-[200px] min-h-0">
                   <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie data={pieData} cx="50%" cy="50%" outerRadius="70%" dataKey="value" label={{ fill: "hsl(var(--gold))", fontSize: 12 }}>
+                    <PieChart margin={{ top: 16, right: 24, bottom: 8, left: 24 }}>
+                      <Pie data={pieData} cx="50%" cy="50%" outerRadius="55%" dataKey="value" label={{ fill: "hsl(var(--gold))", fontSize: 11 }}>
                         {pieData.map((entry, idx) => (
                           <Cell key={idx} fill={GENDER_COLORS[entry.name] ?? OUTROS_COLOR} />
                         ))}
