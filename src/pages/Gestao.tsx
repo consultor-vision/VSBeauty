@@ -756,7 +756,7 @@ const ColaboradorView = ({ colaboradores, onEdit }: { colaboradores: Colaborador
 );
 
 const ProcedimentoView = ({ procedimentos, onEdit }: { procedimentos: Procedimento[]; onEdit: (p: Procedimento) => void }) => (
-  <div className="glass-panel p-4 gold-glow [&_td]:py-2 [&_th]:h-9 text-[13.3px]">
+  <div className="glass-panel p-4 gold-glow [&_td]:py-2 [&_th]:h-9 text-[13.3px] max-h-[calc(100vh-180px)] overflow-y-auto">
     <Table>
       <TableHeader>
         <TableRow className="border-border hover:bg-transparent">
