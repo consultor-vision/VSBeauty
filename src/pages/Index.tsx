@@ -508,17 +508,19 @@ const Index = () => {
             <div className="flex items-center gap-2 min-w-0">
               <button
                 onClick={goToToday}
-                className="px-2 py-1 rounded-md bg-gold/15 border border-gold text-gold text-xs font-semibold hover:bg-gold/25 transition-all shrink-0"
+                className="h-8 px-2 rounded-md bg-gold/15 border border-gold text-gold text-xs font-semibold hover:bg-gold/25 transition-all shrink-0 flex items-center"
               >
                 Hoje
               </button>
-              <button onClick={prevWeek} className="p-1 rounded hover:bg-muted transition-colors shrink-0">
+              <button onClick={prevWeek} className="h-8 w-8 rounded hover:bg-muted transition-colors shrink-0 flex items-center justify-center">
                 <ChevronLeft className="w-4 h-4 text-gold" />
               </button>
-              <button onClick={nextWeek} className="p-1 rounded hover:bg-muted transition-colors shrink-0">
+              <button onClick={nextWeek} className="h-8 w-8 rounded hover:bg-muted transition-colors shrink-0 flex items-center justify-center">
                 <ChevronRight className="w-4 h-4 text-gold" />
               </button>
-              <span className="text-xs font-medium text-foreground truncate">{weekRangeLabel}</span>
+              <span className="font-medium text-foreground truncate leading-none" style={{ fontSize: "14px" }}>
+                {weekRangeLabel}
+              </span>
             </div>
             <Select value={viewMode} onValueChange={(v) => setViewMode(v as "semana" | "dia")}>
               <SelectTrigger className="w-[100px] bg-input border-border text-xs h-8 shrink-0">
