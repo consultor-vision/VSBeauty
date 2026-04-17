@@ -838,7 +838,7 @@ const EstoqueView = ({ estoque, onEdit }: { estoque: EstoqueItem[]; onEdit: (e: 
 );
 
 const ContasPagarView = ({ contas, onDescricao, onEdit }: { contas: ContaPagar[]; onDescricao: (c: ContaPagar) => void; onEdit: (c: ContaPagar) => void }) => (
-  <div className="glass-panel p-4 gold-glow [&_td]:py-4 [&_th]:h-12 text-[15px]">
+  <div className="glass-panel p-4 gold-glow [&_td]:py-1.5 [&_th]:h-8 text-[12px]">
     <div className="flex gap-6 mb-4 text-xs">
       <span>Total Pago: <span className="text-gold">R$ 4.697,55</span></span>
       <span>Total a Pagar: <span className="text-foreground">R$ 0,00</span></span>
