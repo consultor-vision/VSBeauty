@@ -158,7 +158,9 @@ const Index = () => {
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [selectedDay, setSelectedDay] = useState(today.getDate());
-  const [filterClient, setFilterClient] = useState<string>("");
+  const [filterClient, setFilterClient] = useState<string>("all");
+  const [filterProcedimento, setFilterProcedimento] = useState<string>("all");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
   const [viewMode, setViewMode] = useState<"semana" | "dia">("semana");
 
   // Appointments state
