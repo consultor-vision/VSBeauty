@@ -169,13 +169,13 @@ const Analytics = () => {
                 <p className="text-base text-gold text-center mb-1">Distribuição por Gênero</p>
                 <div className="flex-1 w-full min-h-0">
                   <ResponsiveContainer width="100%" height="100%">
-                    <PieChart margin={{ top: 16, right: 24, bottom: 8, left: 24 }}>
-                      <Pie data={pieData} cx="50%" cy="50%" outerRadius="55%" dataKey="value" label={{ fill: "hsl(var(--gold))", fontSize: 11 }}>
+                    <PieChart margin={{ top: 12, right: 24, bottom: 4, left: 24 }}>
+                      <Pie data={pieData} cx="50%" cy="50%" outerRadius="75%" dataKey="value" label={{ fill: "hsl(var(--gold))", fontSize: 13 }}>
                         {pieData.map((entry, idx) => (
                           <Cell key={idx} fill={GENDER_COLORS[entry.name] ?? OUTROS_COLOR} />
                         ))}
                       </Pie>
-                      <Legend verticalAlign="bottom" iconSize={10} wrapperStyle={{ fontSize: 11 }} />
+                      <Legend verticalAlign="bottom" iconSize={12} wrapperStyle={{ fontSize: 13 }} />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
