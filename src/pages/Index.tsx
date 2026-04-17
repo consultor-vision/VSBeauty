@@ -534,8 +534,8 @@ const Index = () => {
           </div>
 
           {/* Filters */}
-          <div className="glass-panel p-3 gold-glow space-y-2">
-            <h3 className="text-xs font-semibold text-gold uppercase tracking-wide mb-1">Filtros</h3>
+          <div className="glass-panel p-4 gold-glow space-y-3">
+            <h3 className="text-sm font-semibold text-gold uppercase tracking-wide mb-1">Filtros</h3>
 
             {/* Cliente */}
             <Popover open={openClient} onOpenChange={setOpenClient}>
