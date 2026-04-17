@@ -140,7 +140,15 @@ const Analytics = () => {
                   <XAxis dataKey="mes" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 13 }} />
                   <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
                   <Bar dataKey="faturamento" fill="#AD842F" radius={[2, 2, 0, 0]}>
-                    <LabelList dataKey="faturamento" position="top" fill="hsl(var(--foreground))" fontSize={11} />
+                    <LabelList
+                      dataKey="faturamento"
+                      position="top"
+                      fill="hsl(var(--foreground))"
+                      fontSize={11}
+                      formatter={(value: number) =>
+                        value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0, maximumFractionDigits: 0 })
+                      }
+                    />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
