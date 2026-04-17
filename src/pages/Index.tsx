@@ -503,6 +503,34 @@ const Index = () => {
             </div>
           </div>
 
+          {/* Week Navigation */}
+          <div className="glass-panel p-2 gold-glow flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <button
+                onClick={goToToday}
+                className="px-2 py-1 rounded-md bg-gold/15 border border-gold text-gold text-xs font-semibold hover:bg-gold/25 transition-all shrink-0"
+              >
+                Hoje
+              </button>
+              <button onClick={prevWeek} className="p-1 rounded hover:bg-muted transition-colors shrink-0">
+                <ChevronLeft className="w-4 h-4 text-gold" />
+              </button>
+              <button onClick={nextWeek} className="p-1 rounded hover:bg-muted transition-colors shrink-0">
+                <ChevronRight className="w-4 h-4 text-gold" />
+              </button>
+              <span className="text-xs font-medium text-foreground truncate">{weekRangeLabel}</span>
+            </div>
+            <Select value={viewMode} onValueChange={(v) => setViewMode(v as "semana" | "dia")}>
+              <SelectTrigger className="w-[100px] bg-input border-border text-xs h-8 shrink-0">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="semana">Semana</SelectItem>
+                <SelectItem value="dia">Dia</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Filters */}
           <div className="glass-panel p-3 gold-glow space-y-2">
             <h3 className="text-xs font-semibold text-gold uppercase tracking-wide mb-1">Filtros</h3>
@@ -613,36 +641,6 @@ const Index = () => {
 
         {/* Right Column - Weekly Grid */}
         <div className="flex-1 glass-panel gold-glow flex flex-col overflow-hidden min-h-0">
-          {/* Week Navigation Header */}
-          <div className="flex items-center justify-between px-3 py-1.5 border-b border-border shrink-0">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={goToToday}
-                className="px-3 py-1 rounded-md bg-gold/15 border border-gold text-gold text-xs font-semibold hover:bg-gold/25 transition-all"
-              >
-                Hoje
-              </button>
-              <div className="flex items-center gap-1">
-                <button onClick={prevWeek} className="p-1 rounded hover:bg-muted transition-colors">
-                  <ChevronLeft className="w-4 h-4 text-gold" />
-                </button>
-                <button onClick={nextWeek} className="p-1 rounded hover:bg-muted transition-colors">
-                  <ChevronRight className="w-4 h-4 text-gold" />
-                </button>
-              </div>
-              <span className="text-sm font-medium text-foreground">{weekRangeLabel}</span>
-            </div>
-            <Select value={viewMode} onValueChange={(v) => setViewMode(v as "semana" | "dia")}>
-              <SelectTrigger className="w-[120px] bg-input border-border text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="semana">Semana</SelectItem>
-                <SelectItem value="dia">Dia</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
           {/* Time Grid */}
           <div className="flex-1 overflow-auto">
             <div className="min-w-[700px]">
