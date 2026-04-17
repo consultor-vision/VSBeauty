@@ -170,7 +170,7 @@ const Analytics = () => {
                 <div className="flex-1 w-full min-h-0">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart margin={{ top: 12, right: 24, bottom: 4, left: 24 }}>
-                      <Pie data={pieData} cx="50%" cy="50%" outerRadius="75%" dataKey="value" label={{ fill: "hsl(var(--gold))", fontSize: 13 }}>
+                      <Pie data={pieData} cx="50%" cy="50%" outerRadius="75%" startAngle={180} endAngle={-180} dataKey="value" label={{ fill: "hsl(var(--gold))", fontSize: 13 }}>
                         {pieData.map((entry, idx) => (
                           <Cell key={idx} fill={GENDER_COLORS[entry.name] ?? OUTROS_COLOR} />
                         ))}
