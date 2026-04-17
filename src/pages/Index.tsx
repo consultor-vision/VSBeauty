@@ -511,7 +511,7 @@ const Index = () => {
             >
               Hoje
             </button>
-            <div className="flex items-center gap-2 flex-1 justify-center min-w-0">
+            <div className="flex items-center gap-2 min-w-0">
               <button onClick={prevWeek} className="h-8 w-8 rounded hover:bg-muted transition-colors shrink-0 flex items-center justify-center">
                 <ChevronLeft className="w-4 h-4 text-gold" />
               </button>
