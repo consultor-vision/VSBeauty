@@ -128,8 +128,8 @@ const Analytics = () => {
             <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Painel de Desempenho Financeiro</h3>
             <div className="flex-1 flex flex-col justify-around min-h-0">
               <div><span className="text-2xl font-bold text-[hsl(150,70%,45%)]">{data.faturamento}</span><p className="text-xs text-[hsl(150,70%,45%)]">Faturamento</p></div>
-              <div className="pl-8"><span className="text-xl font-bold text-gold">{data.lucro}</span><p className="text-xs text-gold">Lucro</p></div>
-              <div className="pl-16"><span className="text-lg font-bold text-destructive">{data.despesas}</span><p className="text-xs text-destructive">Despesas</p></div>
+              <div className="pl-8"><span className="text-2xl font-bold text-gold">{data.lucro}</span><p className="text-xs text-gold">Lucro</p></div>
+              <div className="pl-16"><span className="text-2xl font-bold text-destructive">{data.despesas}</span><p className="text-xs text-destructive">Despesas</p></div>
             </div>
           </div>
           <div className="glass-panel p-3 gold-glow flex flex-col h-[250px] flex-1 min-w-0">
