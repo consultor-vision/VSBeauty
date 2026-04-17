@@ -153,7 +153,7 @@ const Analytics = () => {
             <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Painel de Indicadores de Clientes</h3>
             <div className="flex-1 flex items-center justify-around min-h-0">
               <div className="text-center">
-                <p className="text-xs text-[hsl(var(--chart-1))]">Total de Clientes</p>
+                <p className="text-base text-gold">Total de Clientes</p>
                 <p className="text-4xl font-bold text-foreground mt-2">{clients.total}</p>
               </div>
               <div className="h-full flex flex-col items-center py-1">
@@ -199,7 +199,7 @@ const Analytics = () => {
             <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Painel de Performance dos Atendimentos</h3>
             <div className="flex-1 flex items-center justify-around min-h-0">
               <div className="text-center">
-                <p className="text-xs text-gold">Volume de Atendimentos</p>
+                <p className="text-base text-gold">Volume de Atendimentos</p>
                 <p className="text-4xl font-bold text-foreground mt-2">{perf.volume}</p>
               </div>
               <div>
