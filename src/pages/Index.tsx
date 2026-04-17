@@ -166,6 +166,9 @@ const Index = () => {
   const [filterClient, setFilterClient] = useState<string>("all");
   const [filterProcedimento, setFilterProcedimento] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [openClient, setOpenClient] = useState(false);
+  const [openProc, setOpenProc] = useState(false);
+  const [openStatus, setOpenStatus] = useState(false);
   const [viewMode, setViewMode] = useState<"semana" | "dia">("semana");
 
   // Appointments state
