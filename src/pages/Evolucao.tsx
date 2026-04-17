@@ -270,7 +270,7 @@ const Evolucao = () => {
             </div>
 
             {/* Observation */}
-            <div className="glass-panel p-4 gold-glow h-[270px]">
+            <div className="glass-panel p-4 gold-glow h-[200px]">
               <h3 className="text-center text-gold font-semibold text-sm mb-0.5">Observação</h3>
               <Textarea
                 placeholder="Nenhuma observação registrada"
@@ -281,7 +281,7 @@ const Evolucao = () => {
             </div>
 
             {/* Products */}
-            <div className="glass-panel p-4 gold-glow h-[270px] overflow-auto">
+            <div className="glass-panel p-4 gold-glow h-[200px] overflow-auto">
               <h3 className="text-center text-gold font-semibold text-sm mb-0.5">Produtos Utilizados</h3>
               <Table>
                 <TableHeader>
