@@ -136,15 +136,15 @@ const Analytics = () => {
             <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Desempenho Financeiro por Mês</h3>
             <div className="flex-1 min-h-0">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data.monthly}>
-                  <XAxis dataKey="mes" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 13 }} />
+                <BarChart data={data.monthly} margin={{ top: 14, right: 8, bottom: 0, left: 8 }}>
+                  <XAxis dataKey="mes" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} tickLine={false} axisLine={{ stroke: "hsl(var(--border))" }} />
                   <Tooltip cursor={false} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
                   <Bar dataKey="faturamento" fill="#AD842F" radius={[2, 2, 0, 0]}>
                     <LabelList
                       dataKey="faturamento"
                       position="top"
                       fill="hsl(var(--foreground))"
-                      fontSize={11}
+                      fontSize={9}
                       formatter={(value: number) =>
                         value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0, maximumFractionDigits: 0 })
                       }
