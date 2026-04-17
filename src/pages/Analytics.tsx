@@ -137,9 +137,7 @@ const Analytics = () => {
             <div className="flex-1 min-h-0">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data.monthly}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis dataKey="mes" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
-                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
                   <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
                   <Bar dataKey="faturamento" fill="hsl(var(--chart-1))" radius={[2, 2, 0, 0]} />
                   <Bar dataKey="despesas" fill="hsl(var(--chart-4))" radius={[2, 2, 0, 0]} />
