@@ -185,7 +185,6 @@ const Analytics = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={topProc}>
                   <XAxis dataKey="nome" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }} interval={0} angle={-15} textAnchor="end" height={45} />
-                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
                   <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
                   <Bar dataKey="qtd" fill="hsl(var(--chart-4))" radius={[2, 2, 0, 0]} />
                 </BarChart>
@@ -219,7 +218,6 @@ const Analytics = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={periodoData}>
                   <XAxis dataKey="periodo" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
-                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
                   <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
                   <Bar dataKey="qtd" fill="hsl(var(--chart-4))" radius={[2, 2, 0, 0]} />
                 </BarChart>
@@ -232,7 +230,6 @@ const Analytics = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={semanaData}>
                   <XAxis dataKey="dia" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }} />
-                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
                   <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
                   <Bar dataKey="qtd" fill="hsl(var(--chart-4))" radius={[2, 2, 0, 0]} />
                 </BarChart>
