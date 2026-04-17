@@ -5,7 +5,7 @@ import {
 } from "@/components/ui/select";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend,
+  PieChart, Pie, Cell, Legend, LabelList,
 } from "recharts";
 
 const financialByYear: Record<string, { faturamento: string; lucro: string; despesas: string; monthly: { mes: string; faturamento: number; lucro: number; despesas: number; recebido: number; pendente: number; atrasado: number }[] }> = {
