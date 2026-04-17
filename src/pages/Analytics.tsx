@@ -174,7 +174,7 @@ const Analytics = () => {
                         data={pieData}
                         cx="50%"
                         cy="50%"
-                        outerRadius="75%"
+                        outerRadius="100%"
                         dataKey="value"
                         labelLine={false}
                         label={({ cx, cy, midAngle, innerRadius, outerRadius, value }) => {
