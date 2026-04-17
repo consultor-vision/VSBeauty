@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Calendar, Users, TrendingUp, Settings, BarChart3,
   Menu, User, X, KeyRound, LogOut, Info, Eye, EyeOff,
-  ChevronLeft, ChevronRight,
+  ChevronLeft, ChevronRight, Sun, Moon,
 } from "lucide-react";
 
 const navItems = [
@@ -56,6 +56,18 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    if (typeof window === "undefined") return "dark";
+    return (localStorage.getItem("vsb-theme") as "dark" | "light") || "dark";
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.toggle("light", theme === "light");
+    localStorage.setItem("vsb-theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 
   const handleLogout = () => {
     setShowMenu(false);
@@ -177,6 +189,22 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
             >
               <Info className="w-4 h-4 text-gold" />
               Versão
+            </button>
+            <button
+              onClick={toggleTheme}
+              className="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-sm text-foreground hover:bg-muted transition-colors"
+            >
+              <span className="flex items-center gap-3">
+                {theme === "dark" ? (
+                  <Sun className="w-4 h-4 text-gold" />
+                ) : (
+                  <Moon className="w-4 h-4 text-gold" />
+                )}
+                {theme === "dark" ? "Modo Claro" : "Modo Escuro"}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {theme === "dark" ? "Light" : "Dark"}
+              </span>
             </button>
           </div>
         </div>
