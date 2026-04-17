@@ -137,7 +137,7 @@ const Analytics = () => {
             <div className="flex-1 min-h-0">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data.monthly}>
-                  <XAxis dataKey="mes" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
+                  <XAxis dataKey="mes" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 13 }} />
                   <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
                   <Bar dataKey="faturamento" fill="hsl(var(--chart-1))" radius={[2, 2, 0, 0]} />
                   <Bar dataKey="despesas" fill="hsl(var(--chart-4))" radius={[2, 2, 0, 0]} />
@@ -184,7 +184,7 @@ const Analytics = () => {
             <div className="flex-1 min-h-0">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={topProc}>
-                  <XAxis dataKey="nome" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }} interval={0} angle={-15} textAnchor="end" height={45} />
+                  <XAxis dataKey="nome" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} interval={0} angle={-15} textAnchor="end" height={55} />
                   <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
                   <Bar dataKey="qtd" fill="hsl(var(--chart-4))" radius={[2, 2, 0, 0]} />
                 </BarChart>
@@ -217,7 +217,7 @@ const Analytics = () => {
             <div className="flex-1 min-h-0">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={periodoData}>
-                  <XAxis dataKey="periodo" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
+                  <XAxis dataKey="periodo" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 13 }} />
                   <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
                   <Bar dataKey="qtd" fill="hsl(var(--chart-4))" radius={[2, 2, 0, 0]} />
                 </BarChart>
@@ -229,7 +229,7 @@ const Analytics = () => {
             <div className="flex-1 min-h-0">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={semanaData}>
-                  <XAxis dataKey="dia" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }} />
+                  <XAxis dataKey="dia" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
                   <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
                   <Bar dataKey="qtd" fill="hsl(var(--chart-4))" radius={[2, 2, 0, 0]} />
                 </BarChart>
