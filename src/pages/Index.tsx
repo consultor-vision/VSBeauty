@@ -432,14 +432,14 @@ const Index = () => {
     <Layout title="Agendamento">
       <div className="flex flex-col lg:flex-row gap-3 h-full">
         {/* Left Column - Calendar + Actions */}
-        <div className="lg:w-[300px] flex flex-col gap-3 shrink-0">
+        <div className="lg:w-[420px] flex flex-col gap-3 shrink-0">
           {/* Mini Calendar */}
           <div className="glass-panel p-3 gold-glow">
             <div className="flex items-center justify-between mb-2">
               <button onClick={prevMonth} className="p-1 rounded-md hover:bg-muted transition-colors">
                 <ChevronLeft className="w-4 h-4 text-gold" />
               </button>
-              <h2 className="text-base font-semibold text-gold capitalize">
+              <h2 className="text-base font-semibold text-gold capitalize" style={{ fontSize: '16px' }}>
                 {monthNames[currentMonth]} {currentYear}
               </h2>
               <button onClick={nextMonth} className="p-1 rounded-md hover:bg-muted transition-colors">
@@ -449,7 +449,7 @@ const Index = () => {
 
             <div className="grid grid-cols-7 gap-0.5 mb-1">
               {daysOfWeek.map((day) => (
-                <div key={day} className="text-center text-xs font-medium text-muted-foreground py-1">
+                <div key={day} className="text-center font-medium text-muted-foreground py-1.5" style={{ fontSize: '16px' }}>
                   {day}
                 </div>
               ))}
@@ -457,7 +457,7 @@ const Index = () => {
 
             <div className="grid grid-cols-7 gap-0.5">
               {Array.from({ length: firstDay }).map((_, i) => (
-                <div key={`empty-${i}`} className="h-9" />
+                <div key={`empty-${i}`} className="h-12" />
               ))}
               {Array.from({ length: daysInMonth }).map((_, i) => {
                 const day = i + 1;
@@ -469,7 +469,8 @@ const Index = () => {
                   <button
                     key={day}
                     onClick={() => setSelectedDay(day)}
-                    className={`relative h-9 rounded text-sm font-medium transition-all border ${
+                    style={{ fontSize: '16px' }}
+                    className={`relative h-12 rounded font-medium transition-all border ${
                       selected
                         ? "bg-gold/20 border-gold text-gold"
                         : todayClass
