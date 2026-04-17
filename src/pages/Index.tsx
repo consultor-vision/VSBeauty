@@ -576,7 +576,7 @@ const Index = () => {
               {TIME_SLOTS.map((time) => {
                 const isHour = time.endsWith(":00");
                 return (
-                  <div key={time} className="flex" style={{ minHeight: "31.5px" }}>
+                  <div key={time} className="flex" style={{ minHeight: "36.2px" }}>
                     {/* Time label */}
                     <div className="w-16 shrink-0 text-right pr-2 flex items-start justify-end">
                       {isHour && (
