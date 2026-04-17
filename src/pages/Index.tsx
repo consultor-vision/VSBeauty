@@ -503,6 +503,34 @@ const Index = () => {
             </div>
           </div>
 
+          {/* Week Navigation */}
+          <div className="glass-panel p-2 gold-glow flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <button
+                onClick={goToToday}
+                className="px-2 py-1 rounded-md bg-gold/15 border border-gold text-gold text-xs font-semibold hover:bg-gold/25 transition-all shrink-0"
+              >
+                Hoje
+              </button>
+              <button onClick={prevWeek} className="p-1 rounded hover:bg-muted transition-colors shrink-0">
+                <ChevronLeft className="w-4 h-4 text-gold" />
+              </button>
+              <button onClick={nextWeek} className="p-1 rounded hover:bg-muted transition-colors shrink-0">
+                <ChevronRight className="w-4 h-4 text-gold" />
+              </button>
+              <span className="text-xs font-medium text-foreground truncate">{weekRangeLabel}</span>
+            </div>
+            <Select value={viewMode} onValueChange={(v) => setViewMode(v as "semana" | "dia")}>
+              <SelectTrigger className="w-[100px] bg-input border-border text-xs h-8 shrink-0">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="semana">Semana</SelectItem>
+                <SelectItem value="dia">Dia</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Filters */}
           <div className="glass-panel p-3 gold-glow space-y-2">
             <h3 className="text-xs font-semibold text-gold uppercase tracking-wide mb-1">Filtros</h3>
