@@ -549,10 +549,10 @@ const Index = () => {
             </div>
 
             {/* Cliente */}
-            <div className="relative">
+            <div className="flex items-center gap-2">
               <Popover open={openClient} onOpenChange={setOpenClient}>
                 <PopoverTrigger asChild>
-                  <button type="button" className={cn("w-full flex items-center justify-between bg-input border border-border rounded-md px-3 h-8 text-xs text-foreground hover:bg-muted/50 transition-colors", filterClient !== "all" && "pr-8")}>
+                  <button type="button" className="flex-1 flex items-center justify-between bg-input border border-border rounded-md px-3 h-8 text-xs text-foreground hover:bg-muted/50 transition-colors">
                     <span>{filterClient === "all" ? "Todos os clientes" : mockClients.find((c) => c.id === filterClient)?.nome}</span>
                     <ChevronsUpDown className="w-3 h-3 opacity-50 shrink-0" />
                   </button>
@@ -578,18 +578,22 @@ const Index = () => {
                   </Command>
                 </PopoverContent>
               </Popover>
-              {filterClient !== "all" && (
-                <button type="button" onClick={() => setFilterClient("all")} className="absolute right-7 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground" aria-label="Limpar cliente">
-                  <X className="w-3 h-3" />
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => setFilterClient("all")}
+                disabled={filterClient === "all"}
+                className="shrink-0 h-8 w-8 flex items-center justify-center rounded-md border border-gold/60 text-gold hover:bg-gold/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                aria-label="Limpar cliente"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
             </div>
 
             {/* Procedimento */}
-            <div className="relative">
+            <div className="flex items-center gap-2">
               <Popover open={openProc} onOpenChange={setOpenProc}>
                 <PopoverTrigger asChild>
-                  <button type="button" className={cn("w-full flex items-center justify-between bg-input border border-border rounded-md px-3 h-8 text-xs text-foreground hover:bg-muted/50 transition-colors", filterProcedimento !== "all" && "pr-8")}>
+                  <button type="button" className="flex-1 flex items-center justify-between bg-input border border-border rounded-md px-3 h-8 text-xs text-foreground hover:bg-muted/50 transition-colors">
                     <span>{filterProcedimento === "all" ? "Todos os procedimentos" : filterProcedimento}</span>
                     <ChevronsUpDown className="w-3 h-3 opacity-50 shrink-0" />
                   </button>
@@ -615,18 +619,22 @@ const Index = () => {
                   </Command>
                 </PopoverContent>
               </Popover>
-              {filterProcedimento !== "all" && (
-                <button type="button" onClick={() => setFilterProcedimento("all")} className="absolute right-7 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground" aria-label="Limpar procedimento">
-                  <X className="w-3 h-3" />
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => setFilterProcedimento("all")}
+                disabled={filterProcedimento === "all"}
+                className="shrink-0 h-8 w-8 flex items-center justify-center rounded-md border border-gold/60 text-gold hover:bg-gold/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                aria-label="Limpar procedimento"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
             </div>
 
             {/* Status */}
-            <div className="relative">
+            <div className="flex items-center gap-2">
               <Popover open={openStatus} onOpenChange={setOpenStatus}>
                 <PopoverTrigger asChild>
-                  <button type="button" className={cn("w-full flex items-center justify-between bg-input border border-border rounded-md px-3 h-8 text-xs text-foreground hover:bg-muted/50 transition-colors", filterStatus !== "all" && "pr-8")}>
+                  <button type="button" className="flex-1 flex items-center justify-between bg-input border border-border rounded-md px-3 h-8 text-xs text-foreground hover:bg-muted/50 transition-colors">
                     <span>{filterStatus === "all" ? "Todos os status" : filterStatus.charAt(0).toUpperCase() + filterStatus.slice(1)}</span>
                     <ChevronsUpDown className="w-3 h-3 opacity-50 shrink-0" />
                   </button>
@@ -648,11 +656,15 @@ const Index = () => {
                   </Command>
                 </PopoverContent>
               </Popover>
-              {filterStatus !== "all" && (
-                <button type="button" onClick={() => setFilterStatus("all")} className="absolute right-7 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground" aria-label="Limpar status">
-                  <X className="w-3 h-3" />
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => setFilterStatus("all")}
+                disabled={filterStatus === "all"}
+                className="shrink-0 h-8 w-8 flex items-center justify-center rounded-md border border-gold/60 text-gold hover:bg-gold/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                aria-label="Limpar status"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
             </div>
           </div>
 
