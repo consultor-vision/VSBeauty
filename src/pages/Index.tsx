@@ -549,34 +549,41 @@ const Index = () => {
             </div>
 
             {/* Cliente */}
-            <Popover open={openClient} onOpenChange={setOpenClient}>
-              <PopoverTrigger asChild>
-                <button type="button" className="w-full flex items-center justify-between bg-input border border-border rounded-md px-3 h-8 text-xs text-foreground hover:bg-muted/50 transition-colors">
-                  <span>{filterClient === "all" ? "Todos os clientes" : mockClients.find((c) => c.id === filterClient)?.nome}</span>
-                  <ChevronsUpDown className="w-3 h-3 opacity-50 shrink-0" />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-popover border-border z-50" align="start">
-                <Command>
-                  <CommandInput placeholder="Buscar cliente..." className="h-8 text-xs" />
-                  <CommandList>
-                    <CommandEmpty>Nenhum cliente.</CommandEmpty>
-                    <CommandGroup>
-                      <CommandItem value="Todos os clientes" onSelect={() => { setFilterClient("all"); setOpenClient(false); }} className="text-xs">
-                        <Check className={cn("mr-2 h-3 w-3", filterClient === "all" ? "opacity-100" : "opacity-0")} />
-                        Todos os clientes
-                      </CommandItem>
-                      {mockClients.map((c) => (
-                        <CommandItem key={c.id} value={c.nome} onSelect={() => { setFilterClient(c.id); setOpenClient(false); }} className="text-xs">
-                          <Check className={cn("mr-2 h-3 w-3", filterClient === c.id ? "opacity-100" : "opacity-0")} />
-                          {c.nome}
+            <div className="relative">
+              <Popover open={openClient} onOpenChange={setOpenClient}>
+                <PopoverTrigger asChild>
+                  <button type="button" className={cn("w-full flex items-center justify-between bg-input border border-border rounded-md px-3 h-8 text-xs text-foreground hover:bg-muted/50 transition-colors", filterClient !== "all" && "pr-8")}>
+                    <span>{filterClient === "all" ? "Todos os clientes" : mockClients.find((c) => c.id === filterClient)?.nome}</span>
+                    <ChevronsUpDown className="w-3 h-3 opacity-50 shrink-0" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-popover border-border z-50" align="start">
+                  <Command>
+                    <CommandInput placeholder="Buscar cliente..." className="h-8 text-xs" />
+                    <CommandList>
+                      <CommandEmpty>Nenhum cliente.</CommandEmpty>
+                      <CommandGroup>
+                        <CommandItem value="Todos os clientes" onSelect={() => { setFilterClient("all"); setOpenClient(false); }} className="text-xs">
+                          <Check className={cn("mr-2 h-3 w-3", filterClient === "all" ? "opacity-100" : "opacity-0")} />
+                          Todos os clientes
                         </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+                        {mockClients.map((c) => (
+                          <CommandItem key={c.id} value={c.nome} onSelect={() => { setFilterClient(c.id); setOpenClient(false); }} className="text-xs">
+                            <Check className={cn("mr-2 h-3 w-3", filterClient === c.id ? "opacity-100" : "opacity-0")} />
+                            {c.nome}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              {filterClient !== "all" && (
+                <button type="button" onClick={() => setFilterClient("all")} className="absolute right-7 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground" aria-label="Limpar cliente">
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
 
             {/* Procedimento */}
             <Popover open={openProc} onOpenChange={setOpenProc}>
