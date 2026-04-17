@@ -575,7 +575,7 @@ const Index = () => {
               {TIME_SLOTS.map((time) => {
                 const isHour = time.endsWith(":00");
                 return (
-                  <div key={time} className="flex" style={{ minHeight: "24px" }}>
+                  <div key={time} className="flex" style={{ minHeight: "32px" }}>
                     {/* Time label */}
                     <div className="w-16 shrink-0 text-right pr-2 flex items-start justify-end">
                       {isHour && (
@@ -609,7 +609,7 @@ const Index = () => {
                           const startMin = timeToMinutes(startingApp.startTime);
                           const endMin = timeToMinutes(startingApp.endTime);
                           const durationSlots = Math.max(1, Math.round((endMin - startMin) / 10));
-                          const heightPx = durationSlots * 24;
+                          const heightPx = durationSlots * 32;
                           const bgClass = statusBgColors[startingApp.statusProcedimento] || "bg-muted/30 border-border";
 
                           return (
@@ -665,7 +665,7 @@ const Index = () => {
                           const startMin = timeToMinutes(startingApp.startTime);
                           const endMin = timeToMinutes(startingApp.endTime);
                           const durationSlots = Math.max(1, Math.round((endMin - startMin) / 10));
-                          const heightPx = durationSlots * 24;
+                          const heightPx = durationSlots * 32;
                           const bgClass = statusBgColors[startingApp.statusProcedimento] || "bg-muted/30 border-border";
 
                           return (
