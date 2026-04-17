@@ -625,22 +625,20 @@ const Index = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col gap-3">
-            <button
-              onClick={handleNewAppointment}
-              className="w-full py-3 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all flex items-center justify-center gap-2"
-            >
-              <CalendarCheck className="w-4 h-4" />
-              Agendamento
-            </button>
-            <button
-              onClick={() => setShowBirthdayModal(true)}
-              className="w-full py-3 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all flex items-center justify-center gap-2"
-            >
-              <Cake className="w-4 h-4" />
-              Aniversariantes
-            </button>
-          </div>
+          <button
+            onClick={handleNewAppointment}
+            className="w-full py-3 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all flex items-center justify-center gap-2"
+          >
+            <CalendarCheck className="w-4 h-4" />
+            Agendamento
+          </button>
+          <button
+            onClick={() => setShowBirthdayModal(true)}
+            className="mt-auto w-full py-3 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all flex items-center justify-center gap-2"
+          >
+            <Cake className="w-4 h-4" />
+            Aniversariantes
+          </button>
         </div>
 
         {/* Right Column - Weekly Grid */}
