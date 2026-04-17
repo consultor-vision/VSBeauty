@@ -17,7 +17,12 @@ import {
   User,
   Scissors,
   MessageSquare,
+  Check,
+  ChevronsUpDown,
 } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -161,6 +166,9 @@ const Index = () => {
   const [filterClient, setFilterClient] = useState<string>("all");
   const [filterProcedimento, setFilterProcedimento] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [openClient, setOpenClient] = useState(false);
+  const [openProc, setOpenProc] = useState(false);
+  const [openStatus, setOpenStatus] = useState(false);
   const [viewMode, setViewMode] = useState<"semana" | "dia">("semana");
 
   // Appointments state
@@ -498,38 +506,92 @@ const Index = () => {
           {/* Filters */}
           <div className="glass-panel p-3 gold-glow space-y-2">
             <h3 className="text-xs font-semibold text-gold uppercase tracking-wide mb-1">Filtros</h3>
-            <Select value={filterClient} onValueChange={setFilterClient}>
-              <SelectTrigger className="w-full bg-input border-border text-xs h-8">
-                <SelectValue placeholder="Cliente" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos os clientes</SelectItem>
-                {mockClients.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={filterProcedimento} onValueChange={setFilterProcedimento}>
-              <SelectTrigger className="w-full bg-input border-border text-xs h-8">
-                <SelectValue placeholder="Procedimento" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos os procedimentos</SelectItem>
-                {mockProcedimentos.map((p) => (
-                  <SelectItem key={p} value={p}>{p}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger className="w-full bg-input border-border text-xs h-8">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos os status</SelectItem>
-                <SelectItem value="confirmado">Confirmado</SelectItem>
-                <SelectItem value="pendente">Pendente</SelectItem>
-              </SelectContent>
-            </Select>
+
+            {/* Cliente */}
+            <Popover open={openClient} onOpenChange={setOpenClient}>
+              <PopoverTrigger asChild>
+                <button type="button" className="w-full flex items-center justify-between bg-input border border-border rounded-md px-3 h-8 text-xs text-foreground hover:bg-muted/50 transition-colors">
+                  <span>{filterClient === "all" ? "Todos os clientes" : mockClients.find((c) => c.id === filterClient)?.nome}</span>
+                  <ChevronsUpDown className="w-3 h-3 opacity-50 shrink-0" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-popover border-border z-50" align="start">
+                <Command>
+                  <CommandInput placeholder="Buscar cliente..." className="h-8 text-xs" />
+                  <CommandList>
+                    <CommandEmpty>Nenhum cliente.</CommandEmpty>
+                    <CommandGroup>
+                      <CommandItem value="Todos os clientes" onSelect={() => { setFilterClient("all"); setOpenClient(false); }} className="text-xs">
+                        <Check className={cn("mr-2 h-3 w-3", filterClient === "all" ? "opacity-100" : "opacity-0")} />
+                        Todos os clientes
+                      </CommandItem>
+                      {mockClients.map((c) => (
+                        <CommandItem key={c.id} value={c.nome} onSelect={() => { setFilterClient(c.id); setOpenClient(false); }} className="text-xs">
+                          <Check className={cn("mr-2 h-3 w-3", filterClient === c.id ? "opacity-100" : "opacity-0")} />
+                          {c.nome}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+
+            {/* Procedimento */}
+            <Popover open={openProc} onOpenChange={setOpenProc}>
+              <PopoverTrigger asChild>
+                <button type="button" className="w-full flex items-center justify-between bg-input border border-border rounded-md px-3 h-8 text-xs text-foreground hover:bg-muted/50 transition-colors">
+                  <span>{filterProcedimento === "all" ? "Todos os procedimentos" : filterProcedimento}</span>
+                  <ChevronsUpDown className="w-3 h-3 opacity-50 shrink-0" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-popover border-border z-50" align="start">
+                <Command>
+                  <CommandInput placeholder="Buscar procedimento..." className="h-8 text-xs" />
+                  <CommandList>
+                    <CommandEmpty>Nenhum procedimento.</CommandEmpty>
+                    <CommandGroup>
+                      <CommandItem value="Todos os procedimentos" onSelect={() => { setFilterProcedimento("all"); setOpenProc(false); }} className="text-xs">
+                        <Check className={cn("mr-2 h-3 w-3", filterProcedimento === "all" ? "opacity-100" : "opacity-0")} />
+                        Todos os procedimentos
+                      </CommandItem>
+                      {mockProcedimentos.map((p) => (
+                        <CommandItem key={p} value={p} onSelect={() => { setFilterProcedimento(p); setOpenProc(false); }} className="text-xs">
+                          <Check className={cn("mr-2 h-3 w-3", filterProcedimento === p ? "opacity-100" : "opacity-0")} />
+                          {p}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+
+            {/* Status */}
+            <Popover open={openStatus} onOpenChange={setOpenStatus}>
+              <PopoverTrigger asChild>
+                <button type="button" className="w-full flex items-center justify-between bg-input border border-border rounded-md px-3 h-8 text-xs text-foreground hover:bg-muted/50 transition-colors">
+                  <span>{filterStatus === "all" ? "Todos os status" : filterStatus.charAt(0).toUpperCase() + filterStatus.slice(1)}</span>
+                  <ChevronsUpDown className="w-3 h-3 opacity-50 shrink-0" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-popover border-border z-50" align="start">
+                <Command>
+                  <CommandInput placeholder="Buscar status..." className="h-8 text-xs" />
+                  <CommandList>
+                    <CommandEmpty>Nenhum status.</CommandEmpty>
+                    <CommandGroup>
+                      {[{ v: "all", l: "Todos os status" }, { v: "confirmado", l: "Confirmado" }, { v: "pendente", l: "Pendente" }].map((s) => (
+                        <CommandItem key={s.v} value={s.l} onSelect={() => { setFilterStatus(s.v); setOpenStatus(false); }} className="text-xs">
+                          <Check className={cn("mr-2 h-3 w-3", filterStatus === s.v ? "opacity-100" : "opacity-0")} />
+                          {s.l}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
 
           {/* Action Buttons */}
