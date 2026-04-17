@@ -418,7 +418,13 @@ const Index = () => {
 
   // Get appointments for a specific date
   const getAppointmentsForDate = (dateStr: string) => {
-    return appointments.filter((a) => a.date === dateStr);
+    return appointments.filter((a) => {
+      if (a.date !== dateStr) return false;
+      if (filterClient !== "all" && a.clientId !== filterClient) return false;
+      if (filterProcedimento !== "all" && a.procedimento !== filterProcedimento) return false;
+      if (filterStatus !== "all" && a.statusProcedimento !== filterStatus) return false;
+      return true;
+    });
   };
 
   // Week header date range
