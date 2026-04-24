@@ -163,41 +163,67 @@ const Index = () => {
   const [openStatus, setOpenStatus] = useState(false);
   const [viewMode, setViewMode] = useState<"semana" | "dia">("semana");
 
-  // Appointments state
-  const [appointments, setAppointments] = useState<Appointment[]>([
-    {
-      id: "1", clientId: "1", clientName: "Alana Silva",
-      date: formatDate(today), startTime: "09:00", endTime: "10:00",
-      profissional: "Dra. Maria", procedimento: "Limpeza de Pele", plano: "Plano Mensal",
-      statusProcedimento: "confirmado", statusFinanceiro: "pago", valor: 250,
-    },
-    {
-      id: "2", clientId: "4", clientName: "Ana Maria Pereira",
-      date: formatDate(today), startTime: "10:30", endTime: "11:00",
-      profissional: "Dra. Juliana", procedimento: "Botox", plano: "Avulso",
-      statusProcedimento: "pendente", statusFinanceiro: "pendente", valor: 450,
-    },
-    {
-      id: "3", clientId: "5", clientName: "Angélica Lemes",
-      date: formatDate(today), startTime: "14:00", endTime: "15:00",
-      profissional: "Dr. Carlos", procedimento: "Peeling", plano: "Plano Trimestral",
-      statusProcedimento: "confirmado", statusFinanceiro: "pago", valor: 380,
-    },
-    {
-      id: "4", clientId: "6", clientName: "Barbara Fernandes",
-      date: formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)),
-      startTime: "09:30", endTime: "10:30",
-      profissional: "Dra. Fernanda", procedimento: "Preenchimento", plano: "Avulso",
-      statusProcedimento: "pendente", statusFinanceiro: "pendente", valor: 600,
-    },
-    {
-      id: "5", clientId: "7", clientName: "Bianca Silva",
-      date: formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 2)),
-      startTime: "11:00", endTime: "12:00",
-      profissional: "Dra. Maria", procedimento: "Microagulhamento", plano: "Plano Mensal",
-      statusProcedimento: "confirmado", statusFinanceiro: "parcial", valor: 320,
-    },
-  ]);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // Fetch Clients
+        const { data: clientsData, error: clientsError } = await supabase
+          .from('clientes')
+          .select('*');
+
+        if (clientsError) throw clientsError;
+
+        const formattedClients: Client[] = (clientsData || []).map(c => ({
+          id: String(c.id),
+          nome: c.nome || '',
+          cpf: c.cpf || '',
+          telefone: c.telefone || '',
+          email: c.email || '',
+          cidade: c.cidade || '',
+          uf: c.estado || '',
+          dataNascimento: c.data_nascimento || '',
+          foto: c.imagem || undefined
+        }));
+        setClients(formattedClients);
+
+        // Fetch Appointments (using agenda_visual view as it has joined data)
+        const { data: agendaData, error: agendaError } = await supabase
+          .from('agenda_visual')
+          .select('*');
+
+        if (agendaError) throw agendaError;
+
+        const formattedAppointments: Appointment[] = (agendaData || []).map(a => ({
+          id: String(a.id_agendamento),
+          clientId: String(a.id_cliente),
+          clientName: a.nome_cliente || '',
+          date: a.data_agendar,
+          startTime: a.hora_inicio.substring(0, 5),
+          endTime: a.hora_fim ? a.hora_fim.substring(0, 5) : '',
+          profissional: 'Profissional', // Placeholder
+          procedimento: a.nome_proced || '',
+          plano: '-',
+          statusProcedimento: 'confirmado', // Placeholder or use status from table if available
+          statusFinanceiro: 'pendente',
+          valor: 0,
+        }));
+        setAppointments(formattedAppointments);
+
+      } catch (error: any) {
+        console.error('Error fetching data:', error);
+        toast.error("Erro ao carregar dados do Supabase");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Modals
   const [showClientListModal, setShowClientListModal] = useState(false);
