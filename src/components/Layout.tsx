@@ -5,6 +5,7 @@ import {
   Menu, User, X, KeyRound, LogOut, Info, Eye, EyeOff,
   ChevronLeft, ChevronRight, Sun, Moon,
 } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
 const navItems = [
   { label: "Agenda", path: "/dashboard", icon: Calendar },
@@ -48,6 +49,7 @@ interface LayoutProps {
 const Layout = ({ title, children, headerRight }: LayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, logout, company } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showVersion, setShowVersion] = useState(false);
@@ -69,8 +71,9 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
 
   const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setShowMenu(false);
+    await logout();
     navigate("/login");
   };
 
@@ -118,7 +121,9 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
             <div className="w-8 h-8 rounded-full bg-gold/20 border border-gold/40 flex items-center justify-center">
               <User className="w-4 h-4 text-gold" />
             </div>
-            <span className="text-sm text-foreground hidden sm:block">Filipe Pereira da Silva</span>
+            <span className="text-sm text-foreground hidden sm:block">
+              {user?.nome || "Usuário"} {company?.nome ? `(${company.nome})` : ""}
+            </span>
           </div>
 
           {/* Center: nav buttons */}
@@ -146,8 +151,8 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
           {/* Right: logo */}
           <div className="hidden sm:flex items-center">
             <img
-              src={theme === "light" ? "/Logo_VSB_Claro.png" : "/LogoVSB.png"}
-              alt="Vision Smart Beauty"
+              src={company?.logo || (theme === "light" ? "/Logo_VSB_Claro.png" : "/LogoVSB.png")}
+              alt={company?.nome || "Vision Smart Beauty"}
               className="h-12 object-contain"
             />
           </div>
@@ -163,8 +168,8 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
               <User className="w-5 h-5 text-gold" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">Filipe Pereira da Silva</p>
-              <p className="text-xs text-muted-foreground truncate">lucas@vsb.com</p>
+              <p className="text-sm font-medium text-foreground truncate">{user?.nome || "Usuário"}</p>
+              <p className="text-xs text-muted-foreground truncate">{user?.email || "usuario@exemplo.com"}</p>
             </div>
             <button onClick={() => setShowMenu(false)} className="p-1 rounded hover:bg-muted transition-colors">
               <X className="w-4 h-4 text-foreground" />
