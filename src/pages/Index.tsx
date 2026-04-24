@@ -84,17 +84,7 @@ interface Appointment {
   valor: number;
 }
 
-// --- Mock Data ---
-const mockClients: Client[] = [
-  { id: "1", nome: "Alana Silva", cpf: "325.215.852-33", telefone: "+55(11) 95176-3258", email: "alana@gmail.com", cidade: "São Paulo", uf: "SP", dataNascimento: "2002-01-05" },
-  { id: "2", nome: "Alfredo Nunes", cpf: "000.000.000-00", telefone: "+55(11) 95209-6182", email: "alfredo.nn@gmail.com", cidade: "Cidade", uf: "UF", dataNascimento: "1987-05-21" },
-  { id: "3", nome: "Ana Luz", cpf: "000.000.000-01", telefone: "+55(11) 95209-6182", email: "ana.luz@gmail.com", cidade: "Cidade", uf: "UF", dataNascimento: "1990-04-12" },
-  { id: "4", nome: "Ana Maria Pereira", cpf: "999.999.999-99", telefone: "+55(11) 99999-9999", email: "anamaria@gmail.com", cidade: "São Paulo", uf: "SP", dataNascimento: "1985-04-08" },
-  { id: "5", nome: "Angélica Lemes", cpf: "070.186.649-77", telefone: "+55(11) 99928-3182", email: "lemesangelica39@gmail.com", cidade: "Barueri", uf: "SP", dataNascimento: "1992-07-15" },
-  { id: "6", nome: "Barbara Fernandes", cpf: "093.765.184-20", telefone: "+55(31) 99829-8853", email: "luz_fernandes@ssp.com", cidade: "Belo Horizonte", uf: "MG", dataNascimento: "1988-12-03" },
-  { id: "7", nome: "Bianca Silva", cpf: "333.333.333-33", telefone: "+55(11) 33333-3333", email: "biancasilva@gmail.com", cidade: "Sertãozinho", uf: "SP", dataNascimento: "1995-04-22" },
-];
-
+// Mock Data will be replaced by fetched data
 const mockProcedimentos = ["Limpeza de Pele", "Peeling", "Botox", "Preenchimento", "Laser CO2", "Microagulhamento"];
 const mockProfissionais = ["Dra. Maria", "Dra. Juliana", "Dr. Carlos", "Dra. Fernanda"];
 
