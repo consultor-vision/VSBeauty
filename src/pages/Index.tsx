@@ -312,9 +312,9 @@ const Index = () => {
 
   // Filtered clients for modal
   const filteredClients = useMemo(() => {
-    if (!clientSearch.trim()) return mockClients;
+    if (!clientSearch.trim()) return clients;
     const term = clientSearch.toLowerCase();
-    return mockClients.filter((c) => {
+    return clients.filter((c) => {
       switch (searchField) {
         case "nome": return c.nome.toLowerCase().includes(term);
         case "cpf": return c.cpf.includes(term);
@@ -329,7 +329,7 @@ const Index = () => {
 
   // Birthdays this month
   const birthdaysThisMonth = useMemo(() => {
-    return mockClients
+    return clients
       .filter((c) => {
         const month = new Date(c.dataNascimento).getMonth();
         return month === currentMonth;
@@ -571,7 +571,7 @@ const Index = () => {
               <Popover open={openClient} onOpenChange={setOpenClient}>
                 <PopoverTrigger asChild>
                   <button type="button" className="flex-1 flex items-center justify-between bg-input border border-border rounded-md px-3 h-8 text-xs text-foreground hover:bg-muted/50 transition-colors">
-                    <span>{filterClient === "all" ? "Todos os clientes" : mockClients.find((c) => c.id === filterClient)?.nome}</span>
+                    <span>{filterClient === "all" ? "Todos os clientes" : clients.find((c) => c.id === filterClient)?.nome}</span>
                     <ChevronsUpDown className="w-3 h-3 opacity-50 shrink-0" />
                   </button>
                 </PopoverTrigger>
@@ -585,7 +585,7 @@ const Index = () => {
                           <Check className={cn("mr-2 h-3 w-3", filterClient === "all" ? "opacity-100" : "opacity-0")} />
                           Todos os clientes
                         </CommandItem>
-                        {mockClients.map((c) => (
+                        {clients.map((c) => (
                           <CommandItem key={c.id} value={c.nome} onSelect={() => { setFilterClient(c.id); setOpenClient(false); }} className="text-xs">
                             <Check className={cn("mr-2 h-3 w-3", filterClient === c.id ? "opacity-100" : "opacity-0")} />
                             {c.nome}
@@ -878,7 +878,7 @@ const Index = () => {
       {/* ========== APPOINTMENT DETAIL POPUP ========== */}
       {detailPopup && (() => {
         const app = detailPopup.app;
-        const client = mockClients.find((c) => c.id === app.clientId);
+        const client = clients.find((c) => c.id === app.clientId);
         return (
           <div
             ref={popupRef}
