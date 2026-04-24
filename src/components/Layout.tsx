@@ -71,8 +71,9 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
 
   const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setShowMenu(false);
+    await logout();
     navigate("/login");
   };
 
