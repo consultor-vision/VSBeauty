@@ -296,6 +296,22 @@ const Index = () => {
     setDetailPopup(null);
   };
 
+  const procedimentosList = useMemo(() => {
+    const set = new Set<string>();
+    appointments.forEach(a => {
+      if (a.procedimento) set.add(a.procedimento);
+    });
+    return Array.from(set);
+  }, [appointments]);
+
+  const profissionaisList = useMemo(() => {
+    const set = new Set<string>();
+    appointments.forEach(a => {
+      if (a.profissional) set.add(a.profissional);
+    });
+    return Array.from(set);
+  }, [appointments]);
+
   // New appointment form
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [newProcedimento, setNewProcedimento] = useState("");
