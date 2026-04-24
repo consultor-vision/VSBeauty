@@ -42,24 +42,26 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Login />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/esqueci-senha" element={<ForgotPassword />} />
-            <Route path="/dashboard" element={<Index />} />
-            <Route path="/agenda" element={<Index />} />
-            <Route path="/cadastro" element={<Cadastro />} />
-            <Route path="/evolucao" element={<Evolucao />} />
-            <Route path="/gestao" element={<Gestao />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Login />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/esqueci-senha" element={<ForgotPassword />} />
+              <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+              <Route path="/agenda" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+              <Route path="/cadastro" element={<ProtectedRoute><Cadastro /></ProtectedRoute>} />
+              <Route path="/evolucao" element={<ProtectedRoute><Evolucao /></ProtectedRoute>} />
+              <Route path="/gestao" element={<ProtectedRoute><Gestao /></ProtectedRoute>} />
+              <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 };
