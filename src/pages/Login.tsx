@@ -28,7 +28,7 @@ const Login = () => {
     }
 
     setIsLoading(true);
-    const result = await authenticateUser(email, password);
+    const result = await login(email, password);
     setIsLoading(false);
 
     if (result.success) {
