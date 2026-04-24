@@ -84,9 +84,7 @@ interface Appointment {
   valor: number;
 }
 
-// Mock Data will be replaced by fetched data
-const mockProcedimentos = ["Limpeza de Pele", "Peeling", "Botox", "Preenchimento", "Laser CO2", "Microagulhamento"];
-const mockProfissionais = ["Dra. Maria", "Dra. Juliana", "Dr. Carlos", "Dra. Fernanda"];
+// Mock data removed
 
 const formatDate = (date: Date): string => {
   const y = date.getFullYear();
