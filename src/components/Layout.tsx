@@ -49,6 +49,7 @@ interface LayoutProps {
 const Layout = ({ title, children, headerRight }: LayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, logout, company } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showVersion, setShowVersion] = useState(false);
