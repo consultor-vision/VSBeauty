@@ -659,7 +659,7 @@ const Index = () => {
                           <Check className={cn("mr-2 h-3 w-3", filterProcedimento === "all" ? "opacity-100" : "opacity-0")} />
                           Todos os procedimentos
                         </CommandItem>
-                        {mockProcedimentos.map((p) => (
+                        {procedimentosList.map((p) => (
                           <CommandItem key={p} value={p} onSelect={() => { setFilterProcedimento(p); setOpenProc(false); }} className="text-xs">
                             <Check className={cn("mr-2 h-3 w-3", filterProcedimento === p ? "opacity-100" : "opacity-0")} />
                             {p}
@@ -1129,7 +1129,7 @@ const Index = () => {
                       <SelectValue placeholder="Procedimento" />
                     </SelectTrigger>
                     <SelectContent>
-                      {mockProcedimentos.map((p) => (
+                      {procedimentosList.map((p) => (
                         <SelectItem key={p} value={p}>{p}</SelectItem>
                       ))}
                     </SelectContent>
@@ -1142,7 +1142,7 @@ const Index = () => {
                       <SelectValue placeholder="Profissionais" />
                     </SelectTrigger>
                     <SelectContent>
-                      {mockProfissionais.map((p) => (
+                      {profissionaisList.map((p) => (
                         <SelectItem key={p} value={p}>{p}</SelectItem>
                       ))}
                     </SelectContent>
