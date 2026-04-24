@@ -167,8 +167,8 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
               <User className="w-5 h-5 text-gold" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">Filipe Pereira da Silva</p>
-              <p className="text-xs text-muted-foreground truncate">lucas@vsb.com</p>
+              <p className="text-sm font-medium text-foreground truncate">{user?.nome || "Usuário"}</p>
+              <p className="text-xs text-muted-foreground truncate">{user?.email || "usuario@exemplo.com"}</p>
             </div>
             <button onClick={() => setShowMenu(false)} className="p-1 rounded hover:bg-muted transition-colors">
               <X className="w-4 h-4 text-foreground" />
