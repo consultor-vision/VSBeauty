@@ -39,6 +39,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const daysOfWeek = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
 const daysOfWeekShort = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
@@ -82,19 +84,7 @@ interface Appointment {
   valor: number;
 }
 
-// --- Mock Data ---
-const mockClients: Client[] = [
-  { id: "1", nome: "Alana Silva", cpf: "325.215.852-33", telefone: "+55(11) 95176-3258", email: "alana@gmail.com", cidade: "São Paulo", uf: "SP", dataNascimento: "2002-01-05" },
-  { id: "2", nome: "Alfredo Nunes", cpf: "000.000.000-00", telefone: "+55(11) 95209-6182", email: "alfredo.nn@gmail.com", cidade: "Cidade", uf: "UF", dataNascimento: "1987-05-21" },
-  { id: "3", nome: "Ana Luz", cpf: "000.000.000-01", telefone: "+55(11) 95209-6182", email: "ana.luz@gmail.com", cidade: "Cidade", uf: "UF", dataNascimento: "1990-04-12" },
-  { id: "4", nome: "Ana Maria Pereira", cpf: "999.999.999-99", telefone: "+55(11) 99999-9999", email: "anamaria@gmail.com", cidade: "São Paulo", uf: "SP", dataNascimento: "1985-04-08" },
-  { id: "5", nome: "Angélica Lemes", cpf: "070.186.649-77", telefone: "+55(11) 99928-3182", email: "lemesangelica39@gmail.com", cidade: "Barueri", uf: "SP", dataNascimento: "1992-07-15" },
-  { id: "6", nome: "Barbara Fernandes", cpf: "093.765.184-20", telefone: "+55(31) 99829-8853", email: "luz_fernandes@ssp.com", cidade: "Belo Horizonte", uf: "MG", dataNascimento: "1988-12-03" },
-  { id: "7", nome: "Bianca Silva", cpf: "333.333.333-33", telefone: "+55(11) 33333-3333", email: "biancasilva@gmail.com", cidade: "Sertãozinho", uf: "SP", dataNascimento: "1995-04-22" },
-];
-
-const mockProcedimentos = ["Limpeza de Pele", "Peeling", "Botox", "Preenchimento", "Laser CO2", "Microagulhamento"];
-const mockProfissionais = ["Dra. Maria", "Dra. Juliana", "Dr. Carlos", "Dra. Fernanda"];
+// Mock data removed
 
 const formatDate = (date: Date): string => {
   const y = date.getFullYear();
@@ -171,41 +161,86 @@ const Index = () => {
   const [openStatus, setOpenStatus] = useState(false);
   const [viewMode, setViewMode] = useState<"semana" | "dia">("semana");
 
-  // Appointments state
-  const [appointments, setAppointments] = useState<Appointment[]>([
-    {
-      id: "1", clientId: "1", clientName: "Alana Silva",
-      date: formatDate(today), startTime: "09:00", endTime: "10:00",
-      profissional: "Dra. Maria", procedimento: "Limpeza de Pele", plano: "Plano Mensal",
-      statusProcedimento: "confirmado", statusFinanceiro: "pago", valor: 250,
-    },
-    {
-      id: "2", clientId: "4", clientName: "Ana Maria Pereira",
-      date: formatDate(today), startTime: "10:30", endTime: "11:00",
-      profissional: "Dra. Juliana", procedimento: "Botox", plano: "Avulso",
-      statusProcedimento: "pendente", statusFinanceiro: "pendente", valor: 450,
-    },
-    {
-      id: "3", clientId: "5", clientName: "Angélica Lemes",
-      date: formatDate(today), startTime: "14:00", endTime: "15:00",
-      profissional: "Dr. Carlos", procedimento: "Peeling", plano: "Plano Trimestral",
-      statusProcedimento: "confirmado", statusFinanceiro: "pago", valor: 380,
-    },
-    {
-      id: "4", clientId: "6", clientName: "Barbara Fernandes",
-      date: formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)),
-      startTime: "09:30", endTime: "10:30",
-      profissional: "Dra. Fernanda", procedimento: "Preenchimento", plano: "Avulso",
-      statusProcedimento: "pendente", statusFinanceiro: "pendente", valor: 600,
-    },
-    {
-      id: "5", clientId: "7", clientName: "Bianca Silva",
-      date: formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 2)),
-      startTime: "11:00", endTime: "12:00",
-      profissional: "Dra. Maria", procedimento: "Microagulhamento", plano: "Plano Mensal",
-      statusProcedimento: "confirmado", statusFinanceiro: "parcial", valor: 320,
-    },
-  ]);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // Fetch Clients
+        const { data: clientsData, error: clientsError } = await supabase
+          .from('clientes')
+          .select('*');
+
+        if (clientsError) throw clientsError;
+
+        const formattedClients: Client[] = (clientsData || []).map(c => ({
+          id: String(c.id),
+          nome: c.nome || '',
+          cpf: c.cpf || '',
+          telefone: c.telefone || '',
+          email: c.email || '',
+          cidade: c.cidade || '',
+          uf: c.estado || '',
+          dataNascimento: c.data_nascimento || '',
+          foto: c.imagem || undefined
+        }));
+        setClients(formattedClients);
+
+        // Fetch Appointments (using agenda_visual view as it has joined data)
+        const { data: agendaData, error: agendaError } = await supabase
+          .from('agenda_visual')
+          .select('*');
+
+        if (agendaError) throw agendaError;
+
+        // Fetch raw agendamento to get status_procedimento which might be missing in the view
+        const { data: rawAgendamentos, error: rawError } = await supabase
+          .from('agendamento')
+          .select('id, status_procedimento');
+
+        const statusMap = (rawAgendamentos || []).reduce((acc: any, curr: any) => {
+          acc[curr.id] = curr.status_procedimento;
+          return acc;
+        }, {});
+
+        const formattedAppointments: Appointment[] = (agendaData || []).map(a => {
+          const status = statusMap[a.id_agendamento] || 'pendente';
+          // Ensure status is one of the allowed types
+          const validStatus: Appointment["statusProcedimento"] = 
+            ["pendente", "confirmado", "cancelado", "concluido"].includes(status) 
+            ? status as any 
+            : "pendente";
+
+          return {
+            id: String(a.id_agendamento),
+            clientId: String(a.id_cliente),
+            clientName: a.nome_cliente || '',
+            date: a.data_agendar,
+            startTime: a.hora_inicio.substring(0, 5),
+            endTime: a.hora_fim ? a.hora_fim.substring(0, 5) : '',
+            profissional: 'Profissional', 
+            procedimento: a.nome_proced || '',
+            plano: '-',
+            statusProcedimento: validStatus,
+            statusFinanceiro: 'pendente',
+            valor: 0,
+          };
+        });
+        setAppointments(formattedAppointments);
+
+      } catch (error: any) {
+        console.error('Error fetching data:', error);
+        toast.error("Erro ao carregar dados do Supabase");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Modals
   const [showClientListModal, setShowClientListModal] = useState(false);
@@ -259,6 +294,22 @@ const Index = () => {
     setDetailPopup(null);
   };
 
+  const procedimentosList = useMemo(() => {
+    const set = new Set<string>();
+    appointments.forEach(a => {
+      if (a.procedimento) set.add(a.procedimento);
+    });
+    return Array.from(set);
+  }, [appointments]);
+
+  const profissionaisList = useMemo(() => {
+    const set = new Set<string>();
+    appointments.forEach(a => {
+      if (a.profissional) set.add(a.profissional);
+    });
+    return Array.from(set);
+  }, [appointments]);
+
   // New appointment form
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [newProcedimento, setNewProcedimento] = useState("");
@@ -294,9 +345,9 @@ const Index = () => {
 
   // Filtered clients for modal
   const filteredClients = useMemo(() => {
-    if (!clientSearch.trim()) return mockClients;
+    if (!clientSearch.trim()) return clients;
     const term = clientSearch.toLowerCase();
-    return mockClients.filter((c) => {
+    return clients.filter((c) => {
       switch (searchField) {
         case "nome": return c.nome.toLowerCase().includes(term);
         case "cpf": return c.cpf.includes(term);
@@ -311,7 +362,7 @@ const Index = () => {
 
   // Birthdays this month
   const birthdaysThisMonth = useMemo(() => {
-    return mockClients
+    return clients
       .filter((c) => {
         const month = new Date(c.dataNascimento).getMonth();
         return month === currentMonth;
@@ -553,7 +604,7 @@ const Index = () => {
               <Popover open={openClient} onOpenChange={setOpenClient}>
                 <PopoverTrigger asChild>
                   <button type="button" className="flex-1 flex items-center justify-between bg-input border border-border rounded-md px-3 h-8 text-xs text-foreground hover:bg-muted/50 transition-colors">
-                    <span>{filterClient === "all" ? "Todos os clientes" : mockClients.find((c) => c.id === filterClient)?.nome}</span>
+                    <span>{filterClient === "all" ? "Todos os clientes" : clients.find((c) => c.id === filterClient)?.nome}</span>
                     <ChevronsUpDown className="w-3 h-3 opacity-50 shrink-0" />
                   </button>
                 </PopoverTrigger>
@@ -567,7 +618,7 @@ const Index = () => {
                           <Check className={cn("mr-2 h-3 w-3", filterClient === "all" ? "opacity-100" : "opacity-0")} />
                           Todos os clientes
                         </CommandItem>
-                        {mockClients.map((c) => (
+                        {clients.map((c) => (
                           <CommandItem key={c.id} value={c.nome} onSelect={() => { setFilterClient(c.id); setOpenClient(false); }} className="text-xs">
                             <Check className={cn("mr-2 h-3 w-3", filterClient === c.id ? "opacity-100" : "opacity-0")} />
                             {c.nome}
@@ -608,7 +659,7 @@ const Index = () => {
                           <Check className={cn("mr-2 h-3 w-3", filterProcedimento === "all" ? "opacity-100" : "opacity-0")} />
                           Todos os procedimentos
                         </CommandItem>
-                        {mockProcedimentos.map((p) => (
+                        {procedimentosList.map((p) => (
                           <CommandItem key={p} value={p} onSelect={() => { setFilterProcedimento(p); setOpenProc(false); }} className="text-xs">
                             <Check className={cn("mr-2 h-3 w-3", filterProcedimento === p ? "opacity-100" : "opacity-0")} />
                             {p}
@@ -860,7 +911,7 @@ const Index = () => {
       {/* ========== APPOINTMENT DETAIL POPUP ========== */}
       {detailPopup && (() => {
         const app = detailPopup.app;
-        const client = mockClients.find((c) => c.id === app.clientId);
+        const client = clients.find((c) => c.id === app.clientId);
         return (
           <div
             ref={popupRef}
@@ -1078,7 +1129,7 @@ const Index = () => {
                       <SelectValue placeholder="Procedimento" />
                     </SelectTrigger>
                     <SelectContent>
-                      {mockProcedimentos.map((p) => (
+                      {procedimentosList.map((p) => (
                         <SelectItem key={p} value={p}>{p}</SelectItem>
                       ))}
                     </SelectContent>
@@ -1091,7 +1142,7 @@ const Index = () => {
                       <SelectValue placeholder="Profissionais" />
                     </SelectTrigger>
                     <SelectContent>
-                      {mockProfissionais.map((p) => (
+                      {profissionaisList.map((p) => (
                         <SelectItem key={p} value={p}>{p}</SelectItem>
                       ))}
                     </SelectContent>
