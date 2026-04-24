@@ -171,12 +171,15 @@ const Index = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!user?.id_companhia) return;
+      
       setLoading(true);
       try {
         // Fetch Clients
         const { data: clientsData, error: clientsError } = await supabase
           .from('clientes')
-          .select('*');
+          .select('*')
+          .eq('id_companhia', user.id_companhia);
 
         if (clientsError) throw clientsError;
 
@@ -196,14 +199,16 @@ const Index = () => {
         // Fetch Appointments (using agenda_visual view as it has joined data)
         const { data: agendaData, error: agendaError } = await supabase
           .from('agenda_visual')
-          .select('*');
+          .select('*')
+          .eq('id_companhia', user.id_companhia);
 
         if (agendaError) throw agendaError;
 
         // Fetch raw agendamento to get status_procedimento which might be missing in the view
         const { data: rawAgendamentos, error: rawError } = await supabase
           .from('agendamento')
-          .select('id, status_procedimento');
+          .select('id, status_procedimento')
+          .eq('id_companhia', user.id_companhia);
 
         const statusMap = (rawAgendamentos || []).reduce((acc: any, curr: any) => {
           acc[curr.id] = curr.status_procedimento;
