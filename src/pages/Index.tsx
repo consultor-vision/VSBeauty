@@ -249,7 +249,7 @@ const Index = () => {
     };
 
     fetchData();
-  }, []);
+  }, [user?.id_companhia]);
 
   // Modals
   const [showClientListModal, setShowClientListModal] = useState(false);
