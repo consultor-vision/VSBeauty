@@ -120,7 +120,9 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
             <div className="w-8 h-8 rounded-full bg-gold/20 border border-gold/40 flex items-center justify-center">
               <User className="w-4 h-4 text-gold" />
             </div>
-            <span className="text-sm text-foreground hidden sm:block">Filipe Pereira da Silva</span>
+            <span className="text-sm text-foreground hidden sm:block">
+              {user?.nome || "Usuário"} {company?.nome ? `(${company.nome})` : ""}
+            </span>
           </div>
 
           {/* Center: nav buttons */}
