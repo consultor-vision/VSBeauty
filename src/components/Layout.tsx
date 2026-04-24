@@ -5,6 +5,7 @@ import {
   Menu, User, X, KeyRound, LogOut, Info, Eye, EyeOff,
   ChevronLeft, ChevronRight, Sun, Moon,
 } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
 const navItems = [
   { label: "Agenda", path: "/dashboard", icon: Calendar },
