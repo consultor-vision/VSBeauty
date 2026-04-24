@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
-
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { authenticateUser } from "@/lib/auth-service";
+import { useToast } from "@/hooks/use-toast";
 
 const WHATSAPP_LINK = "https://api.whatsapp.com/send?phone=5511951761388&text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20informa%C3%A7%C3%B5es%20sobre%20o%20Vision%20Smart%20Beauty!";
 
@@ -9,11 +10,39 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate("/dashboard");
+    
+    if (!email || !password) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Preencha todos os campos",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    const result = await authenticateUser(email, password);
+    setIsLoading(false);
+
+    if (result.success) {
+      toast({
+        title: "Sucesso",
+        description: "Login realizado com sucesso!",
+      });
+      navigate("/dashboard");
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Erro no Login",
+        description: result.error,
+      });
+    }
   };
 
   return (
@@ -97,14 +126,15 @@ const Login = () => {
           <button
             id="botaoLogin"
             type="submit"
-            className="w-full h-12 rounded-xl text-sm font-semibold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+            disabled={isLoading}
+            className="w-full h-12 rounded-xl text-sm font-semibold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center disabled:opacity-70 disabled:hover:scale-100"
             style={{
               background: "linear-gradient(135deg, #B38B47 0%, #D4AF37 50%, #E5C15A 100%)",
               color: "#07111B",
               boxShadow: "0 4px 20px rgba(179,139,71,0.3)",
             }}
           >
-            Login
+            {isLoading ? <Loader2 className="animate-spin h-5 w-5" /> : "Login"}
           </button>
         </form>
 
