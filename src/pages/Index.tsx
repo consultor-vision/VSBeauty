@@ -198,20 +198,39 @@ const Index = () => {
 
         if (agendaError) throw agendaError;
 
-        const formattedAppointments: Appointment[] = (agendaData || []).map(a => ({
-          id: String(a.id_agendamento),
-          clientId: String(a.id_cliente),
-          clientName: a.nome_cliente || '',
-          date: a.data_agendar,
-          startTime: a.hora_inicio.substring(0, 5),
-          endTime: a.hora_fim ? a.hora_fim.substring(0, 5) : '',
-          profissional: 'Profissional', // Placeholder
-          procedimento: a.nome_proced || '',
-          plano: '-',
-          statusProcedimento: 'confirmado', // Placeholder or use status from table if available
-          statusFinanceiro: 'pendente',
-          valor: 0,
-        }));
+        // Fetch raw agendamento to get status_procedimento which might be missing in the view
+        const { data: rawAgendamentos, error: rawError } = await supabase
+          .from('agendamento')
+          .select('id, status_procedimento');
+
+        const statusMap = (rawAgendamentos || []).reduce((acc: any, curr: any) => {
+          acc[curr.id] = curr.status_procedimento;
+          return acc;
+        }, {});
+
+        const formattedAppointments: Appointment[] = (agendaData || []).map(a => {
+          const status = statusMap[a.id_agendamento] || 'pendente';
+          // Ensure status is one of the allowed types
+          const validStatus: Appointment["statusProcedimento"] = 
+            ["pendente", "confirmado", "cancelado", "concluido"].includes(status) 
+            ? status as any 
+            : "pendente";
+
+          return {
+            id: String(a.id_agendamento),
+            clientId: String(a.id_cliente),
+            clientName: a.nome_cliente || '',
+            date: a.data_agendar,
+            startTime: a.hora_inicio.substring(0, 5),
+            endTime: a.hora_fim ? a.hora_fim.substring(0, 5) : '',
+            profissional: 'Profissional', 
+            procedimento: a.nome_proced || '',
+            plano: '-',
+            statusProcedimento: validStatus,
+            statusFinanceiro: 'pendente',
+            valor: 0,
+          };
+        });
         setAppointments(formattedAppointments);
 
       } catch (error: any) {
