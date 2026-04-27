@@ -303,6 +303,20 @@ const Index = () => {
     setDetailPopup(null);
   };
 
+  // New appointment form
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [newProcedimento, setNewProcedimento] = useState("");
+  const [newProfissional, setNewProfissional] = useState("");
+  const [newDate, setNewDate] = useState("");
+  const [newStartTime, setNewStartTime] = useState("");
+  const [newEndTime, setNewEndTime] = useState("");
+  const [timePickerHour, setTimePickerHour] = useState("0");
+  const [timePickerMinute, setTimePickerMinute] = useState("0");
+
+  // Client search
+  const [clientSearch, setClientSearch] = useState("");
+  const [searchField, setSearchField] = useState<"nome" | "cpf" | "telefone" | "email" | "cidade" | "uf">("nome");
+
   const daysInMonth = getDaysInMonth(currentYear, currentMonth);
   const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
 
