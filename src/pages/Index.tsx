@@ -179,7 +179,8 @@ const Index = () => {
         const { data: clientsData, error: clientsError } = await supabase
           .from('clientes')
           .select('*')
-          .eq('id_companhia', user.id_companhia);
+          .eq('id_companhia', user.id_companhia)
+          .order('nome', { ascending: true });
 
         if (clientsError) throw clientsError;
 
