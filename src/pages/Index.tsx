@@ -371,6 +371,8 @@ const Index = () => {
 
   // Filtered clients for modal
   const filteredClients = useMemo(() => {
+    // Quando clicamos em Agendamento (que abre a lista de clientes),
+    // queremos trazer todos os clientes da companhia.
     if (!clientSearch.trim()) return clients;
     const term = clientSearch.toLowerCase();
     return clients.filter((c) => {
