@@ -194,7 +194,7 @@ const Index = () => {
           dataNascimento: c.data_nascimento || '',
           foto: c.imagem || undefined
         }));
-        setClients(formattedClients);
+        setClients(formattedClients.sort((a, b) => a.nome.localeCompare(b.nome)));
 
         // Fetch Appointments (using agenda_visual view as it has joined data)
         const { data: agendaData, error: agendaError } = await supabase
@@ -333,12 +333,14 @@ const Index = () => {
     appointmentsForSelectedDay.forEach(a => {
       if (a.procedimento) set.add(a.procedimento);
     });
-    return Array.from(set);
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
   }, [appointmentsForSelectedDay]);
 
   const filteredClientsForDay = useMemo(() => {
     const clientIds = new Set(appointmentsForSelectedDay.map(a => a.clientId));
-    return clients.filter(c => clientIds.has(c.id));
+    return clients
+      .filter(c => clientIds.has(c.id))
+      .sort((a, b) => a.nome.localeCompare(b.nome));
   }, [clients, appointmentsForSelectedDay]);
 
   const availableStatusForDay = useMemo(() => {
