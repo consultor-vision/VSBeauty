@@ -118,8 +118,12 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
             >
               <Menu className="w-5 h-5 text-foreground" />
             </button>
-            <div className="w-8 h-8 rounded-full bg-gold/20 border border-gold/40 flex items-center justify-center">
-              <User className="w-4 h-4 text-gold" />
+            <div className="w-8 h-8 rounded-full bg-gold/20 border border-gold/40 flex items-center justify-center overflow-hidden">
+              {user?.imagem ? (
+                <img src={user.imagem} alt={user.nome || ""} className="w-full h-full object-cover" />
+              ) : (
+                <User className="w-4 h-4 text-gold" />
+              )}
             </div>
             <span className="text-sm text-foreground hidden sm:block">
               {user?.nome || "Usuário"} {company?.nome ? `(${company.nome})` : ""}
@@ -164,8 +168,12 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
         <div className="fixed bottom-14 left-4 z-[60] w-72 glass-panel gold-glow animate-in slide-in-from-bottom-4 duration-200">
           {/* User info */}
           <div className="flex items-center gap-3 p-4 border-b border-border">
-            <div className="w-10 h-10 rounded-full bg-gold/20 border border-gold/40 flex items-center justify-center">
-              <User className="w-5 h-5 text-gold" />
+            <div className="w-10 h-10 rounded-full bg-gold/20 border border-gold/40 flex items-center justify-center overflow-hidden">
+              {user?.imagem ? (
+                <img src={user.imagem} alt={user.nome || ""} className="w-full h-full object-cover" />
+              ) : (
+                <User className="w-5 h-5 text-gold" />
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-foreground truncate">{user?.nome || "Usuário"}</p>
