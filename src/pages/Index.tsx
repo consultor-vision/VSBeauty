@@ -1105,8 +1105,12 @@ const Index = () => {
                   {filteredClients.map((client) => (
                     <TableRow key={client.id} className="border-border hover:bg-muted/50 cursor-pointer">
                       <TableCell>
-                        <div className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center">
-                          <span className="text-xs text-muted-foreground">{client.nome.charAt(0)}</span>
+                        <div className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center overflow-hidden">
+                          {client.foto ? (
+                            <img src={client.foto} alt={client.nome} className="w-full h-full object-cover" />
+                          ) : (
+                            <span className="text-xs text-muted-foreground">{client.nome.charAt(0)}</span>
+                          )}
                         </div>
                       </TableCell>
                       <TableCell className="text-sm">{client.nome}</TableCell>
