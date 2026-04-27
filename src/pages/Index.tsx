@@ -303,22 +303,6 @@ const Index = () => {
     setDetailPopup(null);
   };
 
-  const procedimentosList = useMemo(() => {
-    const set = new Set<string>();
-    appointments.forEach(a => {
-      if (a.procedimento) set.add(a.procedimento);
-    });
-    return Array.from(set);
-  }, [appointments]);
-
-  const profissionaisList = useMemo(() => {
-    const set = new Set<string>();
-    appointments.forEach(a => {
-      if (a.profissional) set.add(a.profissional);
-    });
-    return Array.from(set);
-  }, [appointments]);
-
   // New appointment form
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [newProcedimento, setNewProcedimento] = useState("");
@@ -339,6 +323,39 @@ const Index = () => {
   const selectedDate = new Date(currentYear, currentMonth, selectedDay);
   const selectedDateStr = formatDate(selectedDate);
   const weekDates = useMemo(() => getWeekDates(selectedDate), [selectedDateStr]);
+
+  const appointmentsForSelectedDay = useMemo(() => {
+    return appointments.filter(a => a.date === selectedDateStr);
+  }, [appointments, selectedDateStr]);
+
+  const procedimentosList = useMemo(() => {
+    const set = new Set<string>();
+    appointmentsForSelectedDay.forEach(a => {
+      if (a.procedimento) set.add(a.procedimento);
+    });
+    return Array.from(set);
+  }, [appointmentsForSelectedDay]);
+
+  const filteredClientsForDay = useMemo(() => {
+    const clientIds = new Set(appointmentsForSelectedDay.map(a => a.clientId));
+    return clients.filter(c => clientIds.has(c.id));
+  }, [clients, appointmentsForSelectedDay]);
+
+  const availableStatusForDay = useMemo(() => {
+    const set = new Set<string>();
+    appointmentsForSelectedDay.forEach(a => {
+      if (a.statusProcedimento) set.add(a.statusProcedimento);
+    });
+    return Array.from(set);
+  }, [appointmentsForSelectedDay]);
+
+  const profissionaisList = useMemo(() => {
+    const set = new Set<string>();
+    appointments.forEach(a => {
+      if (a.profissional) set.add(a.profissional);
+    });
+    return Array.from(set);
+  }, [appointments]);
 
   // Days with appointments
   const daysWithAppointments = useMemo(() => {
@@ -613,7 +630,7 @@ const Index = () => {
               <Popover open={openClient} onOpenChange={setOpenClient}>
                 <PopoverTrigger asChild>
                   <button type="button" className="flex-1 flex items-center justify-between bg-input border border-border rounded-md px-3 h-8 text-xs text-foreground hover:bg-muted/50 transition-colors">
-                    <span>{filterClient === "all" ? "Todos os clientes" : clients.find((c) => c.id === filterClient)?.nome}</span>
+                    <span>{filterClient === "all" ? "Todos os clientes" : filteredClientsForDay.find((c) => c.id === filterClient)?.nome}</span>
                     <ChevronsUpDown className="w-3 h-3 opacity-50 shrink-0" />
                   </button>
                 </PopoverTrigger>
@@ -627,7 +644,7 @@ const Index = () => {
                           <Check className={cn("mr-2 h-3 w-3", filterClient === "all" ? "opacity-100" : "opacity-0")} />
                           Todos os clientes
                         </CommandItem>
-                        {clients.map((c) => (
+                        {filteredClientsForDay.map((c) => (
                           <CommandItem key={c.id} value={c.nome} onSelect={() => { setFilterClient(c.id); setOpenClient(false); }} className="text-xs">
                             <Check className={cn("mr-2 h-3 w-3", filterClient === c.id ? "opacity-100" : "opacity-0")} />
                             {c.nome}
@@ -705,7 +722,7 @@ const Index = () => {
                     <CommandList>
                       <CommandEmpty>Nenhum status.</CommandEmpty>
                       <CommandGroup>
-                        {[{ v: "all", l: "Todos os status" }, { v: "confirmado", l: "Confirmado" }, { v: "pendente", l: "Pendente" }].map((s) => (
+                        {[{ v: "all", l: "Todos os status" }, ...availableStatusForDay.map(s => ({ v: s, l: s.charAt(0).toUpperCase() + s.slice(1) }))].map((s) => (
                           <CommandItem key={s.v} value={s.l} onSelect={() => { setFilterStatus(s.v); setOpenStatus(false); }} className="text-xs">
                             <Check className={cn("mr-2 h-3 w-3", filterStatus === s.v ? "opacity-100" : "opacity-0")} />
                             {s.l}
