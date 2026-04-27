@@ -157,7 +157,7 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
             <img
               src={company?.logo || (theme === "light" ? "/Logo_VSB_Claro.png" : "/LogoVSB.png")}
               alt={company?.nome || "Vision Smart Beauty"}
-              className="h-12 object-contain"
+              className="h-12 w-auto object-contain"
             />
           </div>
         </div>
