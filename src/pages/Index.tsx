@@ -303,6 +303,13 @@ const Index = () => {
     setDetailPopup(null);
   };
 
+  const daysInMonth = getDaysInMonth(currentYear, currentMonth);
+  const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
+
+  const selectedDate = new Date(currentYear, currentMonth, selectedDay);
+  const selectedDateStr = formatDate(selectedDate);
+  const weekDates = useMemo(() => getWeekDates(selectedDate), [selectedDateStr]);
+
   const appointmentsForSelectedDay = useMemo(() => {
     return appointments.filter(a => a.date === selectedDateStr);
   }, [appointments, selectedDateStr]);
@@ -328,26 +335,13 @@ const Index = () => {
     return Array.from(set);
   }, [appointmentsForSelectedDay]);
 
-  // New appointment form
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  const [newProcedimento, setNewProcedimento] = useState("");
-  const [newProfissional, setNewProfissional] = useState("");
-  const [newDate, setNewDate] = useState("");
-  const [newStartTime, setNewStartTime] = useState("");
-  const [newEndTime, setNewEndTime] = useState("");
-  const [timePickerHour, setTimePickerHour] = useState("0");
-  const [timePickerMinute, setTimePickerMinute] = useState("0");
-
-  // Client search
-  const [clientSearch, setClientSearch] = useState("");
-  const [searchField, setSearchField] = useState<"nome" | "cpf" | "telefone" | "email" | "cidade" | "uf">("nome");
-
-  const daysInMonth = getDaysInMonth(currentYear, currentMonth);
-  const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
-
-  const selectedDate = new Date(currentYear, currentMonth, selectedDay);
-  const selectedDateStr = formatDate(selectedDate);
-  const weekDates = useMemo(() => getWeekDates(selectedDate), [selectedDateStr]);
+  const profissionaisList = useMemo(() => {
+    const set = new Set<string>();
+    appointments.forEach(a => {
+      if (a.profissional) set.add(a.profissional);
+    });
+    return Array.from(set);
+  }, [appointments]);
 
   // Days with appointments
   const daysWithAppointments = useMemo(() => {
