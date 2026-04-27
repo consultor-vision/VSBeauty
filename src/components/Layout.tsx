@@ -126,7 +126,7 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
               )}
             </div>
             <span className="text-sm text-foreground hidden sm:block">
-              {user?.nome || "Usuário"} {company?.nome ? `(${company.nome})` : ""}
+              {user?.nome || "Usuário"}
             </span>
           </div>
 
