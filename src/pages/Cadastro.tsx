@@ -113,6 +113,7 @@ const Cadastro = () => {
   const [searchFilter, setSearchFilter] = useState({ type: "nome", value: "" });
   const [clients, setClients] = useState<ClientData[]>([]);
   const [loading, setLoading] = useState(false);
+  const [procedimentos, setProcedimentos] = useState<string[]>([]);
   const [hasAnamnese, setHasAnamnese] = useState(false);
 
   // Modal states
@@ -200,6 +201,30 @@ const Cadastro = () => {
     };
 
     fetchClients();
+  }, [user?.id_companhia]);
+
+  useEffect(() => {
+    const fetchProcedimentos = async () => {
+      if (!user?.id_companhia) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('procedimentos')
+          .select('nome')
+          .eq('id_companhia', user.id_companhia)
+          .order('nome', { ascending: true });
+
+        if (error) throw error;
+
+        if (data) {
+          setProcedimentos(data.map(p => p.nome));
+        }
+      } catch (error) {
+        console.error('Error fetching procedimentos:', error);
+      }
+    };
+
+    fetchProcedimentos();
   }, [user?.id_companhia]);
 
   // Novo Cadastro form
