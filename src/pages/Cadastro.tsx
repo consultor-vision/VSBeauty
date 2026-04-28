@@ -299,7 +299,8 @@ const Cadastro = () => {
                 <FormField label="Email" value={selectedClient?.email} />
                 <FormField label="Instagram" value={selectedClient?.instagram} />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <FormField label="Logradouro" value={selectedClient?.logradouro} />
                 <FormField label="Número" value={selectedClient?.numero} />
                 <FormField label="CEP" value={selectedClient?.cep} />
               </div>
