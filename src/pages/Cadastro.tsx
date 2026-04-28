@@ -321,7 +321,7 @@ const Cadastro = () => {
                 <ActionButton icon={Pencil} label="Editar Cadastro" onClick={handleOpenEditCadastro} />
                 <ActionButton 
                   icon={FileText} 
-                  label={hasAnamnese ? "Editar Ficha de anamnese" : "Nova Ficha de anamnese"} 
+                  label={hasAnamnese ? "Editar a Ficha de anamnese" : "Nova Ficha de anamnese"} 
                   onClick={() => setShowAnamnese(true)} 
                 />
                 <ActionButton icon={Plus} label="Novo Procedimento" onClick={() => {
