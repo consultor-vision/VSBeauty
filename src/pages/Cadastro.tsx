@@ -113,7 +113,7 @@ const Cadastro = () => {
   const [searchFilter, setSearchFilter] = useState({ type: "nome", value: "" });
   const [clients, setClients] = useState<ClientData[]>([]);
   const [loading, setLoading] = useState(false);
-  const [procedimentos, setProcedimentos] = useState<{ nome: string; preco: number }[]>([]);
+  const [procedimentos, setProcedimentos] = useState<{ nome: string; valor: number }[]>([]);
   const [hasAnamnese, setHasAnamnese] = useState(false);
 
   // Modal states
