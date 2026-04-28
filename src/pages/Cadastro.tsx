@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Layout from "@/components/Layout";
 import { User, Users, Plus, Eraser, Pencil, FileText, CalendarPlus, Clock, Edit, X, Upload } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -24,6 +24,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
 
 // Mock data
 const mockClients = [
