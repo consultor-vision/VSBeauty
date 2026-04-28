@@ -672,7 +672,7 @@ const Cadastro = () => {
                     <SelectValue placeholder="Preencher" />
                   </SelectTrigger>
                   <SelectContent>
-                    {procedimentosList.map((p) => (
+                    {(procedimentos.length > 0 ? procedimentos : procedimentosList).map((p) => (
                       <SelectItem key={p} value={p.toLowerCase()}>{p}</SelectItem>
                     ))}
                   </SelectContent>
@@ -766,7 +766,7 @@ const Cadastro = () => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {procedimentosList.map((p) => (
+                      {(procedimentos.length > 0 ? procedimentos : procedimentosList).map((p) => (
                         <SelectItem key={p} value={p.toLowerCase()}>{p}</SelectItem>
                       ))}
                     </SelectContent>
