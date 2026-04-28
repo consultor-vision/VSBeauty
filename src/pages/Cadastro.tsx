@@ -752,7 +752,19 @@ const Cadastro = () => {
               </div>
               <div>
                 <label className="text-xs text-gold mb-1 block">Valor de Entrada</label>
-                <Input placeholder="R$ 0,00" value={novoPlano.valorEntrada} onChange={(e) => setNovoPlano((p) => ({ ...p, valorEntrada: e.target.value }))} className="bg-input border-border text-foreground h-9" />
+                <Input 
+                  placeholder="R$ 0,00" 
+                  value={novoPlano.valorEntrada} 
+                  onChange={(e) => {
+                    let val = e.target.value.replace(/\D/g, "");
+                    val = (Number(val) / 100).toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    });
+                    setNovoPlano((p) => ({ ...p, valorEntrada: val }));
+                  }} 
+                  className="bg-input border-border text-foreground h-9" 
+                />
               </div>
             </div>
 
