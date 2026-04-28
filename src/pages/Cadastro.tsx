@@ -210,14 +210,14 @@ const Cadastro = () => {
       try {
         const { data, error } = await supabase
           .from('procedimentos')
-          .select('nome')
+          .select('nome, preco')
           .eq('id_companhia', user.id_companhia)
           .order('nome', { ascending: true });
 
         if (error) throw error;
 
         if (data) {
-          setProcedimentos(data.map(p => p.nome));
+          setProcedimentos(data.map(p => ({ nome: p.nome, preco: p.preco || 0 })));
         }
       } catch (error) {
         console.error('Error fetching procedimentos:', error);
