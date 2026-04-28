@@ -667,12 +667,22 @@ const Cadastro = () => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-xs text-gold mb-1 block">Procedimento</label>
-                <Select value={novoPlano.procedimento || undefined} onValueChange={(v) => setNovoPlano((p) => ({ ...p, procedimento: v }))}>
+                <Select 
+                  value={novoPlano.procedimento || undefined} 
+                  onValueChange={(v) => {
+                    const proc = procedimentos.find(p => p.nome.toLowerCase() === v);
+                    setNovoPlano((p) => ({ 
+                      ...p, 
+                      procedimento: v,
+                      valorUnitario: proc ? proc.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : p.valorUnitario
+                    }));
+                  }}
+                >
                   <SelectTrigger className="bg-input border-border text-foreground h-9">
                     <SelectValue placeholder="Preencher" />
                   </SelectTrigger>
                   <SelectContent>
-                    {(procedimentos.length > 0 ? procedimentos : procedimentosList).map((p) => (
+                    {(procedimentos.length > 0 ? procedimentos.map(p => p.nome) : procedimentosList).map((p) => (
                       <SelectItem key={p} value={p.toLowerCase()}>{p}</SelectItem>
                     ))}
                   </SelectContent>
@@ -680,18 +690,46 @@ const Cadastro = () => {
               </div>
               <div>
                 <label className="text-xs text-gold mb-1 block">Quantidade de Sessões</label>
-                <Input placeholder="Preencher" value={novoPlano.quantidadeSessoes} onChange={(e) => setNovoPlano((p) => ({ ...p, quantidadeSessoes: e.target.value }))} className="bg-input border-border text-foreground h-9" />
+                <Input placeholder="Preencher" type="number" value={novoPlano.quantidadeSessoes} onChange={(e) => setNovoPlano((p) => ({ ...p, quantidadeSessoes: e.target.value }))} className="bg-input border-border text-foreground h-9" />
               </div>
             </div>
 
             <div className="grid grid-cols-5 gap-3">
               <div>
                 <label className="text-xs text-gold mb-1 block">Valor Unitário</label>
-                <Input placeholder="" value={novoPlano.valorUnitario} onChange={(e) => setNovoPlano((p) => ({ ...p, valorUnitario: e.target.value }))} className="bg-input border-border text-foreground h-9" />
+                <Input 
+                  placeholder="" 
+                  value={novoPlano.valorUnitario} 
+                  onChange={(e) => {
+                    let val = e.target.value.replace(/\D/g, "");
+                    val = (Number(val) / 100).toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    });
+                    setNovoPlano((p) => ({ ...p, valorUnitario: val }));
+                  }} 
+                  className="bg-input border-border text-foreground h-9" 
+                />
               </div>
               <div>
                 <label className="text-xs text-gold mb-1 block">Valor do Total</label>
-                <Input readOnly value="R$ 0,00" className="bg-input border-border text-muted-foreground h-9" />
+                <Input 
+                  readOnly 
+                  value={(() => {
+                    const unitStr = novoPlano.valorUnitario.replace(/[^\d,]/g, "").replace(",", ".");
+                    const unitVal = parseFloat(unitStr) || 0;
+                    const qtd = parseInt(novoPlano.quantidadeSessoes) || 0;
+                    const total = unitVal * qtd;
+                    
+                    const entradaStr = novoPlano.valorEntrada.replace(/[^\d,]/g, "").replace(",", ".");
+                    const entradaVal = parseFloat(entradaStr) || 0;
+                    
+                    const finalTotal = total - entradaVal;
+                    
+                    return finalTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                  })()} 
+                  className="bg-input border-border text-muted-foreground h-9" 
+                />
               </div>
               <div>
                 <label className="text-xs text-gold mb-1 block">Forma de Pagamento</label>
