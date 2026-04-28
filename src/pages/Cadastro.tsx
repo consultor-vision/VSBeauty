@@ -113,6 +113,7 @@ const Cadastro = () => {
   const [searchFilter, setSearchFilter] = useState({ type: "nome", value: "" });
   const [clients, setClients] = useState<ClientData[]>([]);
   const [loading, setLoading] = useState(false);
+  const [hasAnamnese, setHasAnamnese] = useState(false);
 
   // Modal states
   const [showEditCadastro, setShowEditCadastro] = useState(false);
@@ -209,9 +210,24 @@ const Cadastro = () => {
     {}
   );
 
-  const handleSelectClient = (client: ClientData) => {
+  const handleSelectClient = async (client: ClientData) => {
     setSelectedClient(client);
     setShowClientList(false);
+    
+    // Check if client has anamnese
+    try {
+      const { data, error } = await supabase
+        .from('anamnese_cliente')
+        .select('id')
+        .eq('id_cliente', Number(client.id))
+        .maybeSingle();
+      
+      if (error) throw error;
+      setHasAnamnese(!!data);
+    } catch (error) {
+      console.error('Error checking anamnese:', error);
+      setHasAnamnese(false);
+    }
   };
 
   const handleClear = () => {
@@ -280,11 +296,9 @@ const Cadastro = () => {
                 <FormField label="Email" value={selectedClient?.email} />
                 <FormField label="Instagram" value={selectedClient?.instagram} />
               </div>
-              <FormField label="Logradouro" value={selectedClient?.logradouro} />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <FormField label="Número" value={selectedClient?.numero} />
                 <FormField label="CEP" value={selectedClient?.cep} />
-                <FormField label="Complemento" value={selectedClient?.complemento} />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <FormField label="Bairro" value={selectedClient?.bairro} />
@@ -302,7 +316,11 @@ const Cadastro = () => {
             {selectedClient && (
               <>
                 <ActionButton icon={Pencil} label="Editar Cadastro" onClick={handleOpenEditCadastro} />
-                <ActionButton icon={FileText} label="Editar Ficha Anamnese" onClick={() => setShowAnamnese(true)} />
+                <ActionButton 
+                  icon={FileText} 
+                  label={hasAnamnese ? "Editar Ficha Anamnese" : "Nova Ficha Anamnese"} 
+                  onClick={() => setShowAnamnese(true)} 
+                />
                 <ActionButton icon={Plus} label="Novo Procedimento" onClick={() => {
                   setNovoPlano({ procedimento: "", quantidadeSessoes: "", valorUnitario: "", formaPagamento: "", parcelas: "", valorEntrada: "" });
                   setShowNovoProcedimento(true);
@@ -516,14 +534,10 @@ const Cadastro = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3">
                 <div>
                   <label className="text-xs text-gold mb-1 block">Número</label>
                   <Input value={editForm.numero} onChange={(e) => setEditForm({ ...editForm, numero: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-                <div>
-                  <label className="text-xs text-gold mb-1 block">Complemento</label>
-                  <Input value={editForm.complemento} onChange={(e) => setEditForm({ ...editForm, complemento: e.target.value })} className="bg-input border-border text-foreground h-9" />
                 </div>
               </div>
 
