@@ -605,22 +605,13 @@ const Cadastro = () => {
                   </div>
 
                   {anamneseData[idx]?.opcao === "sim" && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-border/50 animate-in fade-in slide-in-from-top-2">
+                    <div className="grid grid-cols-1 gap-3 pt-2 border-t border-border/50 animate-in fade-in slide-in-from-top-2">
                       <div className="space-y-1">
                         <label className="text-[10px] text-gold uppercase font-bold">{q.extra}</label>
                         <Input
                           placeholder="Digite aqui..."
                           value={anamneseData[idx]?.qual || ""}
                           onChange={(e) => setAnamneseData((prev) => ({ ...prev, [idx]: { ...prev[idx], opcao: prev[idx]?.opcao || "", qual: e.target.value, complemento: prev[idx]?.complemento || "" } }))}
-                          className="bg-input border-border text-foreground h-9 text-sm"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] text-gold uppercase font-bold">Complemento</label>
-                        <Input
-                          placeholder="Informações adicionais..."
-                          value={anamneseData[idx]?.complemento || ""}
-                          onChange={(e) => setAnamneseData((prev) => ({ ...prev, [idx]: { ...prev[idx], opcao: prev[idx]?.opcao || "", qual: prev[idx]?.qual || "", complemento: e.target.value } }))}
                           className="bg-input border-border text-foreground h-9 text-sm"
                         />
                       </div>
