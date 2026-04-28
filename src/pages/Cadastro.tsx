@@ -172,7 +172,7 @@ const Cadastro = () => {
           nascimento: c.data_nascimento || '',
           genero: c.genero || '',
           instagram: c.instagram || '',
-          logradouro: c.endereco || c.logradouro || '',
+          logradouro: (c as any).endereco || (c as any).logradouro || '',
           numero: c.numero || '',
           cep: c.cep || '',
           complemento: c.complemento || '',
