@@ -409,8 +409,12 @@ const Cadastro = () => {
                 {filteredClients.map((client) => (
                   <TableRow key={client.id} className="border-border hover:bg-muted/30">
                     <TableCell>
-                      <div className="w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center">
-                        <User className="w-4 h-4 text-muted-foreground/40" />
+                      <div className="w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center overflow-hidden">
+                        {client.foto ? (
+                          <img src={client.foto} alt={client.nome} className="w-full h-full object-cover" />
+                        ) : (
+                          <User className="w-4 h-4 text-muted-foreground/40" />
+                        )}
                       </div>
                     </TableCell>
                     <TableCell className="text-sm">{client.nome}</TableCell>
