@@ -219,7 +219,7 @@ const Cadastro = () => {
       const { data, error } = await supabase
         .from('anamnese_cliente')
         .select('id')
-        .eq('id_cliente', client.id)
+        .eq('id_cliente', Number(client.id))
         .maybeSingle();
       
       if (error) throw error;
