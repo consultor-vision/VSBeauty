@@ -127,7 +127,7 @@ const Cadastro = () => {
 
   // Novo Cadastro form
   const [novoCadastro, setNovoCadastro] = useState({
-    nome: "", telefone: "", email: "", instagram: "", nascimento: "", genero: "", cpf: "", cep: "",
+    nome: "", telefone: "", email: "", instagram: "", nascimento: "", genero: "", cpf: "", cep: "", logradouro: "", numero: "", bairro: "", cidade: "", uf: "",
   });
 
   // Novo Agendamento form
