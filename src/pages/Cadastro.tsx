@@ -885,9 +885,22 @@ const Cadastro = () => {
               </Select>
               <Input placeholder="CPF" value={novoCadastro.cpf} onChange={(e) => setNovoCadastro((p) => ({ ...p, cpf: e.target.value }))} className="bg-input border-border text-foreground h-9" />
             </div>
-            <div className="flex items-center justify-center gap-3">
-              <Input placeholder="CEP" value={novoCadastro.cep} onChange={(e) => setNovoCadastro((p) => ({ ...p, cep: e.target.value }))} className="w-[200px] bg-input border-border text-foreground h-9" />
+            <div className="grid grid-cols-[1fr_auto_2fr] gap-3 items-end">
+              <div>
+                <Input placeholder="CEP" value={novoCadastro.cep} onChange={(e) => setNovoCadastro((p) => ({ ...p, cep: e.target.value }))} className="bg-input border-border text-foreground h-9" />
+              </div>
               <button className="h-9 w-9 rounded-md bg-accent border border-gold/40 flex items-center justify-center text-gold hover:bg-accent/80 transition-colors">→</button>
+              <div>
+                <Input placeholder="Logradouro" value={novoCadastro.logradouro} onChange={(e) => setNovoCadastro((p) => ({ ...p, logradouro: e.target.value }))} className="bg-input border-border text-foreground h-9" />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-3">
+              <Input placeholder="Número" value={novoCadastro.numero} onChange={(e) => setNovoCadastro((p) => ({ ...p, numero: e.target.value }))} className="bg-input border-border text-foreground h-9" />
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <Input placeholder="Bairro" value={novoCadastro.bairro} onChange={(e) => setNovoCadastro((p) => ({ ...p, bairro: e.target.value }))} className="bg-input border-border text-foreground h-9" />
+              <Input placeholder="Cidade" value={novoCadastro.cidade} onChange={(e) => setNovoCadastro((p) => ({ ...p, cidade: e.target.value }))} className="bg-input border-border text-foreground h-9" />
+              <Input placeholder="UF" value={novoCadastro.uf} onChange={(e) => setNovoCadastro((p) => ({ ...p, uf: e.target.value }))} className="bg-input border-border text-foreground h-9" />
             </div>
             <div className="flex justify-center pt-2">
               <button onClick={() => setShowNovoCadastro(false)} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">
