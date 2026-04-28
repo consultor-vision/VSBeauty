@@ -161,24 +161,34 @@ const Cadastro = () => {
 
         if (error) throw error;
 
-        const formattedClients: ClientData[] = (data || []).map(c => ({
-          id: String(c.id),
-          nome: c.nome || '',
-          foto: c.imagem || '',
-          cpf: c.cpf || '',
-          telefone: c.telefone || '',
-          email: c.email || '',
-          cidade: c.cidade || '',
-          uf: c.estado || '',
-          nascimento: c.data_nascimento || '',
-          genero: c.genero || '',
-          instagram: c.instagram || '',
-          logradouro: (c as any).endereco || (c as any).logradouro || '',
-          numero: c.numero || '',
-          cep: c.cep || '',
-          complemento: c.complemento || '',
-          bairro: c.bairro || ''
-        }));
+        const formattedClients: ClientData[] = (data || []).map(c => {
+          let formattedNascimento = c.data_nascimento || '';
+          if (formattedNascimento) {
+            const date = parseISO(formattedNascimento);
+            if (isValid(date)) {
+              formattedNascimento = format(date, "dd/MM/yyyy");
+            }
+          }
+
+          return {
+            id: String(c.id),
+            nome: c.nome || '',
+            foto: c.imagem || '',
+            cpf: c.cpf || '',
+            telefone: c.telefone || '',
+            email: c.email || '',
+            cidade: c.cidade || '',
+            uf: c.estado || '',
+            nascimento: formattedNascimento,
+            genero: c.genero || '',
+            instagram: c.instagram || '',
+            logradouro: (c as any).endereco || (c as any).logradouro || '',
+            numero: c.numero || '',
+            cep: c.cep || '',
+            complemento: c.complemento || '',
+            bairro: c.bairro || ''
+          };
+        });
         setClients(formattedClients);
       } catch (error: any) {
         console.error('Error fetching clients:', error);
