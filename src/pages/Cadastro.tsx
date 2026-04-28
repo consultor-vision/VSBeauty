@@ -565,37 +565,49 @@ const Cadastro = () => {
             <DialogTitle className="text-foreground">Nova Ficha de Anamnese</DialogTitle>
           </DialogHeader>
           <ScrollArea className="max-h-[75vh] p-5 pt-3">
-            <div className="space-y-3">
+            <div className="space-y-4">
               {anamneseQuestions.map((q, idx) => (
-                <div key={idx} className="flex items-center gap-3 bg-muted/30 rounded-lg p-3 border border-border">
-                  <p className="flex-1 text-sm text-foreground min-w-0">{q.pergunta}</p>
-                  <Select
-                    value={anamneseData[idx]?.opcao || undefined}
-                    onValueChange={(v) => setAnamneseData((prev) => ({ ...prev, [idx]: { ...prev[idx], opcao: v, qual: prev[idx]?.qual || "", complemento: prev[idx]?.complemento || "" } }))}
-                  >
-                    <SelectTrigger className="w-[100px] bg-input border-border text-foreground h-8 text-xs">
-                      <SelectValue placeholder="Opção" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="sim">Sim</SelectItem>
-                      <SelectItem value="nao">Não</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Input
-                    placeholder={q.extra}
-                    value={anamneseData[idx]?.qual || ""}
-                    onChange={(e) => setAnamneseData((prev) => ({ ...prev, [idx]: { ...prev[idx], opcao: prev[idx]?.opcao || "", qual: e.target.value, complemento: prev[idx]?.complemento || "" } }))}
-                    className="w-[80px] bg-input border-border text-foreground h-8 text-xs"
-                  />
-                  <Input
-                    placeholder="Complemento"
-                    value={anamneseData[idx]?.complemento || ""}
-                    onChange={(e) => setAnamneseData((prev) => ({ ...prev, [idx]: { ...prev[idx], opcao: prev[idx]?.opcao || "", qual: prev[idx]?.qual || "", complemento: e.target.value } }))}
-                    className="w-[160px] bg-input border-border text-foreground h-8 text-xs"
-                  />
-                  <button className="px-3 py-1.5 rounded bg-gold text-primary-foreground text-xs font-semibold hover:bg-gold-light transition-colors shrink-0">
-                    Salvar
-                  </button>
+                <div key={idx} className="bg-muted/30 rounded-lg p-4 border border-border space-y-3">
+                  <div className="flex items-center justify-between gap-4">
+                    <p className="text-sm font-medium text-foreground">{q.pergunta}</p>
+                    <div className="flex bg-input border border-border rounded-md p-1 shrink-0">
+                      <button
+                        onClick={() => setAnamneseData((prev) => ({ ...prev, [idx]: { ...prev[idx], opcao: "sim", qual: prev[idx]?.qual || "", complemento: prev[idx]?.complemento || "" } }))}
+                        className={`px-4 py-1 rounded text-xs transition-all ${anamneseData[idx]?.opcao === "sim" ? "bg-gold text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                      >
+                        Sim
+                      </button>
+                      <button
+                        onClick={() => setAnamneseData((prev) => ({ ...prev, [idx]: { ...prev[idx], opcao: "nao", qual: prev[idx]?.qual || "", complemento: prev[idx]?.complemento || "" } }))}
+                        className={`px-4 py-1 rounded text-xs transition-all ${anamneseData[idx]?.opcao === "nao" ? "bg-gold text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                      >
+                        Não
+                      </button>
+                    </div>
+                  </div>
+
+                  {anamneseData[idx]?.opcao === "sim" && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-border/50 animate-in fade-in slide-in-from-top-2">
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-gold uppercase font-bold">{q.extra}</label>
+                        <Input
+                          placeholder="Digite aqui..."
+                          value={anamneseData[idx]?.qual || ""}
+                          onChange={(e) => setAnamneseData((prev) => ({ ...prev, [idx]: { ...prev[idx], opcao: prev[idx]?.opcao || "", qual: e.target.value, complemento: prev[idx]?.complemento || "" } }))}
+                          className="bg-input border-border text-foreground h-9 text-sm"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-gold uppercase font-bold">Complemento</label>
+                        <Input
+                          placeholder="Informações adicionais..."
+                          value={anamneseData[idx]?.complemento || ""}
+                          onChange={(e) => setAnamneseData((prev) => ({ ...prev, [idx]: { ...prev[idx], opcao: prev[idx]?.opcao || "", qual: prev[idx]?.qual || "", complemento: e.target.value } }))}
+                          className="bg-input border-border text-foreground h-9 text-sm"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
