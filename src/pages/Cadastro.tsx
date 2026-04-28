@@ -114,8 +114,37 @@ const Cadastro = () => {
   const [loading, setLoading] = useState(false);
 
   // Modal states
-  // ... keep existing code
+  const [showEditCadastro, setShowEditCadastro] = useState(false);
+  const [showAnamnese, setShowAnamnese] = useState(false);
+  const [showNovoProcedimento, setShowNovoProcedimento] = useState(false);
+  const [showEditPlano, setShowEditPlano] = useState(false);
+  const [showHistorico, setShowHistorico] = useState(false);
+  const [showNovoCadastro, setShowNovoCadastro] = useState(false);
+  const [showNovoAgendamento, setShowNovoAgendamento] = useState(false);
   const [editingPlan, setEditingPlan] = useState<PlanData | null>(null);
+
+  // Novo Cadastro form
+  const [novoCadastro, setNovoCadastro] = useState({
+    nome: "", telefone: "", email: "", instagram: "", nascimento: "", genero: "", cpf: "", cep: "",
+  });
+
+  // Novo Agendamento form
+  const [novoAgendamento, setNovoAgendamento] = useState({
+    procedimento: "", profissional: "", data: "", horarioInicio: "", horarioFechamento: "",
+  });
+
+  // Edit cadastro form
+  const [editForm, setEditForm] = useState<ClientData | null>(null);
+
+  // Novo Plano form
+  const [novoPlano, setNovoPlano] = useState({
+    procedimento: "",
+    quantidadeSessoes: "",
+    valorUnitario: "",
+    formaPagamento: "",
+    parcelas: "",
+    valorEntrada: "",
+  });
 
   useEffect(() => {
     const fetchClients = async () => {
