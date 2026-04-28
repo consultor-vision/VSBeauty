@@ -106,42 +106,63 @@ interface ClientData {
 }
 
 const Cadastro = () => {
+  const { user } = useAuth();
   const [showClientList, setShowClientList] = useState(false);
   const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
   const [searchFilter, setSearchFilter] = useState({ type: "nome", value: "" });
+  const [clients, setClients] = useState<ClientData[]>([]);
+  const [loading, setLoading] = useState(false);
 
   // Modal states
-  const [showEditCadastro, setShowEditCadastro] = useState(false);
-  const [showAnamnese, setShowAnamnese] = useState(false);
-  const [showNovoProcedimento, setShowNovoProcedimento] = useState(false);
-  const [showEditPlano, setShowEditPlano] = useState(false);
-  const [showHistorico, setShowHistorico] = useState(false);
-  const [showNovoCadastro, setShowNovoCadastro] = useState(false);
-  const [showNovoAgendamento, setShowNovoAgendamento] = useState(false);
+  // ... keep existing code
   const [editingPlan, setEditingPlan] = useState<PlanData | null>(null);
 
+  useEffect(() => {
+    const fetchClients = async () => {
+      if (!user?.id_companhia) return;
+      
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('clientes')
+          .select('*')
+          .eq('id_companhia', user.id_companhia)
+          .order('nome', { ascending: true });
+
+        if (error) throw error;
+
+        const formattedClients: ClientData[] = (data || []).map(c => ({
+          id: String(c.id),
+          nome: c.nome || '',
+          foto: c.imagem || '',
+          cpf: c.cpf || '',
+          telefone: c.telefone || '',
+          email: c.email || '',
+          cidade: c.cidade || '',
+          uf: c.estado || '',
+          nascimento: c.data_nascimento || '',
+          genero: c.genero || '',
+          instagram: c.instagram || '',
+          logradouro: c.endereco || '',
+          numero: c.numero || '',
+          cep: c.cep || '',
+          complemento: c.complemento || '',
+          bairro: c.bairro || ''
+        }));
+        setClients(formattedClients);
+      } catch (error: any) {
+        console.error('Error fetching clients:', error);
+        toast.error("Erro ao carregar clientes");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClients();
+  }, [user?.id_companhia]);
+
   // Novo Cadastro form
-  const [novoCadastro, setNovoCadastro] = useState({
-    nome: "", telefone: "", email: "", instagram: "", nascimento: "", genero: "", cpf: "", cep: "",
-  });
-
-  // Novo Agendamento form
-  const [novoAgendamento, setNovoAgendamento] = useState({
-    procedimento: "", profissional: "", data: "", horarioInicio: "", horarioFechamento: "",
-  });
-
-  // Edit cadastro form
-  const [editForm, setEditForm] = useState<ClientData | null>(null);
-
-  // Novo Plano form
-  const [novoPlano, setNovoPlano] = useState({
-    procedimento: "",
-    quantidadeSessoes: "",
-    valorUnitario: "",
-    formaPagamento: "",
-    parcelas: "",
-    valorEntrada: "",
-  });
+  // ... keep existing code
 
   // Anamnese form
   const [anamneseData, setAnamneseData] = useState<Record<number, { opcao: string; qual: string; complemento: string }>>(
@@ -173,16 +194,18 @@ const Cadastro = () => {
     setShowHistorico(true);
   };
 
-  const filteredClients = mockClients.filter((c) => {
-    if (!searchFilter.value) return true;
-    const val = searchFilter.value.toLowerCase();
-    switch (searchFilter.type) {
-      case "nome": return c.nome.toLowerCase().includes(val);
-      case "cpf": return c.cpf.includes(val);
-      case "telefone": return c.telefone.includes(val);
-      default: return true;
-    }
-  });
+  const filteredClients = useMemo(() => {
+    return clients.filter((c) => {
+      if (!searchFilter.value) return true;
+      const val = searchFilter.value.toLowerCase();
+      switch (searchFilter.type) {
+        case "nome": return c.nome.toLowerCase().includes(val);
+        case "cpf": return c.cpf.includes(val);
+        case "telefone": return c.telefone.includes(val);
+        default: return true;
+      }
+    });
+  }, [clients, searchFilter]);
 
   return (
     <Layout title="Consulta de Clientes">
