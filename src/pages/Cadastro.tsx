@@ -285,7 +285,10 @@ const Cadastro = () => {
               Painel de Visualização de Cliente
             </h2>
             <div className="space-y-3">
-              <FormField label="Nome Completo" value={selectedClient?.nome} />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <FormField label="ID do Cliente" value={selectedClient?.id} />
+                <FormField label="Nome Completo" value={selectedClient?.nome} />
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <FormField label="Data de Nascimento" value={selectedClient?.nascimento} />
                 <FormField label="Gênero" value={selectedClient?.genero} />
