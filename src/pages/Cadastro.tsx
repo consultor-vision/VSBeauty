@@ -87,7 +87,7 @@ const anamneseQuestions = [
 const procedimentosList = ["Botox", "Preenchimento Labial", "Tratamentos para Celulite", "Dreno Detox", "Laser4", "Limpeza de Pele", "Peeling"];
 
 interface ClientData {
-  id: number;
+  id: string;
   foto: string;
   nome: string;
   cpf: string;
