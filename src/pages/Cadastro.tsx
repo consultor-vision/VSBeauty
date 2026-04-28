@@ -127,7 +127,7 @@ const Cadastro = () => {
 
   // Novo Cadastro form
   const [novoCadastro, setNovoCadastro] = useState({
-    nome: "", telefone: "", email: "", instagram: "", nascimento: "", genero: "", cpf: "", cep: "",
+    nome: "", telefone: "", email: "", instagram: "", nascimento: "", genero: "", cpf: "", cep: "", logradouro: "", numero: "", bairro: "", cidade: "", uf: "",
   });
 
   // Novo Agendamento form
@@ -299,7 +299,8 @@ const Cadastro = () => {
                 <FormField label="Email" value={selectedClient?.email} />
                 <FormField label="Instagram" value={selectedClient?.instagram} />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <FormField label="Logradouro" value={selectedClient?.logradouro} />
                 <FormField label="Número" value={selectedClient?.numero} />
                 <FormField label="CEP" value={selectedClient?.cep} />
               </div>
@@ -338,7 +339,7 @@ const Cadastro = () => {
               <>
                 <ActionButton icon={Users} label="Clientes" onClick={() => setShowClientList(true)} />
                 <ActionButton icon={Plus} label="Novo Cadastro" onClick={() => {
-                  setNovoCadastro({ nome: "", telefone: "", email: "", instagram: "", nascimento: "", genero: "", cpf: "", cep: "" });
+                  setNovoCadastro({ nome: "", telefone: "", email: "", instagram: "", nascimento: "", genero: "", cpf: "", cep: "", logradouro: "", numero: "", bairro: "", cidade: "", uf: "" });
                   setShowNovoCadastro(true);
                 }} />
               </>
@@ -604,22 +605,13 @@ const Cadastro = () => {
                   </div>
 
                   {anamneseData[idx]?.opcao === "sim" && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-border/50 animate-in fade-in slide-in-from-top-2">
+                    <div className="grid grid-cols-1 gap-3 pt-2 border-t border-border/50 animate-in fade-in slide-in-from-top-2">
                       <div className="space-y-1">
                         <label className="text-[10px] text-gold uppercase font-bold">{q.extra}</label>
                         <Input
                           placeholder="Digite aqui..."
                           value={anamneseData[idx]?.qual || ""}
                           onChange={(e) => setAnamneseData((prev) => ({ ...prev, [idx]: { ...prev[idx], opcao: prev[idx]?.opcao || "", qual: e.target.value, complemento: prev[idx]?.complemento || "" } }))}
-                          className="bg-input border-border text-foreground h-9 text-sm"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] text-gold uppercase font-bold">Complemento</label>
-                        <Input
-                          placeholder="Informações adicionais..."
-                          value={anamneseData[idx]?.complemento || ""}
-                          onChange={(e) => setAnamneseData((prev) => ({ ...prev, [idx]: { ...prev[idx], opcao: prev[idx]?.opcao || "", qual: prev[idx]?.qual || "", complemento: e.target.value } }))}
                           className="bg-input border-border text-foreground h-9 text-sm"
                         />
                       </div>
@@ -893,9 +885,22 @@ const Cadastro = () => {
               </Select>
               <Input placeholder="CPF" value={novoCadastro.cpf} onChange={(e) => setNovoCadastro((p) => ({ ...p, cpf: e.target.value }))} className="bg-input border-border text-foreground h-9" />
             </div>
-            <div className="flex items-center justify-center gap-3">
-              <Input placeholder="CEP" value={novoCadastro.cep} onChange={(e) => setNovoCadastro((p) => ({ ...p, cep: e.target.value }))} className="w-[200px] bg-input border-border text-foreground h-9" />
+            <div className="grid grid-cols-[1fr_auto_2fr] gap-3 items-end">
+              <div>
+                <Input placeholder="CEP" value={novoCadastro.cep} onChange={(e) => setNovoCadastro((p) => ({ ...p, cep: e.target.value }))} className="bg-input border-border text-foreground h-9" />
+              </div>
               <button className="h-9 w-9 rounded-md bg-accent border border-gold/40 flex items-center justify-center text-gold hover:bg-accent/80 transition-colors">→</button>
+              <div>
+                <Input placeholder="Logradouro" value={novoCadastro.logradouro} onChange={(e) => setNovoCadastro((p) => ({ ...p, logradouro: e.target.value }))} className="bg-input border-border text-foreground h-9" />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-3">
+              <Input placeholder="Número" value={novoCadastro.numero} onChange={(e) => setNovoCadastro((p) => ({ ...p, numero: e.target.value }))} className="bg-input border-border text-foreground h-9" />
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <Input placeholder="Bairro" value={novoCadastro.bairro} onChange={(e) => setNovoCadastro((p) => ({ ...p, bairro: e.target.value }))} className="bg-input border-border text-foreground h-9" />
+              <Input placeholder="Cidade" value={novoCadastro.cidade} onChange={(e) => setNovoCadastro((p) => ({ ...p, cidade: e.target.value }))} className="bg-input border-border text-foreground h-9" />
+              <Input placeholder="UF" value={novoCadastro.uf} onChange={(e) => setNovoCadastro((p) => ({ ...p, uf: e.target.value }))} className="bg-input border-border text-foreground h-9" />
             </div>
             <div className="flex justify-center pt-2">
               <button onClick={() => setShowNovoCadastro(false)} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">
