@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Layout from "@/components/Layout";
 import { User, Users, Plus, Eraser, Pencil, FileText, CalendarPlus, Clock, Edit, X, Upload } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -24,6 +24,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
 
 // Mock data
 const mockClients = [
@@ -84,7 +87,7 @@ const anamneseQuestions = [
 const procedimentosList = ["Botox", "Preenchimento Labial", "Tratamentos para Celulite", "Dreno Detox", "Laser4", "Limpeza de Pele", "Peeling"];
 
 interface ClientData {
-  id: number;
+  id: string;
   foto: string;
   nome: string;
   cpf: string;
@@ -103,9 +106,12 @@ interface ClientData {
 }
 
 const Cadastro = () => {
+  const { user } = useAuth();
   const [showClientList, setShowClientList] = useState(false);
   const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
   const [searchFilter, setSearchFilter] = useState({ type: "nome", value: "" });
+  const [clients, setClients] = useState<ClientData[]>([]);
+  const [loading, setLoading] = useState(false);
 
   // Modal states
   const [showEditCadastro, setShowEditCadastro] = useState(false);
@@ -140,6 +146,53 @@ const Cadastro = () => {
     valorEntrada: "",
   });
 
+  useEffect(() => {
+    const fetchClients = async () => {
+      if (!user?.id_companhia) return;
+      
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('clientes')
+          .select('*')
+          .eq('id_companhia', user.id_companhia)
+          .order('nome', { ascending: true });
+
+        if (error) throw error;
+
+        const formattedClients: ClientData[] = (data || []).map(c => ({
+          id: String(c.id),
+          nome: c.nome || '',
+          foto: c.imagem || '',
+          cpf: c.cpf || '',
+          telefone: c.telefone || '',
+          email: c.email || '',
+          cidade: c.cidade || '',
+          uf: c.estado || '',
+          nascimento: c.data_nascimento || '',
+          genero: c.genero || '',
+          instagram: c.instagram || '',
+          logradouro: (c as any).endereco || (c as any).logradouro || '',
+          numero: c.numero || '',
+          cep: c.cep || '',
+          complemento: c.complemento || '',
+          bairro: c.bairro || ''
+        }));
+        setClients(formattedClients);
+      } catch (error: any) {
+        console.error('Error fetching clients:', error);
+        toast.error("Erro ao carregar clientes");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClients();
+  }, [user?.id_companhia]);
+
+  // Novo Cadastro form
+  // ... keep existing code
+
   // Anamnese form
   const [anamneseData, setAnamneseData] = useState<Record<number, { opcao: string; qual: string; complemento: string }>>(
     {}
@@ -170,16 +223,18 @@ const Cadastro = () => {
     setShowHistorico(true);
   };
 
-  const filteredClients = mockClients.filter((c) => {
-    if (!searchFilter.value) return true;
-    const val = searchFilter.value.toLowerCase();
-    switch (searchFilter.type) {
-      case "nome": return c.nome.toLowerCase().includes(val);
-      case "cpf": return c.cpf.includes(val);
-      case "telefone": return c.telefone.includes(val);
-      default: return true;
-    }
-  });
+  const filteredClients = useMemo(() => {
+    return clients.filter((c) => {
+      if (!searchFilter.value) return true;
+      const val = searchFilter.value.toLowerCase();
+      switch (searchFilter.type) {
+        case "nome": return c.nome.toLowerCase().includes(val);
+        case "cpf": return c.cpf.includes(val);
+        case "telefone": return c.telefone.includes(val);
+        default: return true;
+      }
+    });
+  }, [clients, searchFilter]);
 
   return (
     <Layout title="Consulta de Clientes">
@@ -354,8 +409,12 @@ const Cadastro = () => {
                 {filteredClients.map((client) => (
                   <TableRow key={client.id} className="border-border hover:bg-muted/30">
                     <TableCell>
-                      <div className="w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center">
-                        <User className="w-4 h-4 text-muted-foreground/40" />
+                      <div className="w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center overflow-hidden">
+                        {client.foto ? (
+                          <img src={client.foto} alt={client.nome} className="w-full h-full object-cover" />
+                        ) : (
+                          <User className="w-4 h-4 text-muted-foreground/40" />
+                        )}
                       </div>
                     </TableCell>
                     <TableCell className="text-sm">{client.nome}</TableCell>
