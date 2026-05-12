@@ -874,7 +874,7 @@ const Cadastro = () => {
           </DialogHeader>
           <ScrollArea className="max-h-[75vh] p-5 pt-3">
             <div className="space-y-4">
-              {anamneseQuestions.map((q, idx) => (
+              {(anamneseQuestionsDb.length > 0 ? anamneseQuestionsDb.map(q => ({ pergunta: q.pergunta, extra: q.caso_sim || 'Qual?' })) : anamneseQuestions).map((q, idx) => (
                 <div key={idx} className="bg-muted/30 rounded-lg p-4 border border-border space-y-3">
                   <div className="flex items-center justify-between gap-4">
                     <p className="text-sm font-medium text-foreground">{q.pergunta}</p>
