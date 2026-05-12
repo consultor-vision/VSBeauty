@@ -821,7 +821,7 @@ const Cadastro = () => {
                   <label className="text-xs text-gold mb-1 block">CEP</label>
                   <Input value={editForm.cep} onChange={(e) => setEditForm({ ...editForm, cep: e.target.value })} className="bg-input border-border text-foreground h-9" />
                 </div>
-                <button className="h-9 w-9 rounded-md bg-gold/20 border border-gold flex items-center justify-center text-gold hover:bg-gold/30 transition-colors">→</button>
+                <button type="button" onClick={() => editForm && buscarCEP(editForm.cep, "edit")} disabled={cepLoading} className="h-9 w-9 rounded-md bg-gold/20 border border-gold flex items-center justify-center text-gold hover:bg-gold/30 transition-colors disabled:opacity-50">→</button>
                 <div>
                   <label className="text-xs text-gold mb-1 block">Logradouro</label>
                   <Input value={editForm.logradouro} onChange={(e) => setEditForm({ ...editForm, logradouro: e.target.value })} className="bg-input border-border text-foreground h-9" />
