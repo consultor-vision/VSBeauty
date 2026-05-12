@@ -124,8 +124,12 @@ const Cadastro = () => {
   const [searchFilter, setSearchFilter] = useState({ type: "nome", value: "" });
   const [clients, setClients] = useState<ClientData[]>([]);
   const [loading, setLoading] = useState(false);
-  const [procedimentos, setProcedimentos] = useState<{ nome: string; valor: number }[]>([]);
+  const [procedimentos, setProcedimentos] = useState<{ id: number; nome: string; valor: number }[]>([]);
   const [hasAnamnese, setHasAnamnese] = useState(false);
+  const [clientPlans, setClientPlans] = useState<PlanData[]>([]);
+  const [loadingPlans, setLoadingPlans] = useState(false);
+  const [anamneseQuestionsDb, setAnamneseQuestionsDb] = useState<{ id: number; pergunta: string; caso_sim: string }[]>([]);
+  const [cepLoading, setCepLoading] = useState(false);
 
   // Modal states
   const [showEditCadastro, setShowEditCadastro] = useState(false);
@@ -136,6 +140,17 @@ const Cadastro = () => {
   const [showNovoCadastro, setShowNovoCadastro] = useState(false);
   const [showNovoAgendamento, setShowNovoAgendamento] = useState(false);
   const [editingPlan, setEditingPlan] = useState<PlanData | null>(null);
+  const [editPlanForm, setEditPlanForm] = useState({
+    id_procedimento: "",
+    sessoes: "",
+    valor: "",
+    forma_pagamento: "",
+    parcelas: "",
+    status_procedimento: "",
+    status_financeiro: "",
+  });
+  const [savingPlan, setSavingPlan] = useState(false);
+  const [savingAnamnese, setSavingAnamnese] = useState(false);
 
   // Novo Cadastro form
   const [novoCadastro, setNovoCadastro] = useState({
@@ -159,6 +174,51 @@ const Cadastro = () => {
     parcelas: "",
     valorEntrada: "",
   });
+
+  // ViaCEP integration
+  const buscarCEP = async (cep: string, target: "novo" | "edit") => {
+    const cepLimpo = (cep || "").replace(/\D/g, "");
+    if (!cepLimpo) {
+      toast.error("Informe um CEP válido.");
+      return;
+    }
+    setCepLoading(true);
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+      const data = await res.json();
+      if (data.erro) {
+        toast.error("CEP não encontrado.");
+        return;
+      }
+      if (target === "novo") {
+        setNovoCadastro((p) => ({
+          ...p,
+          logradouro: data.logradouro || "",
+          bairro: data.bairro || "",
+          cidade: data.localidade || "",
+          uf: data.uf || "",
+        }));
+      } else {
+        setEditForm((prev) =>
+          prev
+            ? {
+                ...prev,
+                logradouro: data.logradouro || "",
+                bairro: data.bairro || "",
+                cidade: data.localidade || "",
+                uf: data.uf || "",
+              }
+            : prev
+        );
+      }
+      toast.success("Endereço preenchido.");
+    } catch (e) {
+      console.error(e);
+      toast.error("Erro ao buscar CEP.");
+    } finally {
+      setCepLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchClients = async () => {
