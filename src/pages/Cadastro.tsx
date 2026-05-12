@@ -1229,7 +1229,7 @@ const Cadastro = () => {
               <div>
                 <Input placeholder="CEP" value={novoCadastro.cep} onChange={(e) => setNovoCadastro((p) => ({ ...p, cep: e.target.value }))} className="bg-input border-border text-foreground h-9" />
               </div>
-              <button className="h-9 w-9 rounded-md bg-accent border border-gold/40 flex items-center justify-center text-gold hover:bg-accent/80 transition-colors">→</button>
+              <button type="button" onClick={() => buscarCEP(novoCadastro.cep, "novo")} disabled={cepLoading} className="h-9 w-9 rounded-md bg-accent border border-gold/40 flex items-center justify-center text-gold hover:bg-accent/80 transition-colors disabled:opacity-50">→</button>
               <div>
                 <Input placeholder="Logradouro" value={novoCadastro.logradouro} onChange={(e) => setNovoCadastro((p) => ({ ...p, logradouro: e.target.value }))} className="bg-input border-border text-foreground h-9" />
               </div>
