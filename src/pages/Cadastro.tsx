@@ -912,10 +912,11 @@ const Cadastro = () => {
             </div>
             <div className="flex justify-center pt-5">
               <button
-                onClick={() => setShowAnamnese(false)}
-                className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all"
+                onClick={handleSaveAnamnese}
+                disabled={savingAnamnese}
+                className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all disabled:opacity-60"
               >
-                Finalizar
+                {savingAnamnese ? "Salvando..." : "Finalizar"}
               </button>
             </div>
           </ScrollArea>
