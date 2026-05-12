@@ -613,7 +613,7 @@ const Cadastro = () => {
                 <ActionButton 
                   icon={FileText} 
                   label={hasAnamnese ? "Editar a Ficha de anamnese" : "Nova Ficha de anamnese"} 
-                  onClick={() => setShowAnamnese(true)} 
+                  onClick={handleOpenAnamnese} 
                 />
                 <ActionButton icon={Plus} label="Novo Procedimento" onClick={() => {
                   setNovoPlano({ procedimento: "", quantidadeSessoes: "", valorUnitario: "", formaPagamento: "", parcelas: "", valorEntrada: "" });
