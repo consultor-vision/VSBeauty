@@ -39,6 +39,8 @@ const mockClients = [
 ];
 
 interface PlanData {
+  id?: number;
+  id_procedimento?: number | null;
   dataCompra: string;
   procedimento: string;
   sessoesPrevistas: number;
@@ -50,6 +52,15 @@ interface PlanData {
   formaPagamento?: string;
   parcelas?: string;
 }
+
+const formatBRL = (n: number) =>
+  (n || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+const parseBRL = (s: string) => {
+  if (!s) return 0;
+  const clean = s.replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", ".");
+  return parseFloat(clean) || 0;
+};
 
 const mockPlans: PlanData[] = [
   { dataCompra: "15/5/2025", procedimento: "Botox", sessoesPrevistas: 20, sessoesRealizadas: 10, responsavel: "Filipe Pereira da Silva", statusProcedimento: "Pendente", statusFinanceiro: "Pago", valorProcedimento: "R$ 100", formaPagamento: "Cartão de Crédito", parcelas: "10" },
