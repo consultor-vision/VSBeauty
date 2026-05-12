@@ -657,8 +657,8 @@ const Cadastro = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {selectedClient && mockPlans.length > 0 ? (
-                    mockPlans.map((plan, idx) => (
+                  {selectedClient && clientPlans.length > 0 ? (
+                    clientPlans.map((plan, idx) => (
                       <TableRow key={idx} className="border-border hover:bg-muted/30">
                         <TableCell className="text-sm">{plan.dataCompra}</TableCell>
                         <TableCell className="text-sm">{plan.procedimento}</TableCell>
