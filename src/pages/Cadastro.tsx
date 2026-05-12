@@ -39,6 +39,8 @@ const mockClients = [
 ];
 
 interface PlanData {
+  id?: number;
+  id_procedimento?: number | null;
   dataCompra: string;
   procedimento: string;
   sessoesPrevistas: number;
@@ -50,6 +52,15 @@ interface PlanData {
   formaPagamento?: string;
   parcelas?: string;
 }
+
+const formatBRL = (n: number) =>
+  (n || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+const parseBRL = (s: string) => {
+  if (!s) return 0;
+  const clean = s.replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", ".");
+  return parseFloat(clean) || 0;
+};
 
 const mockPlans: PlanData[] = [
   { dataCompra: "15/5/2025", procedimento: "Botox", sessoesPrevistas: 20, sessoesRealizadas: 10, responsavel: "Filipe Pereira da Silva", statusProcedimento: "Pendente", statusFinanceiro: "Pago", valorProcedimento: "R$ 100", formaPagamento: "Cartão de Crédito", parcelas: "10" },
@@ -113,8 +124,12 @@ const Cadastro = () => {
   const [searchFilter, setSearchFilter] = useState({ type: "nome", value: "" });
   const [clients, setClients] = useState<ClientData[]>([]);
   const [loading, setLoading] = useState(false);
-  const [procedimentos, setProcedimentos] = useState<{ nome: string; valor: number }[]>([]);
+  const [procedimentos, setProcedimentos] = useState<{ id: number; nome: string; valor: number }[]>([]);
   const [hasAnamnese, setHasAnamnese] = useState(false);
+  const [clientPlans, setClientPlans] = useState<PlanData[]>([]);
+  const [loadingPlans, setLoadingPlans] = useState(false);
+  const [anamneseQuestionsDb, setAnamneseQuestionsDb] = useState<{ id: number; pergunta: string; caso_sim: string }[]>([]);
+  const [cepLoading, setCepLoading] = useState(false);
 
   // Modal states
   const [showEditCadastro, setShowEditCadastro] = useState(false);
@@ -125,6 +140,17 @@ const Cadastro = () => {
   const [showNovoCadastro, setShowNovoCadastro] = useState(false);
   const [showNovoAgendamento, setShowNovoAgendamento] = useState(false);
   const [editingPlan, setEditingPlan] = useState<PlanData | null>(null);
+  const [editPlanForm, setEditPlanForm] = useState({
+    id_procedimento: "",
+    sessoes: "",
+    valor: "",
+    forma_pagamento: "",
+    parcelas: "",
+    status_procedimento: "",
+    status_financeiro: "",
+  });
+  const [savingPlan, setSavingPlan] = useState(false);
+  const [savingAnamnese, setSavingAnamnese] = useState(false);
 
   // Novo Cadastro form
   const [novoCadastro, setNovoCadastro] = useState({
@@ -148,6 +174,51 @@ const Cadastro = () => {
     parcelas: "",
     valorEntrada: "",
   });
+
+  // ViaCEP integration
+  const buscarCEP = async (cep: string, target: "novo" | "edit") => {
+    const cepLimpo = (cep || "").replace(/\D/g, "");
+    if (!cepLimpo) {
+      toast.error("Informe um CEP válido.");
+      return;
+    }
+    setCepLoading(true);
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+      const data = await res.json();
+      if (data.erro) {
+        toast.error("CEP não encontrado.");
+        return;
+      }
+      if (target === "novo") {
+        setNovoCadastro((p) => ({
+          ...p,
+          logradouro: data.logradouro || "",
+          bairro: data.bairro || "",
+          cidade: data.localidade || "",
+          uf: data.uf || "",
+        }));
+      } else {
+        setEditForm((prev) =>
+          prev
+            ? {
+                ...prev,
+                logradouro: data.logradouro || "",
+                bairro: data.bairro || "",
+                cidade: data.localidade || "",
+                uf: data.uf || "",
+              }
+            : prev
+        );
+      }
+      toast.success("Endereço preenchido.");
+    } catch (e) {
+      console.error(e);
+      toast.error("Erro ao buscar CEP.");
+    } finally {
+      setCepLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -210,14 +281,14 @@ const Cadastro = () => {
       try {
         const { data, error } = await supabase
           .from('procedimentos')
-          .select('nome, valor')
+          .select('id, nome, valor')
           .eq('id_companhia', user.id_companhia)
           .order('nome', { ascending: true });
 
         if (error) throw error;
 
         if (data) {
-          setProcedimentos(data.map(p => ({ nome: p.nome, valor: Number(p.valor) || 0 })));
+          setProcedimentos(data.map(p => ({ id: Number(p.id), nome: p.nome || '', valor: Number(p.valor) || 0 })));
         }
       } catch (error) {
         console.error('Error fetching procedimentos:', error);
@@ -225,6 +296,29 @@ const Cadastro = () => {
     };
 
     fetchProcedimentos();
+  }, [user?.id_companhia]);
+
+  // Fetch anamnese questions for company
+  useEffect(() => {
+    const fetchAnamnese = async () => {
+      if (!user?.id_companhia) return;
+      try {
+        const { data, error } = await supabase
+          .from('anamnese')
+          .select('id, pergunta, caso_sim, "Ordem"')
+          .eq('id_companhia', user.id_companhia)
+          .order('Ordem', { ascending: true });
+        if (error) throw error;
+        if (data && data.length > 0) {
+          setAnamneseQuestionsDb(
+            data.map((q: any) => ({ id: Number(q.id), pergunta: q.pergunta || '', caso_sim: q.caso_sim || 'Qual?' }))
+          );
+        }
+      } catch (e) {
+        console.error('Error fetching anamnese questions:', e);
+      }
+    };
+    fetchAnamnese();
   }, [user?.id_companhia]);
 
   // Novo Cadastro form
@@ -235,28 +329,86 @@ const Cadastro = () => {
     {}
   );
 
+  const fetchClientPlans = async (clienteId: number) => {
+    setLoadingPlans(true);
+    try {
+      const { data, error } = await supabase
+        .from('planos')
+        .select('*')
+        .eq('id_cliente', clienteId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+
+      // Fetch session counts (concluído) per plano via agendamento
+      const ids = (data || []).map((p: any) => p.id);
+      let realizadasMap: Record<number, number> = {};
+      if (ids.length) {
+        const { data: ag } = await supabase
+          .from('agendamento')
+          .select('id_plano,status_procedimento')
+          .in('id_plano', ids);
+        (ag || []).forEach((a: any) => {
+          if ((a.status_procedimento || '').toLowerCase() === 'concluído') {
+            realizadasMap[a.id_plano] = (realizadasMap[a.id_plano] || 0) + 1;
+          }
+        });
+      }
+
+      const procMap = new Map(procedimentos.map(p => [p.id, p.nome]));
+      const formatted: PlanData[] = (data || []).map((p: any) => {
+        const dt = p.created_at ? new Date(p.created_at) : null;
+        return {
+          id: Number(p.id),
+          id_procedimento: p.id_procedimento,
+          dataCompra: dt ? format(dt, 'dd/MM/yyyy') : '',
+          procedimento: procMap.get(Number(p.id_procedimento)) || p.nome_plano || '',
+          sessoesPrevistas: Number(p.sessoes) || 0,
+          sessoesRealizadas: realizadasMap[Number(p.id)] || 0,
+          responsavel: p.alterado_por || '',
+          statusProcedimento: p.status_procedimento || 'Pendente',
+          statusFinanceiro: p.status_financeiro || 'Pendente',
+          valorProcedimento: formatBRL(Number(p.valor_procediemtno) || 0),
+          formaPagamento: p.forma_pagamento || '',
+          parcelas: p.parcelas != null ? String(p.parcelas) : '',
+        };
+      });
+      setClientPlans(formatted);
+    } catch (e) {
+      console.error('Error fetching plans:', e);
+      toast.error('Erro ao carregar planos');
+      setClientPlans([]);
+    } finally {
+      setLoadingPlans(false);
+    }
+  };
+
   const handleSelectClient = async (client: ClientData) => {
     setSelectedClient(client);
     setShowClientList(false);
-    
+
     // Check if client has anamnese
     try {
       const { data, error } = await supabase
         .from('anamnese_cliente')
         .select('id')
         .eq('id_cliente', Number(client.id))
+        .limit(1)
         .maybeSingle();
-      
       if (error) throw error;
       setHasAnamnese(!!data);
     } catch (error) {
       console.error('Error checking anamnese:', error);
       setHasAnamnese(false);
     }
+
+    // Load plans
+    fetchClientPlans(Number(client.id));
   };
 
   const handleClear = () => {
     setSelectedClient(null);
+    setClientPlans([]);
+    setHasAnamnese(false);
   };
 
   const handleOpenEditCadastro = () => {
@@ -266,9 +418,122 @@ const Cadastro = () => {
     }
   };
 
-  const handleOpenEditPlano = (plan: PlanData) => {
+  const handleOpenEditPlano = async (plan: PlanData) => {
     setEditingPlan(plan);
     setShowEditPlano(true);
+    if (!plan.id) return;
+    try {
+      const { data, error } = await supabase
+        .from('planos')
+        .select('*')
+        .eq('id', plan.id)
+        .single();
+      if (error) throw error;
+      setEditPlanForm({
+        id_procedimento: data.id_procedimento != null ? String(data.id_procedimento) : '',
+        sessoes: data.sessoes != null ? String(data.sessoes) : '',
+        valor: formatBRL(Number(data.valor_procediemtno) || 0),
+        forma_pagamento: data.forma_pagamento || '',
+        parcelas: data.parcelas != null ? String(data.parcelas) : '',
+        status_procedimento: data.status_procedimento || 'Pendente',
+        status_financeiro: data.status_financeiro || 'Pendente',
+      });
+    } catch (e) {
+      console.error('Error loading plan:', e);
+      toast.error('Erro ao carregar plano');
+    }
+  };
+
+  const handleSaveEditPlano = async () => {
+    if (!editingPlan?.id) return;
+    setSavingPlan(true);
+    try {
+      const { error } = await supabase
+        .from('planos')
+        .update({
+          id_procedimento: editPlanForm.id_procedimento ? Number(editPlanForm.id_procedimento) : null,
+          sessoes: editPlanForm.sessoes ? Number(editPlanForm.sessoes) : null,
+          valor_procediemtno: parseBRL(editPlanForm.valor),
+          forma_pagamento: editPlanForm.forma_pagamento || null,
+          parcelas: editPlanForm.parcelas ? Number(editPlanForm.parcelas) : null,
+          status_procedimento: editPlanForm.status_procedimento || null,
+          status_financeiro: editPlanForm.status_financeiro || null,
+          data_alteracao: new Date().toISOString(),
+        })
+        .eq('id', editingPlan.id);
+      if (error) throw error;
+      toast.success('Plano atualizado');
+      setShowEditPlano(false);
+      if (selectedClient) fetchClientPlans(Number(selectedClient.id));
+    } catch (e: any) {
+      console.error(e);
+      toast.error('Erro ao salvar plano');
+    } finally {
+      setSavingPlan(false);
+    }
+  };
+
+  const handleOpenAnamnese = async () => {
+    setShowAnamnese(true);
+    if (!selectedClient) return;
+    try {
+      const { data, error } = await supabase
+        .from('anamnese_cliente')
+        .select('id_pergunta, resposta, resposta_caso_sim')
+        .eq('id_cliente', Number(selectedClient.id));
+      if (error) throw error;
+
+      const questions = anamneseQuestionsDb.length > 0 ? anamneseQuestionsDb : [];
+      const next: Record<number, { opcao: string; qual: string; complemento: string }> = {};
+      (data || []).forEach((row: any) => {
+        const idx = questions.findIndex(q => q.id === Number(row.id_pergunta));
+        if (idx >= 0) {
+          next[idx] = {
+            opcao: (row.resposta || '').toLowerCase() === 'sim' ? 'sim' : 'nao',
+            qual: row.resposta_caso_sim || '',
+            complemento: '',
+          };
+        }
+      });
+      setAnamneseData(next);
+    } catch (e) {
+      console.error('Error loading anamnese:', e);
+    }
+  };
+
+  const handleSaveAnamnese = async () => {
+    if (!selectedClient || !user?.id_companhia) return;
+    const questions = anamneseQuestionsDb;
+    if (questions.length === 0) {
+      toast.error('Nenhuma pergunta de anamnese cadastrada para a companhia');
+      return;
+    }
+    setSavingAnamnese(true);
+    try {
+      // delete previous and re-insert (simple sync)
+      await supabase.from('anamnese_cliente').delete().eq('id_cliente', Number(selectedClient.id));
+      const rows = Object.entries(anamneseData)
+        .filter(([idx, v]) => v && (v.opcao || v.qual))
+        .map(([idx, v]) => ({
+          id_companhia: user.id_companhia,
+          id_cliente: Number(selectedClient.id),
+          id_pergunta: questions[Number(idx)].id,
+          resposta: v.opcao === 'sim' ? 'Sim' : 'Não',
+          resposta_caso_sim: v.qual || null,
+        }));
+      if (rows.length) {
+        const { error } = await supabase.from('anamnese_cliente').insert(rows);
+        if (error) throw error;
+      }
+      setHasAnamnese(true);
+      toast.success('Ficha de anamnese salva');
+      setShowAnamnese(false);
+    } catch (e: any) {
+      console.error(e);
+      toast.error('Erro ao salvar anamnese');
+    } finally {
+      setSavingAnamnese(false);
+    }
   };
 
   const handleOpenHistorico = () => {
@@ -348,7 +613,7 @@ const Cadastro = () => {
                 <ActionButton 
                   icon={FileText} 
                   label={hasAnamnese ? "Editar a Ficha de anamnese" : "Nova Ficha de anamnese"} 
-                  onClick={() => setShowAnamnese(true)} 
+                  onClick={handleOpenAnamnese} 
                 />
                 <ActionButton icon={Plus} label="Novo Procedimento" onClick={() => {
                   setNovoPlano({ procedimento: "", quantidadeSessoes: "", valorUnitario: "", formaPagamento: "", parcelas: "", valorEntrada: "" });
@@ -392,8 +657,8 @@ const Cadastro = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {selectedClient && mockPlans.length > 0 ? (
-                    mockPlans.map((plan, idx) => (
+                  {selectedClient && clientPlans.length > 0 ? (
+                    clientPlans.map((plan, idx) => (
                       <TableRow key={idx} className="border-border hover:bg-muted/30">
                         <TableCell className="text-sm">{plan.dataCompra}</TableCell>
                         <TableCell className="text-sm">{plan.procedimento}</TableCell>
@@ -556,7 +821,7 @@ const Cadastro = () => {
                   <label className="text-xs text-gold mb-1 block">CEP</label>
                   <Input value={editForm.cep} onChange={(e) => setEditForm({ ...editForm, cep: e.target.value })} className="bg-input border-border text-foreground h-9" />
                 </div>
-                <button className="h-9 w-9 rounded-md bg-gold/20 border border-gold flex items-center justify-center text-gold hover:bg-gold/30 transition-colors">→</button>
+                <button type="button" onClick={() => editForm && buscarCEP(editForm.cep, "edit")} disabled={cepLoading} className="h-9 w-9 rounded-md bg-gold/20 border border-gold flex items-center justify-center text-gold hover:bg-gold/30 transition-colors disabled:opacity-50">→</button>
                 <div>
                   <label className="text-xs text-gold mb-1 block">Logradouro</label>
                   <Input value={editForm.logradouro} onChange={(e) => setEditForm({ ...editForm, logradouro: e.target.value })} className="bg-input border-border text-foreground h-9" />
@@ -609,7 +874,7 @@ const Cadastro = () => {
           </DialogHeader>
           <ScrollArea className="max-h-[75vh] p-5 pt-3">
             <div className="space-y-4">
-              {anamneseQuestions.map((q, idx) => (
+              {(anamneseQuestionsDb.length > 0 ? anamneseQuestionsDb.map(q => ({ pergunta: q.pergunta, extra: q.caso_sim || 'Qual?' })) : anamneseQuestions).map((q, idx) => (
                 <div key={idx} className="bg-muted/30 rounded-lg p-4 border border-border space-y-3">
                   <div className="flex items-center justify-between gap-4">
                     <p className="text-sm font-medium text-foreground">{q.pergunta}</p>
@@ -647,10 +912,11 @@ const Cadastro = () => {
             </div>
             <div className="flex justify-center pt-5">
               <button
-                onClick={() => setShowAnamnese(false)}
-                className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all"
+                onClick={handleSaveAnamnese}
+                disabled={savingAnamnese}
+                className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all disabled:opacity-60"
               >
-                Finalizar
+                {savingAnamnese ? "Salvando..." : "Finalizar"}
               </button>
             </div>
           </ScrollArea>
@@ -811,72 +1077,111 @@ const Cadastro = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs text-gold mb-1 block">Procedimento</label>
-                  <Select defaultValue={editingPlan.procedimento.toLowerCase()}>
+                  <Select
+                    value={editPlanForm.id_procedimento || undefined}
+                    onValueChange={(v) => {
+                      const proc = procedimentos.find(p => String(p.id) === v);
+                      setEditPlanForm(f => ({
+                        ...f,
+                        id_procedimento: v,
+                        valor: proc ? formatBRL(proc.valor) : f.valor,
+                      }));
+                    }}
+                  >
                     <SelectTrigger className="bg-input border-border text-foreground h-9">
-                      <SelectValue />
+                      <SelectValue placeholder="Preencher" />
                     </SelectTrigger>
                     <SelectContent>
-                      {(procedimentos.length > 0 ? procedimentos : procedimentosList).map((p) => (
-                        <SelectItem key={p} value={p.toLowerCase()}>{p}</SelectItem>
+                      {procedimentos.map((p) => (
+                        <SelectItem key={p.id} value={String(p.id)}>{p.nome}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
                   <label className="text-xs text-gold mb-1 block">Quantidade de Sessões</label>
-                  <Input defaultValue={editingPlan.sessoesPrevistas} className="bg-input border-border text-foreground h-9" />
+                  <Input
+                    type="number"
+                    value={editPlanForm.sessoes}
+                    onChange={(e) => setEditPlanForm(f => ({ ...f, sessoes: e.target.value }))}
+                    className="bg-input border-border text-foreground h-9"
+                  />
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="text-xs text-gold mb-1 block">Valor de Procedimento</label>
-                  <Input defaultValue={editingPlan.valorProcedimento || ""} className="bg-input border-border text-foreground h-9" />
+                  <Input
+                    value={editPlanForm.valor}
+                    onChange={(e) => {
+                      const digits = e.target.value.replace(/\D/g, "");
+                      const formatted = (Number(digits) / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+                      setEditPlanForm(f => ({ ...f, valor: formatted }));
+                    }}
+                    className="bg-input border-border text-foreground h-9"
+                  />
                 </div>
                 <div>
                   <label className="text-xs text-gold mb-1 block">Forma de Pagamento</label>
-                  <Select defaultValue={editingPlan.formaPagamento?.toLowerCase().replace(/ /g, "_") || undefined}>
+                  <Select
+                    value={editPlanForm.forma_pagamento || undefined}
+                    onValueChange={(v) => setEditPlanForm(f => ({ ...f, forma_pagamento: v }))}
+                  >
                     <SelectTrigger className="bg-input border-border text-foreground h-9">
                       <SelectValue placeholder="Preencher" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="cartão_de_crédito">Cartão de Crédito</SelectItem>
-                      <SelectItem value="cartão_de_débito">Cartão de Débito</SelectItem>
-                      <SelectItem value="pix">PIX</SelectItem>
-                      <SelectItem value="dinheiro">Dinheiro</SelectItem>
+                      <SelectItem value="Cartão de Crédito">Cartão de Crédito</SelectItem>
+                      <SelectItem value="Cartão de Débito">Cartão de Débito</SelectItem>
+                      <SelectItem value="Pix">PIX</SelectItem>
+                      <SelectItem value="Dinheiro">Dinheiro</SelectItem>
+                      <SelectItem value="Boleto">Boleto</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
                   <label className="text-xs text-gold mb-1 block">Parcelas</label>
-                  <Input defaultValue={editingPlan.parcelas || ""} className="bg-input border-border text-foreground h-9" />
+                  <Input
+                    type="number"
+                    value={editPlanForm.parcelas}
+                    onChange={(e) => setEditPlanForm(f => ({ ...f, parcelas: e.target.value }))}
+                    className="bg-input border-border text-foreground h-9"
+                  />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs text-gold mb-1 block">Status do Procedimento</label>
-                  <Select defaultValue={editingPlan.statusProcedimento.toLowerCase()}>
+                  <Select
+                    value={editPlanForm.status_procedimento || undefined}
+                    onValueChange={(v) => setEditPlanForm(f => ({ ...f, status_procedimento: v }))}
+                  >
                     <SelectTrigger className="bg-input border-border text-foreground h-9">
-                      <SelectValue />
+                      <SelectValue placeholder="Preencher" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="pendente">Pendente</SelectItem>
-                      <SelectItem value="concluído">Concluído</SelectItem>
-                      <SelectItem value="cancelado">Cancelado</SelectItem>
+                      <SelectItem value="Pendente">Pendente</SelectItem>
+                      <SelectItem value="Concluído">Concluído</SelectItem>
+                      <SelectItem value="Cancelado">Cancelado</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
                   <label className="text-xs text-gold mb-1 block">Status Financeiro</label>
-                  <Select defaultValue={editingPlan.statusFinanceiro.toLowerCase()}>
+                  <Select
+                    value={editPlanForm.status_financeiro || undefined}
+                    onValueChange={(v) => setEditPlanForm(f => ({ ...f, status_financeiro: v }))}
+                  >
                     <SelectTrigger className="bg-input border-border text-foreground h-9">
-                      <SelectValue />
+                      <SelectValue placeholder="Preencher" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="pendente">Pendente</SelectItem>
-                      <SelectItem value="pago">Pago</SelectItem>
-                      <SelectItem value="parcial">Parcial</SelectItem>
+                      <SelectItem value="Pendente">Pendente</SelectItem>
+                      <SelectItem value="Pago">Pago</SelectItem>
+                      <SelectItem value="Parcial">Parcial</SelectItem>
+                      <SelectItem value="Atrasado">Atrasado</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -884,10 +1189,11 @@ const Cadastro = () => {
 
               <div className="flex justify-center pt-2">
                 <button
-                  onClick={() => setShowEditPlano(false)}
-                  className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all"
+                  onClick={handleSaveEditPlano}
+                  disabled={savingPlan}
+                  className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all disabled:opacity-60"
                 >
-                  Salvar
+                  {savingPlan ? "Salvando..." : "Salvar"}
                 </button>
               </div>
             </div>
@@ -964,7 +1270,7 @@ const Cadastro = () => {
               <div>
                 <Input placeholder="CEP" value={novoCadastro.cep} onChange={(e) => setNovoCadastro((p) => ({ ...p, cep: e.target.value }))} className="bg-input border-border text-foreground h-9" />
               </div>
-              <button className="h-9 w-9 rounded-md bg-accent border border-gold/40 flex items-center justify-center text-gold hover:bg-accent/80 transition-colors">→</button>
+              <button type="button" onClick={() => buscarCEP(novoCadastro.cep, "novo")} disabled={cepLoading} className="h-9 w-9 rounded-md bg-accent border border-gold/40 flex items-center justify-center text-gold hover:bg-accent/80 transition-colors disabled:opacity-50">→</button>
               <div>
                 <Input placeholder="Logradouro" value={novoCadastro.logradouro} onChange={(e) => setNovoCadastro((p) => ({ ...p, logradouro: e.target.value }))} className="bg-input border-border text-foreground h-9" />
               </div>
