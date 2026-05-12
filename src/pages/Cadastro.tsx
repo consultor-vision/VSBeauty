@@ -329,28 +329,86 @@ const Cadastro = () => {
     {}
   );
 
+  const fetchClientPlans = async (clienteId: number) => {
+    setLoadingPlans(true);
+    try {
+      const { data, error } = await supabase
+        .from('planos')
+        .select('*')
+        .eq('id_cliente', clienteId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+
+      // Fetch session counts (concluído) per plano via agendamento
+      const ids = (data || []).map((p: any) => p.id);
+      let realizadasMap: Record<number, number> = {};
+      if (ids.length) {
+        const { data: ag } = await supabase
+          .from('agendamento')
+          .select('id_plano,status_procedimento')
+          .in('id_plano', ids);
+        (ag || []).forEach((a: any) => {
+          if ((a.status_procedimento || '').toLowerCase() === 'concluído') {
+            realizadasMap[a.id_plano] = (realizadasMap[a.id_plano] || 0) + 1;
+          }
+        });
+      }
+
+      const procMap = new Map(procedimentos.map(p => [p.id, p.nome]));
+      const formatted: PlanData[] = (data || []).map((p: any) => {
+        const dt = p.created_at ? new Date(p.created_at) : null;
+        return {
+          id: Number(p.id),
+          id_procedimento: p.id_procedimento,
+          dataCompra: dt ? format(dt, 'dd/MM/yyyy') : '',
+          procedimento: procMap.get(Number(p.id_procedimento)) || p.nome_plano || '',
+          sessoesPrevistas: Number(p.sessoes) || 0,
+          sessoesRealizadas: realizadasMap[Number(p.id)] || 0,
+          responsavel: p.alterado_por || '',
+          statusProcedimento: p.status_procedimento || 'Pendente',
+          statusFinanceiro: p.status_financeiro || 'Pendente',
+          valorProcedimento: formatBRL(Number(p.valor_procediemtno) || 0),
+          formaPagamento: p.forma_pagamento || '',
+          parcelas: p.parcelas != null ? String(p.parcelas) : '',
+        };
+      });
+      setClientPlans(formatted);
+    } catch (e) {
+      console.error('Error fetching plans:', e);
+      toast.error('Erro ao carregar planos');
+      setClientPlans([]);
+    } finally {
+      setLoadingPlans(false);
+    }
+  };
+
   const handleSelectClient = async (client: ClientData) => {
     setSelectedClient(client);
     setShowClientList(false);
-    
+
     // Check if client has anamnese
     try {
       const { data, error } = await supabase
         .from('anamnese_cliente')
         .select('id')
         .eq('id_cliente', Number(client.id))
+        .limit(1)
         .maybeSingle();
-      
       if (error) throw error;
       setHasAnamnese(!!data);
     } catch (error) {
       console.error('Error checking anamnese:', error);
       setHasAnamnese(false);
     }
+
+    // Load plans
+    fetchClientPlans(Number(client.id));
   };
 
   const handleClear = () => {
     setSelectedClient(null);
+    setClientPlans([]);
+    setHasAnamnese(false);
   };
 
   const handleOpenEditCadastro = () => {
@@ -360,9 +418,122 @@ const Cadastro = () => {
     }
   };
 
-  const handleOpenEditPlano = (plan: PlanData) => {
+  const handleOpenEditPlano = async (plan: PlanData) => {
     setEditingPlan(plan);
     setShowEditPlano(true);
+    if (!plan.id) return;
+    try {
+      const { data, error } = await supabase
+        .from('planos')
+        .select('*')
+        .eq('id', plan.id)
+        .single();
+      if (error) throw error;
+      setEditPlanForm({
+        id_procedimento: data.id_procedimento != null ? String(data.id_procedimento) : '',
+        sessoes: data.sessoes != null ? String(data.sessoes) : '',
+        valor: formatBRL(Number(data.valor_procediemtno) || 0),
+        forma_pagamento: data.forma_pagamento || '',
+        parcelas: data.parcelas != null ? String(data.parcelas) : '',
+        status_procedimento: data.status_procedimento || 'Pendente',
+        status_financeiro: data.status_financeiro || 'Pendente',
+      });
+    } catch (e) {
+      console.error('Error loading plan:', e);
+      toast.error('Erro ao carregar plano');
+    }
+  };
+
+  const handleSaveEditPlano = async () => {
+    if (!editingPlan?.id) return;
+    setSavingPlan(true);
+    try {
+      const { error } = await supabase
+        .from('planos')
+        .update({
+          id_procedimento: editPlanForm.id_procedimento ? Number(editPlanForm.id_procedimento) : null,
+          sessoes: editPlanForm.sessoes ? Number(editPlanForm.sessoes) : null,
+          valor_procediemtno: parseBRL(editPlanForm.valor),
+          forma_pagamento: editPlanForm.forma_pagamento || null,
+          parcelas: editPlanForm.parcelas ? Number(editPlanForm.parcelas) : null,
+          status_procedimento: editPlanForm.status_procedimento || null,
+          status_financeiro: editPlanForm.status_financeiro || null,
+          data_alteracao: new Date().toISOString(),
+        })
+        .eq('id', editingPlan.id);
+      if (error) throw error;
+      toast.success('Plano atualizado');
+      setShowEditPlano(false);
+      if (selectedClient) fetchClientPlans(Number(selectedClient.id));
+    } catch (e: any) {
+      console.error(e);
+      toast.error('Erro ao salvar plano');
+    } finally {
+      setSavingPlan(false);
+    }
+  };
+
+  const handleOpenAnamnese = async () => {
+    setShowAnamnese(true);
+    if (!selectedClient) return;
+    try {
+      const { data, error } = await supabase
+        .from('anamnese_cliente')
+        .select('id_pergunta, resposta, resposta_caso_sim')
+        .eq('id_cliente', Number(selectedClient.id));
+      if (error) throw error;
+
+      const questions = anamneseQuestionsDb.length > 0 ? anamneseQuestionsDb : [];
+      const next: Record<number, { opcao: string; qual: string; complemento: string }> = {};
+      (data || []).forEach((row: any) => {
+        const idx = questions.findIndex(q => q.id === Number(row.id_pergunta));
+        if (idx >= 0) {
+          next[idx] = {
+            opcao: (row.resposta || '').toLowerCase() === 'sim' ? 'sim' : 'nao',
+            qual: row.resposta_caso_sim || '',
+            complemento: '',
+          };
+        }
+      });
+      setAnamneseData(next);
+    } catch (e) {
+      console.error('Error loading anamnese:', e);
+    }
+  };
+
+  const handleSaveAnamnese = async () => {
+    if (!selectedClient || !user?.id_companhia) return;
+    const questions = anamneseQuestionsDb;
+    if (questions.length === 0) {
+      toast.error('Nenhuma pergunta de anamnese cadastrada para a companhia');
+      return;
+    }
+    setSavingAnamnese(true);
+    try {
+      // delete previous and re-insert (simple sync)
+      await supabase.from('anamnese_cliente').delete().eq('id_cliente', Number(selectedClient.id));
+      const rows = Object.entries(anamneseData)
+        .filter(([idx, v]) => v && (v.opcao || v.qual))
+        .map(([idx, v]) => ({
+          id_companhia: user.id_companhia,
+          id_cliente: Number(selectedClient.id),
+          id_pergunta: questions[Number(idx)].id,
+          resposta: v.opcao === 'sim' ? 'Sim' : 'Não',
+          resposta_caso_sim: v.qual || null,
+        }));
+      if (rows.length) {
+        const { error } = await supabase.from('anamnese_cliente').insert(rows);
+        if (error) throw error;
+      }
+      setHasAnamnese(true);
+      toast.success('Ficha de anamnese salva');
+      setShowAnamnese(false);
+    } catch (e: any) {
+      console.error(e);
+      toast.error('Erro ao salvar anamnese');
+    } finally {
+      setSavingAnamnese(false);
+    }
   };
 
   const handleOpenHistorico = () => {
