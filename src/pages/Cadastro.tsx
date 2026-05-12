@@ -281,14 +281,14 @@ const Cadastro = () => {
       try {
         const { data, error } = await supabase
           .from('procedimentos')
-          .select('nome, valor')
+          .select('id, nome, valor')
           .eq('id_companhia', user.id_companhia)
           .order('nome', { ascending: true });
 
         if (error) throw error;
 
         if (data) {
-          setProcedimentos(data.map(p => ({ nome: p.nome, valor: Number(p.valor) || 0 })));
+          setProcedimentos(data.map(p => ({ id: Number(p.id), nome: p.nome || '', valor: Number(p.valor) || 0 })));
         }
       } catch (error) {
         console.error('Error fetching procedimentos:', error);
@@ -296,6 +296,29 @@ const Cadastro = () => {
     };
 
     fetchProcedimentos();
+  }, [user?.id_companhia]);
+
+  // Fetch anamnese questions for company
+  useEffect(() => {
+    const fetchAnamnese = async () => {
+      if (!user?.id_companhia) return;
+      try {
+        const { data, error } = await supabase
+          .from('anamnese')
+          .select('id, pergunta, caso_sim, "Ordem"')
+          .eq('id_companhia', user.id_companhia)
+          .order('Ordem', { ascending: true });
+        if (error) throw error;
+        if (data && data.length > 0) {
+          setAnamneseQuestionsDb(
+            data.map((q: any) => ({ id: Number(q.id), pergunta: q.pergunta || '', caso_sim: q.caso_sim || 'Qual?' }))
+          );
+        }
+      } catch (e) {
+        console.error('Error fetching anamnese questions:', e);
+      }
+    };
+    fetchAnamnese();
   }, [user?.id_companhia]);
 
   // Novo Cadastro form
