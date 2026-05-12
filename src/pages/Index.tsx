@@ -389,7 +389,7 @@ const Index = () => {
         default: return true;
       }
     });
-  }, [clientSearch, searchField]);
+  }, [clientSearch, searchField, clients]);
 
   // Birthdays this month
   const birthdaysThisMonth = useMemo(() => {
