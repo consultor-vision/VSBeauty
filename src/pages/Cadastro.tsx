@@ -1076,72 +1076,111 @@ const Cadastro = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs text-gold mb-1 block">Procedimento</label>
-                  <Select defaultValue={editingPlan.procedimento.toLowerCase()}>
+                  <Select
+                    value={editPlanForm.id_procedimento || undefined}
+                    onValueChange={(v) => {
+                      const proc = procedimentos.find(p => String(p.id) === v);
+                      setEditPlanForm(f => ({
+                        ...f,
+                        id_procedimento: v,
+                        valor: proc ? formatBRL(proc.valor) : f.valor,
+                      }));
+                    }}
+                  >
                     <SelectTrigger className="bg-input border-border text-foreground h-9">
-                      <SelectValue />
+                      <SelectValue placeholder="Preencher" />
                     </SelectTrigger>
                     <SelectContent>
-                      {(procedimentos.length > 0 ? procedimentos : procedimentosList).map((p) => (
-                        <SelectItem key={p} value={p.toLowerCase()}>{p}</SelectItem>
+                      {procedimentos.map((p) => (
+                        <SelectItem key={p.id} value={String(p.id)}>{p.nome}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
                   <label className="text-xs text-gold mb-1 block">Quantidade de Sessões</label>
-                  <Input defaultValue={editingPlan.sessoesPrevistas} className="bg-input border-border text-foreground h-9" />
+                  <Input
+                    type="number"
+                    value={editPlanForm.sessoes}
+                    onChange={(e) => setEditPlanForm(f => ({ ...f, sessoes: e.target.value }))}
+                    className="bg-input border-border text-foreground h-9"
+                  />
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="text-xs text-gold mb-1 block">Valor de Procedimento</label>
-                  <Input defaultValue={editingPlan.valorProcedimento || ""} className="bg-input border-border text-foreground h-9" />
+                  <Input
+                    value={editPlanForm.valor}
+                    onChange={(e) => {
+                      const digits = e.target.value.replace(/\D/g, "");
+                      const formatted = (Number(digits) / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+                      setEditPlanForm(f => ({ ...f, valor: formatted }));
+                    }}
+                    className="bg-input border-border text-foreground h-9"
+                  />
                 </div>
                 <div>
                   <label className="text-xs text-gold mb-1 block">Forma de Pagamento</label>
-                  <Select defaultValue={editingPlan.formaPagamento?.toLowerCase().replace(/ /g, "_") || undefined}>
+                  <Select
+                    value={editPlanForm.forma_pagamento || undefined}
+                    onValueChange={(v) => setEditPlanForm(f => ({ ...f, forma_pagamento: v }))}
+                  >
                     <SelectTrigger className="bg-input border-border text-foreground h-9">
                       <SelectValue placeholder="Preencher" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="cartão_de_crédito">Cartão de Crédito</SelectItem>
-                      <SelectItem value="cartão_de_débito">Cartão de Débito</SelectItem>
-                      <SelectItem value="pix">PIX</SelectItem>
-                      <SelectItem value="dinheiro">Dinheiro</SelectItem>
+                      <SelectItem value="Cartão de Crédito">Cartão de Crédito</SelectItem>
+                      <SelectItem value="Cartão de Débito">Cartão de Débito</SelectItem>
+                      <SelectItem value="Pix">PIX</SelectItem>
+                      <SelectItem value="Dinheiro">Dinheiro</SelectItem>
+                      <SelectItem value="Boleto">Boleto</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
                   <label className="text-xs text-gold mb-1 block">Parcelas</label>
-                  <Input defaultValue={editingPlan.parcelas || ""} className="bg-input border-border text-foreground h-9" />
+                  <Input
+                    type="number"
+                    value={editPlanForm.parcelas}
+                    onChange={(e) => setEditPlanForm(f => ({ ...f, parcelas: e.target.value }))}
+                    className="bg-input border-border text-foreground h-9"
+                  />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs text-gold mb-1 block">Status do Procedimento</label>
-                  <Select defaultValue={editingPlan.statusProcedimento.toLowerCase()}>
+                  <Select
+                    value={editPlanForm.status_procedimento || undefined}
+                    onValueChange={(v) => setEditPlanForm(f => ({ ...f, status_procedimento: v }))}
+                  >
                     <SelectTrigger className="bg-input border-border text-foreground h-9">
-                      <SelectValue />
+                      <SelectValue placeholder="Preencher" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="pendente">Pendente</SelectItem>
-                      <SelectItem value="concluído">Concluído</SelectItem>
-                      <SelectItem value="cancelado">Cancelado</SelectItem>
+                      <SelectItem value="Pendente">Pendente</SelectItem>
+                      <SelectItem value="Concluído">Concluído</SelectItem>
+                      <SelectItem value="Cancelado">Cancelado</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
                   <label className="text-xs text-gold mb-1 block">Status Financeiro</label>
-                  <Select defaultValue={editingPlan.statusFinanceiro.toLowerCase()}>
+                  <Select
+                    value={editPlanForm.status_financeiro || undefined}
+                    onValueChange={(v) => setEditPlanForm(f => ({ ...f, status_financeiro: v }))}
+                  >
                     <SelectTrigger className="bg-input border-border text-foreground h-9">
-                      <SelectValue />
+                      <SelectValue placeholder="Preencher" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="pendente">Pendente</SelectItem>
-                      <SelectItem value="pago">Pago</SelectItem>
-                      <SelectItem value="parcial">Parcial</SelectItem>
+                      <SelectItem value="Pendente">Pendente</SelectItem>
+                      <SelectItem value="Pago">Pago</SelectItem>
+                      <SelectItem value="Parcial">Parcial</SelectItem>
+                      <SelectItem value="Atrasado">Atrasado</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -1149,10 +1188,11 @@ const Cadastro = () => {
 
               <div className="flex justify-center pt-2">
                 <button
-                  onClick={() => setShowEditPlano(false)}
-                  className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all"
+                  onClick={handleSaveEditPlano}
+                  disabled={savingPlan}
+                  className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all disabled:opacity-60"
                 >
-                  Salvar
+                  {savingPlan ? "Salvando..." : "Salvar"}
                 </button>
               </div>
             </div>
