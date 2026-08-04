@@ -207,7 +207,7 @@ export const EditUserModal = ({ isOpen, onClose, user, onSuccess }: EditUserModa
             </div>
           </form>
         </div>
-      </form>
+      </DialogContent>
     </Dialog>
   );
 };
