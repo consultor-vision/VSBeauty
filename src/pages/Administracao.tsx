@@ -202,7 +202,13 @@ const Administracao = () => {
                       </td>
                       <td className="px-6 py-4 text-sm text-muted-foreground">{u.email}</td>
                       <td className="px-6 py-4 text-center">
-                        <button className="text-muted-foreground hover:text-gold transition-colors">
+                        <button 
+                          onClick={() => {
+                            setSelectedUser(u);
+                            setIsEditUserModalOpen(true);
+                          }}
+                          className="text-muted-foreground hover:text-gold transition-colors"
+                        >
                           <Edit2 className="w-4 h-4 mx-auto" />
                         </button>
                       </td>
