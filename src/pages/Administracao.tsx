@@ -314,6 +314,13 @@ const Administracao = () => {
           </div>
         </DialogContent>
       </Dialog>
+      
+      <EditUserModal 
+        isOpen={isEditUserModalOpen}
+        onClose={() => setIsEditUserModalOpen(false)}
+        user={selectedUser}
+        onSuccess={fetchData}
+      />
     </Layout>
   );
 };
