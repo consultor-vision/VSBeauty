@@ -23,7 +23,7 @@ export const NewUserModal = ({ isOpen, onClose, onSuccess }: NewUserModalProps) 
   const [loading, setLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [acesso, setAcesso] = useState(true);
-  const [isCEO, setIsCEO] = useState(false);
+  const [isCEO, setIsCEO] = useState(false); // Sempre false por padrão conforme solicitado
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
@@ -59,7 +59,7 @@ export const NewUserModal = ({ isOpen, onClose, onSuccess }: NewUserModalProps) 
             data_nascimento: formData.data_nascimento || null,
             vsb_adm: isAdmin,
             acesso: acesso,
-            CEO: isCEO,
+            CEO: false, // Garantindo que colaboradores criados pelo sistema sempre sejam CEO = false
           });
 
         if (dbError) throw dbError;
@@ -215,16 +215,16 @@ export const NewUserModal = ({ isOpen, onClose, onSuccess }: NewUserModalProps) 
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2 pt-2">
-                <Label className="text-xs font-semibold text-white">Cargo de Direção</Label>
+              <div className="flex flex-col gap-2 pt-2 opacity-50 pointer-events-none">
+                <Label className="text-xs font-semibold text-white">Cargo de Direção (CEO)</Label>
                 <div className="flex items-center gap-3">
-                  <span className={`text-[10px] font-medium ${!isCEO ? 'text-white' : 'text-muted-foreground'}`}>Colaborador</span>
+                  <span className="text-[10px] font-medium text-white">Não</span>
                   <Switch 
-                    checked={isCEO}
-                    onCheckedChange={setIsCEO}
+                    checked={false}
+                    disabled
                     className="data-[state=checked]:bg-gold scale-75"
                   />
-                  <span className={`text-[10px] font-medium ${isCEO ? 'text-white' : 'text-muted-foreground'}`}>CEO</span>
+                  <span className="text-[10px] font-medium text-muted-foreground">Sim</span>
                 </div>
               </div>
             </div>
