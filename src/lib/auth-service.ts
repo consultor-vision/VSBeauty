@@ -46,11 +46,6 @@ export const authenticateUser = async (email: string, senha: string) => {
     }
 
     // 7. Obter o company_id do usuário
-      console.error("Erro ao buscar usuário vinculado:", userError);
-      throw new Error("Usuário não vinculado ao sistema");
-    }
-
-    // 7. Obter o company_id do usuário
     const company_id = userData.id_companhia;
     if (!company_id) {
       throw new Error("Usuário não possui empresa vinculada");

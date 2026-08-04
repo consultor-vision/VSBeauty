@@ -28,6 +28,7 @@ interface EditUserModalProps {
 export const EditUserModal = ({ isOpen, onClose, user, onSuccess }: EditUserModalProps) => {
   const [loading, setLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [acesso, setAcesso] = useState(true);
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
@@ -46,6 +47,7 @@ export const EditUserModal = ({ isOpen, onClose, user, onSuccess }: EditUserModa
         data_nascimento: user.data_nascimento || "",
       });
       setIsAdmin(user.vsb_adm || false);
+      setAcesso(user.acesso !== false);
     }
   }, [user]);
 
@@ -65,6 +67,7 @@ export const EditUserModal = ({ isOpen, onClose, user, onSuccess }: EditUserModa
           cpf: formData.cpf,
           data_nascimento: formData.data_nascimento || null,
           vsb_adm: isAdmin,
+          acesso: acesso,
         })
         .eq("id", user.id);
 
