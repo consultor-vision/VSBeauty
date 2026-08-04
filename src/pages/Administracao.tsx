@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Plus, UserCog, ChevronRight, Edit2, CheckSquare, Square } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import { NewCompanyModal } from "@/components/admin/NewCompanyModal";
+
 import type { Database } from "@/integrations/supabase/types";
 
 type Companhia = Database["public"]["Tables"]["companhia"]["Row"];
@@ -20,6 +22,8 @@ const Administracao = () => {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [versoes, setVersoes] = useState<Versao[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isNewCompanyModalOpen, setIsNewCompanyModalOpen] = useState(false);
+
 
   useEffect(() => {
     fetchData();
@@ -88,7 +92,10 @@ const Administracao = () => {
             </TabsList>
 
             {activeTab === "clientes" && (
-              <Button className="bg-green-600 hover:bg-green-700 text-white gap-2 h-9 px-4">
+              <Button 
+                onClick={() => setIsNewCompanyModalOpen(true)}
+                className="bg-green-600 hover:bg-green-700 text-white gap-2 h-9 px-4"
+              >
                 <Plus className="w-4 h-4" /> Cadastrar Cliente
               </Button>
             )}
@@ -235,6 +242,12 @@ const Administracao = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      <NewCompanyModal 
+        isOpen={isNewCompanyModalOpen}
+        onClose={() => setIsNewCompanyModalOpen(false)}
+        onSuccess={fetchData}
+      />
     </Layout>
   );
 };
