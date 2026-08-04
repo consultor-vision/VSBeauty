@@ -9,6 +9,7 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import { NewCompanyModal } from "@/components/admin/NewCompanyModal";
 import { EditUserModal } from "@/components/admin/EditUserModal";
+import { NewUserModal } from "@/components/admin/NewUserModal";
 import { EditCompanyModal } from "@/components/admin/EditCompanyModal";
 import {
   Dialog,
@@ -32,6 +33,7 @@ const Administracao = () => {
   const [loading, setLoading] = useState(true);
   const [isNewCompanyModalOpen, setIsNewCompanyModalOpen] = useState(false);
   const [isEditChoiceModalOpen, setIsEditChoiceModalOpen] = useState(false);
+  const [isNewUserModalOpen, setIsNewUserModalOpen] = useState(false);
   const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
   const [isEditCompanyModalOpen, setIsEditCompanyModalOpen] = useState(false);
   const [selectedCompanhia, setSelectedCompanhia] = useState<Companhia | null>(null);
@@ -118,7 +120,10 @@ const Administracao = () => {
               </Button>
             )}
             {activeTab === "usuarios" && (
-              <Button className="bg-green-600 hover:bg-green-700 text-white gap-2 h-9 px-4">
+              <Button 
+                onClick={() => setIsNewUserModalOpen(true)}
+                className="bg-green-600 hover:bg-green-700 text-white gap-2 h-9 px-4"
+              >
                 <Plus className="w-4 h-4" /> Colaborador
               </Button>
             )}
@@ -320,6 +325,12 @@ const Administracao = () => {
         isOpen={isEditUserModalOpen}
         onClose={() => setIsEditUserModalOpen(false)}
         user={selectedUser}
+        onSuccess={fetchData}
+      />
+
+      <NewUserModal 
+        isOpen={isNewUserModalOpen}
+        onClose={() => setIsNewUserModalOpen(false)}
         onSuccess={fetchData}
       />
 
