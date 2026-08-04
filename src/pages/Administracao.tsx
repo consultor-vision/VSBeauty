@@ -8,6 +8,7 @@ import { Plus, UserCog, ChevronRight, Edit2, CheckSquare, Square } from "lucide-
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { NewCompanyModal } from "@/components/admin/NewCompanyModal";
+import { EditUserModal } from "@/components/admin/EditUserModal";
 import {
   Dialog,
   DialogContent,
