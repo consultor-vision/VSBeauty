@@ -287,8 +287,16 @@ const Administracao = () => {
               className="bg-[#2D336B] hover:bg-[#3D438B] text-white px-8"
               onClick={() => {
                 setIsEditChoiceModalOpen(false);
-                // Future: Open User Edit Modal
-                toast.info("Funcionalidade de edição de usuário em breve");
+                if (selectedCompanhia) {
+                  const userForComp = usuarios.find(u => u.nome === selectedCompanhia.adm) || 
+                                     usuarios.find(u => u.id_companhia === selectedCompanhia.id);
+                  if (userForComp) {
+                    setSelectedUser(userForComp);
+                    setIsEditUserModalOpen(true);
+                  } else {
+                    toast.error("Nenhum usuário encontrado para esta companhia");
+                  }
+                }
               }}
             >
               Usuário
