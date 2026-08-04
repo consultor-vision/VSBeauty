@@ -1125,6 +1125,7 @@ export type Database = {
         Row: {
           acesso: boolean | null
           adm: boolean | null
+          CEO: boolean | null
           cpf: string | null
           created_at: string
           data_nascimento: string | null
@@ -1140,6 +1141,7 @@ export type Database = {
         Insert: {
           acesso?: boolean | null
           adm?: boolean | null
+          CEO?: boolean | null
           cpf?: string | null
           created_at?: string
           data_nascimento?: string | null
@@ -1155,6 +1157,7 @@ export type Database = {
         Update: {
           acesso?: boolean | null
           adm?: boolean | null
+          CEO?: boolean | null
           cpf?: string | null
           created_at?: string
           data_nascimento?: string | null

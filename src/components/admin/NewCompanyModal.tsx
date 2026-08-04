@@ -82,8 +82,36 @@ export const NewCompanyModal = ({ isOpen, onClose, onSuccess }: NewCompanyModalP
         .single();
 
       if (companyError) throw companyError;
+
+      // 2. Create Responsible User in Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: formData.resp_email,
+        password: formData.resp_senha,
+      });
+
+      if (authError) throw authError;
+
+      if (authData.user) {
+        // 3. Create record in public.usuarios as CEO and Admin
+        const { error: dbError } = await supabase
+          .from("usuarios")
+          .insert({
+            uid: authData.user.id,
+            nome: formData.resp_nome,
+            email: formData.resp_email,
+            phone: formData.resp_telefone,
+            cpf: formData.resp_cpf,
+            data_nascimento: formData.resp_nascimento || null,
+            vsb_adm: true, // Responsável da empresa é Admin por padrão
+            acesso: true,
+            CEO: true, // Novo cadastro de cliente (empresa) define o responsável como CEO
+            id_companhia: company.id,
+          });
+
+        if (dbError) throw dbError;
+      }
       
-      toast.success("Empresa cadastrada com sucesso!");
+      toast.success("Empresa e responsável cadastrados com sucesso!");
       onSuccess();
       onClose();
     } catch (error: any) {

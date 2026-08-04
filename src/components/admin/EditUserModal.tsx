@@ -29,6 +29,7 @@ export const EditUserModal = ({ isOpen, onClose, user, onSuccess }: EditUserModa
   const [loading, setLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [acesso, setAcesso] = useState(true);
+  const [isCEO, setIsCEO] = useState(false);
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
@@ -48,6 +49,7 @@ export const EditUserModal = ({ isOpen, onClose, user, onSuccess }: EditUserModa
       });
       setIsAdmin(user.vsb_adm || false);
       setAcesso(user.acesso !== false);
+      setIsCEO(user.CEO === true);
     }
   }, [user]);
 
@@ -68,6 +70,7 @@ export const EditUserModal = ({ isOpen, onClose, user, onSuccess }: EditUserModa
           data_nascimento: formData.data_nascimento || null,
           vsb_adm: isAdmin,
           acesso: acesso,
+          CEO: isCEO,
         })
         .eq("id", user.id);
 
@@ -190,6 +193,19 @@ export const EditUserModal = ({ isOpen, onClose, user, onSuccess }: EditUserModa
                     className="data-[state=checked]:bg-[#17C964] scale-75"
                   />
                   <span className={`text-[10px] font-medium ${acesso ? 'text-white' : 'text-muted-foreground'}`}>Ativo</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2 pt-2">
+                <Label className="text-xs font-semibold text-white">Cargo de Direção:</Label>
+                <div className="flex items-center gap-3">
+                  <span className={`text-[10px] font-medium ${!isCEO ? 'text-white' : 'text-muted-foreground'}`}>Colaborador</span>
+                  <Switch 
+                    checked={isCEO}
+                    onCheckedChange={setIsCEO}
+                    className="data-[state=checked]:bg-gold scale-75"
+                  />
+                  <span className={`text-[10px] font-medium ${isCEO ? 'text-white' : 'text-muted-foreground'}`}>CEO</span>
                 </div>
               </div>
             </div>
