@@ -85,7 +85,7 @@ export const NewUserModal = ({ isOpen, onClose, onSuccess }: NewUserModalProps) 
       <DialogContent className="max-w-md bg-[#15191F] border-gold/20 text-white p-0 overflow-hidden">
         <div className="p-6 space-y-6">
           <DialogHeader className="text-center space-y-1">
-            <DialogTitle className="text-xl font-semibold text-gold uppercase tracking-wider">Cadastrar Empresa</DialogTitle>
+            <DialogTitle className="text-xl font-semibold text-gold uppercase tracking-wider">CADASTRAR COLABORADOR</DialogTitle>
             <p className="text-sm text-muted-foreground font-medium">Preencha abaixo as informações</p>
           </DialogHeader>
 
