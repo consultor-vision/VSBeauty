@@ -96,7 +96,7 @@ export const NewCompanyModal = ({ isOpen, onClose, onSuccess }: NewCompanyModalP
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl bg-[#0F172A] border-gold/20 text-white max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <DialogContent className="max-w-2xl bg-[#15191F] border-gold/20 text-white max-h-[90vh] overflow-y-auto custom-scrollbar">
         <DialogHeader className="flex flex-row items-center justify-between border-b border-gold/10 pb-4">
           <div className="flex flex-col gap-1">
             <DialogTitle className="text-xl font-semibold text-gold">Cadastrar Empresa</DialogTitle>
