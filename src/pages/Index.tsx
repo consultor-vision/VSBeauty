@@ -294,17 +294,19 @@ const Index = () => {
   };
 
   const handleChangeStatus = async (appId: string, status: Appointment["statusProcedimento"]) => {
+    // Requirements: Show confirmation dialog first
+    setConfirmStatusChange({ appId, status });
+  };
+
+  const executeStatusUpdate = async (appId: string, status: Appointment["statusProcedimento"]) => {
     try {
       // 1. Map UI status to confirmation/status fields
-      // Requirement: confirmed -> true, cancelled -> status reflection, otherwise null
-      // Assuming 'confirmado' maps to confirmacao = true, and others update the status_procedimento
-      
       const updateData: any = { status_procedimento: status };
       
       if (status === "confirmado") {
         updateData.confirmacao = true;
       } else if (status === "cancelado") {
-        updateData.confirmacao = false; // Or null if preferred, but usually cancelled implies not confirmed
+        updateData.confirmacao = false;
       } else {
         updateData.confirmacao = null;
       }
@@ -324,6 +326,8 @@ const Index = () => {
     } finally {
       setContextMenu(null);
       setShowStatusSubmenu(false);
+      setConfirmStatusChange(null);
+      setDetailPopup(null);
     }
   };
 
