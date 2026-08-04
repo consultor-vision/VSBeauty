@@ -292,10 +292,38 @@ const Index = () => {
     setContextMenu({ app, x: e.clientX, y: e.clientY });
   };
 
-  const handleChangeStatus = (appId: string, status: Appointment["statusProcedimento"]) => {
-    setAppointments((prev) => prev.map((a) => a.id === appId ? { ...a, statusProcedimento: status } : a));
-    setContextMenu(null);
-    setShowStatusSubmenu(false);
+  const handleChangeStatus = async (appId: string, status: Appointment["statusProcedimento"]) => {
+    try {
+      // 1. Map UI status to confirmation/status fields
+      // Requirement: confirmed -> true, cancelled -> status reflection, otherwise null
+      // Assuming 'confirmado' maps to confirmacao = true, and others update the status_procedimento
+      
+      const updateData: any = { status_procedimento: status };
+      
+      if (status === "confirmado") {
+        updateData.confirmacao = true;
+      } else if (status === "cancelado") {
+        updateData.confirmacao = false; // Or null if preferred, but usually cancelled implies not confirmed
+      } else {
+        updateData.confirmacao = null;
+      }
+
+      const { error } = await supabase
+        .from('agendamento')
+        .update(updateData)
+        .eq('id', appId);
+
+      if (error) throw error;
+
+      setAppointments((prev) => prev.map((a) => a.id === appId ? { ...a, statusProcedimento: status } : a));
+      toast.success(`Status atualizado para ${status}`);
+    } catch (error: any) {
+      console.error('Error updating status:', error);
+      toast.error("Erro ao atualizar status no Supabase");
+    } finally {
+      setContextMenu(null);
+      setShowStatusSubmenu(false);
+    }
   };
 
   const handleDeleteAppointment = (appId: string) => {
