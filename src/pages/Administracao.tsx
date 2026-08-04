@@ -168,7 +168,9 @@ const Administracao = () => {
                           <span className="text-sm font-medium text-foreground">{comp.nome}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-foreground">{comp.adm}</td>
+                      <td className="px-6 py-4 text-sm text-foreground">
+                        {usuarios.find(u => u.id_companhia === comp.id && u.CEO === true)?.uid || "-"}
+                      </td>
                       <td className="px-6 py-4 text-sm text-foreground">
                         {comp.inicio_contrato ? format(new Date(comp.inicio_contrato), "d/M/yyyy") : "-"}
                       </td>
