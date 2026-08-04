@@ -314,13 +314,12 @@ const Administracao = () => {
               onClick={() => {
                 setIsEditChoiceModalOpen(false);
                 if (selectedCompanhia) {
-                  const userForComp = usuarios.find(u => u.nome === selectedCompanhia.adm) || 
-                                     usuarios.find(u => u.id_companhia === selectedCompanhia.id);
-                  if (userForComp) {
-                    setSelectedUser(userForComp);
+                  const ceoUser = usuarios.find(u => u.id_companhia === selectedCompanhia.id && u.CEO === true);
+                  if (ceoUser) {
+                    setSelectedUser(ceoUser);
                     setIsEditUserModalOpen(true);
                   } else {
-                    toast.error("Nenhum usuário encontrado para esta companhia");
+                    toast.error("Nenhum usuário CEO encontrado para esta companhia");
                   }
                 }
               }}
