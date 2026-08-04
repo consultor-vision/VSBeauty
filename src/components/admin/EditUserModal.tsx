@@ -195,14 +195,14 @@ export const EditUserModal = ({ isOpen, onClose, user, onSuccess }: EditUserModa
                 onClick={onClose}
                 className="flex-1 bg-[#FF5A5F] hover:bg-[#FF5A5F]/80 text-white font-bold h-12 rounded-xl"
               >
-                Voltar
+                Excluir
               </Button>
               <Button 
                 type="submit"
                 disabled={loading}
                 className="flex-1 bg-gold hover:bg-gold-light text-white font-bold h-12 rounded-xl uppercase tracking-wider"
               >
-                {loading ? "Salvando..." : "Editar"}
+                {loading ? "Salvando..." : "Salvar"}
               </Button>
             </div>
           </form>
