@@ -1325,6 +1325,56 @@ const Index = () => {
                 </div>
               </div>
               <div className="flex justify-center">
+                <button
+                  onClick={() => {
+                    const time = `${timePickerHour.padStart(2, "0")}:${timePickerMinute.padStart(2, "0")}`;
+                    if (showTimePickerModal === "start") setNewStartTime(time);
+                    else setNewEndTime(time);
+                    setShowTimePickerModal(null);
+                  }}
+                  className="px-12 py-2 rounded-lg bg-gold text-primary-foreground font-semibold hover:bg-gold-light transition-all"
+                >
+                  Confirmar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========== STATUS CHANGE CONFIRMATION MODAL ========== */}
+      {confirmStatusChange && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="glass-panel gold-glow w-full max-w-sm p-6 animate-in fade-in zoom-in-95 duration-200 text-center">
+            <h3 className="text-lg font-bold text-foreground mb-4">
+              {confirmStatusChange.status === "confirmado" 
+                ? "Cancelado, deseja alterar para Confirmado?" 
+                : "Deseja cancelar?"}
+            </h3>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setConfirmStatusChange(null)}
+                className="flex-1 py-2.5 rounded-lg border border-border text-foreground font-medium hover:bg-muted transition-all"
+              >
+                Não
+              </button>
+              <button
+                onClick={() => executeStatusUpdate(confirmStatusChange.appId, confirmStatusChange.status)}
+                className={`flex-1 py-2.5 rounded-lg text-primary-foreground font-bold transition-all ${
+                  confirmStatusChange.status === "confirmado" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-red-600 hover:bg-red-700"
+                }`}
+              >
+                Sim, Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+                    <ChevronLeft className="w-5 h-5 -rotate-90" />
+                  </button>
+                </div>
+              </div>
+              <div className="flex justify-center">
                 <button onClick={confirmTimePicker} className="px-10 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold hover:bg-gold-light transition-all">
                   OK
                 </button>
