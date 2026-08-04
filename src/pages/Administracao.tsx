@@ -31,7 +31,9 @@ const Administracao = () => {
   const [loading, setLoading] = useState(true);
   const [isNewCompanyModalOpen, setIsNewCompanyModalOpen] = useState(false);
   const [isEditChoiceModalOpen, setIsEditChoiceModalOpen] = useState(false);
+  const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
   const [selectedCompanhia, setSelectedCompanhia] = useState<Companhia | null>(null);
+  const [selectedUser, setSelectedUser] = useState<Usuario | null>(null);
 
 
   useEffect(() => {
