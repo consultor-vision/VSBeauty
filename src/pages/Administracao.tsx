@@ -247,7 +247,10 @@ const Administracao = () => {
           </TabsContent>
 
           <TabsContent value="atualizacao" className="mt-0">
-            <div className="glass-panel border-gold/20 overflow-hidden">
+            <div className="glass-panel border-gold/20 overflow-hidden relative">
+              <div className="absolute top-2 right-2 text-[10px] text-muted-foreground/30 pointer-events-none">
+                Esta informações estão no Supabase na tabela tb_versoes
+              </div>
               <table className="w-full text-left">
                 <thead className="bg-card/50 border-b border-gold/10">
                   <tr>
