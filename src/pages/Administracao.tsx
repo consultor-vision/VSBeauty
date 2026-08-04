@@ -4,35 +4,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { Plus, UserCog, History, ChevronRight, Edit2, CheckSquare, Square } from "lucide-react";
+import { Plus, UserCog, ChevronRight, Edit2, CheckSquare, Square } from "lucide-react";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
+import type { Database } from "@/integrations/supabase/types";
 
-interface Companhia {
-  id: number;
-  nome: string;
-  responsavel: string;
-  data_liberacao: string;
-  logo?: string;
-}
-
-interface Usuario {
-  id: string;
-  nome: string;
-  email: string;
-  vsb_adm: boolean;
-  imagem?: string;
-  id_companhia: number;
-}
-
-interface Versao {
-  id: number;
-  numeracao: string;
-  data: string;
-  tipo: string;
-  descricao: string;
-}
+type Companhia = Database["public"]["Tables"]["companhia"]["Row"];
+type Usuario = Database["public"]["Tables"]["usuarios"]["Row"];
+type Versao = Database["public"]["Tables"]["vsb_cadastr_versao"]["Row"];
 
 const Administracao = () => {
   const { user } = useAuth();
@@ -52,7 +31,7 @@ const Administracao = () => {
       const [compRes, userRes, versRes] = await Promise.all([
         supabase.from("companhia").select("*").order("nome"),
         supabase.from("usuarios").select("*").order("nome"),
-        supabase.from("versao_sistema").select("*").order("data", { ascending: false }),
+        supabase.from("vsb_cadastr_versao").select("*").order("created_at", { ascending: false }),
       ]);
 
       if (compRes.data) setCompanhias(compRes.data);
@@ -66,7 +45,7 @@ const Administracao = () => {
     }
   };
 
-  const toggleUserAdmin = async (userId: string, currentStatus: boolean) => {
+  const toggleUserAdmin = async (userId: number, currentStatus: boolean) => {
     try {
       const { error } = await supabase
         .from("usuarios")
@@ -151,9 +130,9 @@ const Administracao = () => {
                           <span className="text-sm font-medium text-foreground">{comp.nome}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-foreground">{comp.responsavel}</td>
+                      <td className="px-6 py-4 text-sm text-foreground">{comp.adm}</td>
                       <td className="px-6 py-4 text-sm text-foreground">
-                        {comp.data_liberacao ? format(new Date(comp.data_liberacao), "d/M/yyyy") : "-"}
+                        {comp.inicio_contrato ? format(new Date(comp.inicio_contrato), "d/M/yyyy") : "-"}
                       </td>
                       <td className="px-6 py-4 text-right">
                         <button className="text-gold hover:text-gold-light transition-colors">
@@ -234,9 +213,9 @@ const Administracao = () => {
                 <tbody className="divide-y divide-gold/10">
                   {versoes.map((v) => (
                     <tr key={v.id} className="hover:bg-white/5 transition-colors group">
-                      <td className="px-6 py-4 text-sm font-medium text-foreground">{v.numeracao}</td>
+                      <td className="px-6 py-4 text-sm font-medium text-foreground">{v.versao}</td>
                       <td className="px-6 py-4 text-sm text-foreground">
-                        {v.data ? format(new Date(v.data), "d/M/yyyy") : "-"}
+                        {v.created_at ? format(new Date(v.created_at), "d/M/yyyy") : "-"}
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm text-foreground max-w-md line-clamp-2">
