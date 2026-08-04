@@ -9,6 +9,7 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import { NewCompanyModal } from "@/components/admin/NewCompanyModal";
 import { EditUserModal } from "@/components/admin/EditUserModal";
+import { EditCompanyModal } from "@/components/admin/EditCompanyModal";
 import {
   Dialog,
   DialogContent,
@@ -32,6 +33,7 @@ const Administracao = () => {
   const [isNewCompanyModalOpen, setIsNewCompanyModalOpen] = useState(false);
   const [isEditChoiceModalOpen, setIsEditChoiceModalOpen] = useState(false);
   const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
+  const [isEditCompanyModalOpen, setIsEditCompanyModalOpen] = useState(false);
   const [selectedCompanhia, setSelectedCompanhia] = useState<Companhia | null>(null);
   const [selectedUser, setSelectedUser] = useState<Usuario | null>(null);
 
@@ -305,8 +307,7 @@ const Administracao = () => {
               className="bg-gold hover:bg-gold-light text-black px-8"
               onClick={() => {
                 setIsEditChoiceModalOpen(false);
-                // Future: Open Company Edit Modal (can reuse NewCompanyModal with initialData)
-                toast.info("Funcionalidade de edição de companhia em breve");
+                setIsEditCompanyModalOpen(true);
               }}
             >
               Companhia
@@ -319,6 +320,13 @@ const Administracao = () => {
         isOpen={isEditUserModalOpen}
         onClose={() => setIsEditUserModalOpen(false)}
         user={selectedUser}
+        onSuccess={fetchData}
+      />
+
+      <EditCompanyModal 
+        isOpen={isEditCompanyModalOpen}
+        onClose={() => setIsEditCompanyModalOpen(false)}
+        company={selectedCompanhia}
         onSuccess={fetchData}
       />
     </Layout>
