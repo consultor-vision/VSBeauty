@@ -12,6 +12,7 @@ import Cadastro from "./pages/Cadastro";
 import Evolucao from "./pages/Evolucao";
 import Gestao from "./pages/Gestao";
 import Analytics from "./pages/Analytics";
+import Administracao from "./pages/Administracao";
 import NotFound from "./pages/NotFound";
 import { AuthProvider, useAuth } from "./hooks/use-auth";
 
@@ -57,6 +58,7 @@ const App = () => {
               <Route path="/evolucao" element={<ProtectedRoute><Evolucao /></ProtectedRoute>} />
               <Route path="/gestao" element={<ProtectedRoute><Gestao /></ProtectedRoute>} />
               <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+              <Route path="/administracao" element={<ProtectedRoute><Administracao /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

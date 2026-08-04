@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   Calendar, Users, TrendingUp, Settings, BarChart3,
   Menu, User, X, KeyRound, LogOut, Info, Eye, EyeOff,
-  ChevronLeft, ChevronRight, Sun, Moon,
+  ChevronLeft, ChevronRight, Sun, Moon, ShieldCheck,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -13,6 +13,7 @@ const navItems = [
   { label: "Evolução", path: "/evolucao", icon: TrendingUp },
   { label: "Gestão", path: "/gestao", icon: Settings },
   { label: "Analytics", path: "/analytics", icon: BarChart3, adminOnly: true },
+  { label: "Administração", path: "/administracao", icon: ShieldCheck, adminOnly: true },
 ];
 
 const versionNotes = [
