@@ -1,21 +1,16 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/tabs"; // Note: Use regular Dialog from shadcn
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Camera, Search, Save, X, Calendar as CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { Camera, Search, Calendar as CalendarIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-
-// Since Dialog isn't explicitly imported as a standalone in previous context but we have it in shadcn
 import {
-  Dialog as ShadcnDialog,
-  DialogContent as ShadcnDialogContent,
-  DialogHeader as ShadcnDialogHeader,
-  DialogTitle as ShadcnDialogTitle,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 
 interface NewCompanyModalProps {
@@ -82,16 +77,11 @@ export const NewCompanyModal = ({ isOpen, onClose, onSuccess }: NewCompanyModalP
           nome: formData.nome,
           adm: formData.resp_nome,
           inicio_contrato: formData.inicio_contrato || null,
-          // Note: Add other fields if they exist in schema or just these for now
         })
         .select()
         .single();
 
       if (companyError) throw companyError;
-
-      // 2. Create User (Simplified logic for now, usually would involve Auth)
-      // In a real scenario, we'd sign up the user. For now, we'll just insert into 'usuarios'
-      // but usually this needs an auth.uid.
       
       toast.success("Empresa cadastrada com sucesso!");
       onSuccess();
@@ -105,11 +95,11 @@ export const NewCompanyModal = ({ isOpen, onClose, onSuccess }: NewCompanyModalP
   };
 
   return (
-    <ShadcnDialog open={isOpen} onOpenChange={onClose}>
-      <ShadcnDialogContent className="max-w-2xl bg-[#0F172A] border-gold/20 text-white max-h-[90vh] overflow-y-auto custom-scrollbar">
-        <ShadcnDialogHeader className="flex flex-row items-center justify-between border-b border-gold/10 pb-4">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl bg-[#0F172A] border-gold/20 text-white max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <DialogHeader className="flex flex-row items-center justify-between border-b border-gold/10 pb-4">
           <div className="flex flex-col gap-1">
-            <ShadcnDialogTitle className="text-xl font-semibold text-gold">Cadastrar Empresa</ShadcnDialogTitle>
+            <DialogTitle className="text-xl font-semibold text-gold">Cadastrar Empresa</DialogTitle>
             <p className="text-xs text-muted-foreground">Preencha abaixo as informações</p>
           </div>
           <div className="flex items-center gap-4">
@@ -125,7 +115,7 @@ export const NewCompanyModal = ({ isOpen, onClose, onSuccess }: NewCompanyModalP
                </span>
             </div>
           </div>
-        </ShadcnDialogHeader>
+        </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6 pt-4">
           <div className="space-y-4">
@@ -379,7 +369,7 @@ export const NewCompanyModal = ({ isOpen, onClose, onSuccess }: NewCompanyModalP
             </Button>
           </div>
         </form>
-      </ShadcnDialogContent>
-    </ShadcnDialog>
+      </DialogContent>
+    </Dialog>
   );
 };
