@@ -11,6 +11,7 @@ import { NewCompanyModal } from "@/components/admin/NewCompanyModal";
 import { EditUserModal } from "@/components/admin/EditUserModal";
 import { NewUserModal } from "@/components/admin/NewUserModal";
 import { EditCompanyModal } from "@/components/admin/EditCompanyModal";
+import { NewVersionModal } from "@/components/admin/NewVersionModal";
 import {
   Dialog,
   DialogContent,
@@ -38,6 +39,7 @@ const Administracao = () => {
   const [isEditCompanyModalOpen, setIsEditCompanyModalOpen] = useState(false);
   const [selectedCompanhia, setSelectedCompanhia] = useState<Companhia | null>(null);
   const [selectedUser, setSelectedUser] = useState<Usuario | null>(null);
+  const [isNewVersionModalOpen, setIsNewVersionModalOpen] = useState(false);
 
 
   useEffect(() => {
@@ -128,7 +130,10 @@ const Administracao = () => {
               </Button>
             )}
             {activeTab === "atualizacao" && (
-              <Button className="bg-green-600 hover:bg-green-700 text-white gap-2 h-9 px-4">
+              <Button 
+                onClick={() => setIsNewVersionModalOpen(true)}
+                className="bg-green-600 hover:bg-green-700 text-white gap-2 h-9 px-4"
+              >
                 <Plus className="w-4 h-4" /> Versão
               </Button>
             )}
@@ -338,6 +343,12 @@ const Administracao = () => {
         isOpen={isEditCompanyModalOpen}
         onClose={() => setIsEditCompanyModalOpen(false)}
         company={selectedCompanhia}
+        onSuccess={fetchData}
+      />
+
+      <NewVersionModal 
+        isOpen={isNewVersionModalOpen}
+        onClose={() => setIsNewVersionModalOpen(false)}
         onSuccess={fetchData}
       />
     </Layout>
