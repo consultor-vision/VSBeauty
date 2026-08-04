@@ -1370,19 +1370,6 @@ const Index = () => {
           </div>
         </div>
       )}
-                    <ChevronLeft className="w-5 h-5 -rotate-90" />
-                  </button>
-                </div>
-              </div>
-              <div className="flex justify-center">
-                <button onClick={confirmTimePicker} className="px-10 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold hover:bg-gold-light transition-all">
-                  OK
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ========== BIRTHDAY MODAL ========== */}
       {showBirthdayModal && (
