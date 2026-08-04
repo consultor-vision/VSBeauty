@@ -8,6 +8,7 @@ import { Plus, UserCog, ChevronRight, Edit2, CheckSquare, Square } from "lucide-
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { NewCompanyModal } from "@/components/admin/NewCompanyModal";
+import { EditUserModal } from "@/components/admin/EditUserModal";
 import {
   Dialog,
   DialogContent,
@@ -30,7 +31,9 @@ const Administracao = () => {
   const [loading, setLoading] = useState(true);
   const [isNewCompanyModalOpen, setIsNewCompanyModalOpen] = useState(false);
   const [isEditChoiceModalOpen, setIsEditChoiceModalOpen] = useState(false);
+  const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
   const [selectedCompanhia, setSelectedCompanhia] = useState<Companhia | null>(null);
+  const [selectedUser, setSelectedUser] = useState<Usuario | null>(null);
 
 
   useEffect(() => {
@@ -199,7 +202,13 @@ const Administracao = () => {
                       </td>
                       <td className="px-6 py-4 text-sm text-muted-foreground">{u.email}</td>
                       <td className="px-6 py-4 text-center">
-                        <button className="text-muted-foreground hover:text-gold transition-colors">
+                        <button 
+                          onClick={() => {
+                            setSelectedUser(u);
+                            setIsEditUserModalOpen(true);
+                          }}
+                          className="text-muted-foreground hover:text-gold transition-colors"
+                        >
                           <Edit2 className="w-4 h-4 mx-auto" />
                         </button>
                       </td>
@@ -278,8 +287,16 @@ const Administracao = () => {
               className="bg-[#2D336B] hover:bg-[#3D438B] text-white px-8"
               onClick={() => {
                 setIsEditChoiceModalOpen(false);
-                // Future: Open User Edit Modal
-                toast.info("Funcionalidade de edição de usuário em breve");
+                if (selectedCompanhia) {
+                  const userForComp = usuarios.find(u => u.nome === selectedCompanhia.adm) || 
+                                     usuarios.find(u => u.id_companhia === selectedCompanhia.id);
+                  if (userForComp) {
+                    setSelectedUser(userForComp);
+                    setIsEditUserModalOpen(true);
+                  } else {
+                    toast.error("Nenhum usuário encontrado para esta companhia");
+                  }
+                }
               }}
             >
               Usuário
@@ -297,6 +314,13 @@ const Administracao = () => {
           </div>
         </DialogContent>
       </Dialog>
+      
+      <EditUserModal 
+        isOpen={isEditUserModalOpen}
+        onClose={() => setIsEditUserModalOpen(false)}
+        user={selectedUser}
+        onSuccess={fetchData}
+      />
     </Layout>
   );
 };
