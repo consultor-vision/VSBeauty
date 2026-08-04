@@ -1060,6 +1060,32 @@ const Index = () => {
                   </button>
                 </div>
               )}
+              {app.statusProcedimento === 'cancelado' && (
+                <div className="flex items-center gap-2 pt-2 border-t border-border">
+                  <button
+                    onClick={() => {
+                      handleChangeStatus(app.id, 'confirmado');
+                      setDetailPopup(null);
+                    }}
+                    className="w-full text-xs font-medium px-3 py-1.5 rounded-md bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-600/30 transition-colors"
+                  >
+                    Alterar para Confirmado
+                  </button>
+                </div>
+              )}
+              {app.statusProcedimento === 'confirmado' && (
+                <div className="flex items-center gap-2 pt-2 border-t border-border">
+                  <button
+                    onClick={() => {
+                      handleChangeStatus(app.id, 'cancelado');
+                      setDetailPopup(null);
+                    }}
+                    className="w-full text-xs font-medium px-3 py-1.5 rounded-md bg-red-600/20 text-red-400 border border-red-500/30 hover:bg-red-600/30 transition-colors"
+                  >
+                    Deseja cancelar?
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         );
