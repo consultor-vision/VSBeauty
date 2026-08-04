@@ -98,19 +98,11 @@ export const NewVersionModal = ({ isOpen, onClose, onSuccess }: NewVersionModalP
             />
           </div>
 
-          <div className="flex gap-4 pt-4">
-            <Button 
-              type="button"
-              variant="destructive"
-              onClick={onClose}
-              className="flex-1 bg-[#FF5A5F] hover:bg-[#FF5A5F]/90 text-white h-12 text-lg font-semibold"
-            >
-              Cancelar
-            </Button>
+          <div className="flex justify-center pt-4">
             <Button 
               type="submit"
               disabled={loading}
-              className="flex-1 bg-[#B5964B] hover:bg-[#A5863B] text-black h-12 text-lg font-semibold"
+              className="w-full max-w-xs bg-[#B5964B] hover:bg-[#A5863B] text-black h-12 text-lg font-semibold"
             >
               {loading ? "Cadastrando..." : "Cadastrar"}
             </Button>
