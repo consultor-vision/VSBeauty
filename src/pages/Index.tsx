@@ -261,6 +261,7 @@ const Index = () => {
   // Appointment detail popup & context menu
   const [detailPopup, setDetailPopup] = useState<{ app: Appointment; x: number; y: number } | null>(null);
   const [contextMenu, setContextMenu] = useState<{ app: Appointment; x: number; y: number } | null>(null);
+  const [confirmStatusChange, setConfirmStatusChange] = useState<{ appId: string; status: Appointment["statusProcedimento"] } | null>(null);
   const [showStatusSubmenu, setShowStatusSubmenu] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
   const contextRef = useRef<HTMLDivElement>(null);
