@@ -12,7 +12,7 @@ const navItems = [
   { label: "Cadastro", path: "/cadastro", icon: Users },
   { label: "Evolução", path: "/evolucao", icon: TrendingUp },
   { label: "Gestão", path: "/gestao", icon: Settings },
-  { label: "Analytics", path: "/analytics", icon: BarChart3 },
+  { label: "Analytics", path: "/analytics", icon: BarChart3, adminOnly: true },
 ];
 
 const versionNotes = [
@@ -133,6 +133,8 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
           {/* Center: nav buttons */}
           <div className="flex items-center gap-5 sm:gap-8">
             {navItems.map((item) => {
+              if (item.adminOnly && !user?.vsb_adm) return null;
+              
               const isActive = location.pathname === item.path;
               const Icon = item.icon;
               return (
