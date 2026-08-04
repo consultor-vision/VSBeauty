@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Plus, UserCog, ChevronRight, Edit2, CheckSquare, Square } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import { NewCompanyModal } from "@/components/admin/NewCompanyModal";
+
 import type { Database } from "@/integrations/supabase/types";
 
 type Companhia = Database["public"]["Tables"]["companhia"]["Row"];
