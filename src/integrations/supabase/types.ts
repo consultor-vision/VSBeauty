@@ -116,6 +116,7 @@ export type Database = {
       agendamento: {
         Row: {
           alterado_por: number | null
+          confirmacao: boolean | null
           created_at: string
           data_alteracao: string | null
           data_inicio: string | null
@@ -132,6 +133,7 @@ export type Database = {
         }
         Insert: {
           alterado_por?: number | null
+          confirmacao?: boolean | null
           created_at?: string
           data_alteracao?: string | null
           data_inicio?: string | null
@@ -148,6 +150,7 @@ export type Database = {
         }
         Update: {
           alterado_por?: number | null
+          confirmacao?: boolean | null
           created_at?: string
           data_alteracao?: string | null
           data_inicio?: string | null
