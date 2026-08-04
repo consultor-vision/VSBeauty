@@ -61,6 +61,31 @@ export const EditVersionModal = ({ isOpen, onClose, onSuccess, version }: EditVe
     }
   };
 
+  const handleDelete = async () => {
+    if (!version) return;
+    
+    if (!confirm("Tem certeza que deseja excluir esta versão?")) return;
+
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from("vsb_cadastr_versao")
+        .delete()
+        .eq("id", version.id);
+
+      if (error) throw error;
+
+      toast.success("Versão excluída com sucesso!");
+      onSuccess();
+      onClose();
+    } catch (error) {
+      console.error("Erro ao excluir versão:", error);
+      toast.error("Erro ao excluir versão");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl bg-[#15191F] border-gold/20 text-white p-0 overflow-hidden">
@@ -102,11 +127,20 @@ export const EditVersionModal = ({ isOpen, onClose, onSuccess, version }: EditVe
             />
           </div>
 
-          <div className="flex justify-center pt-4">
+          <div className="flex gap-4 justify-center pt-4">
+            <Button 
+              type="button"
+              onClick={handleDelete}
+              disabled={loading}
+              variant="destructive"
+              className="w-full max-w-[150px] h-12 text-lg font-semibold bg-red-600 hover:bg-red-700"
+            >
+              Excluir
+            </Button>
             <Button 
               type="submit"
               disabled={loading}
-              className="w-full max-w-xs bg-[#B5964B] hover:bg-[#A5863B] text-black h-12 text-lg font-semibold"
+              className="w-full max-w-[150px] bg-[#B5964B] hover:bg-[#A5863B] text-black h-12 text-lg font-semibold"
             >
               {loading ? "Salvando..." : "Editar"}
             </Button>
