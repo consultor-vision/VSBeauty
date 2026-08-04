@@ -11,7 +11,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { X } from "lucide-react";
 
 interface EditVersionModalProps {
   isOpen: boolean;
@@ -67,12 +66,6 @@ export const EditVersionModal = ({ isOpen, onClose, onSuccess, version }: EditVe
       <DialogContent className="max-w-2xl bg-[#15191F] border-gold/20 text-white p-0 overflow-hidden">
         <DialogHeader className="p-6 border-b border-gold/10 relative">
           <DialogTitle className="text-xl font-semibold text-white text-center">Editar Versão</DialogTitle>
-          <button 
-            onClick={onClose}
-            className="absolute right-4 top-4 text-white hover:text-gold transition-colors"
-          >
-            <X className="w-6 h-6" />
-          </button>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
