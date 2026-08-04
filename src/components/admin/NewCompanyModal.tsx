@@ -104,7 +104,7 @@ export const NewCompanyModal = ({ isOpen, onClose, onSuccess }: NewCompanyModalP
             data_nascimento: formData.resp_nascimento || null,
             vsb_adm: true, // Responsável da empresa é Admin por padrão
             acesso: true,
-            ceo: true, // Novo cadastro de cliente (empresa) define o responsável como CEO
+            CEO: true, // Novo cadastro de cliente (empresa) define o responsável como CEO
             id_companhia: company.id,
           });
 

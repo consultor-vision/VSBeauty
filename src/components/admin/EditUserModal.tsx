@@ -49,7 +49,7 @@ export const EditUserModal = ({ isOpen, onClose, user, onSuccess }: EditUserModa
       });
       setIsAdmin(user.vsb_adm || false);
       setAcesso(user.acesso !== false);
-      setIsCEO(user.ceo === true);
+      setIsCEO(user.CEO === true);
     }
   }, [user]);
 
@@ -70,7 +70,7 @@ export const EditUserModal = ({ isOpen, onClose, user, onSuccess }: EditUserModa
           data_nascimento: formData.data_nascimento || null,
           vsb_adm: isAdmin,
           acesso: acesso,
-          ceo: isCEO,
+          CEO: isCEO,
         })
         .eq("id", user.id);
 

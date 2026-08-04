@@ -59,7 +59,7 @@ export const NewUserModal = ({ isOpen, onClose, onSuccess }: NewUserModalProps) 
             data_nascimento: formData.data_nascimento || null,
             vsb_adm: isAdmin,
             acesso: acesso,
-            ceo: isCEO,
+            CEO: isCEO,
           });
 
         if (dbError) throw dbError;
