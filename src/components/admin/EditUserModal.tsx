@@ -163,16 +163,31 @@ export const EditUserModal = ({ isOpen, onClose, user, onSuccess }: EditUserModa
               </div>
             </div>
 
-            <div className="flex flex-col gap-2 pt-2">
-              <Label className="text-xs font-semibold text-white">Tipo de Acesso:</Label>
-              <div className="flex items-center gap-3">
-                <span className={`text-xs font-medium ${!isAdmin ? 'text-white' : 'text-muted-foreground'}`}>Comum</span>
-                <Switch 
-                  checked={isAdmin}
-                  onCheckedChange={setIsAdmin}
-                  className="data-[state=checked]:bg-teal-500"
-                />
-                <span className={`text-xs font-medium ${isAdmin ? 'text-white' : 'text-muted-foreground'}`}>Administrador</span>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2 pt-2">
+                <Label className="text-xs font-semibold text-white">Tipo de Acesso:</Label>
+                <div className="flex items-center gap-3">
+                  <span className={`text-[10px] font-medium ${!isAdmin ? 'text-white' : 'text-muted-foreground'}`}>Comum</span>
+                  <Switch 
+                    checked={isAdmin}
+                    onCheckedChange={setIsAdmin}
+                    className="data-[state=checked]:bg-teal-500 scale-75"
+                  />
+                  <span className={`text-[10px] font-medium ${isAdmin ? 'text-white' : 'text-muted-foreground'}`}>Administrador</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2 pt-2">
+                <Label className="text-xs font-semibold text-white">Status de Acesso:</Label>
+                <div className="flex items-center gap-3">
+                  <span className={`text-[10px] font-medium ${!acesso ? 'text-white' : 'text-muted-foreground'}`}>Bloqueado</span>
+                  <Switch 
+                    checked={acesso}
+                    onCheckedChange={setAcesso}
+                    className="data-[state=checked]:bg-[#17C964] scale-75"
+                  />
+                  <span className={`text-[10px] font-medium ${acesso ? 'text-white' : 'text-muted-foreground'}`}>Ativo</span>
+                </div>
               </div>
             </div>
 

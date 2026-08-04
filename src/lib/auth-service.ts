@@ -40,6 +40,16 @@ export const authenticateUser = async (email: string, senha: string) => {
       throw new Error("Usuário não vinculado ao sistema");
     }
 
+    // NOVA VALIDAÇÃO: Bloqueio de acesso
+    if (userData.acesso === false) {
+      throw new Error("Acesso bloqueado");
+    }
+
+    // 7. Obter o company_id do usuário
+      console.error("Erro ao buscar usuário vinculado:", userError);
+      throw new Error("Usuário não vinculado ao sistema");
+    }
+
     // 7. Obter o company_id do usuário
     const company_id = userData.id_companhia;
     if (!company_id) {
