@@ -524,16 +524,15 @@ const Index = () => {
     try {
       const { data, error } = await supabase
         .from('agendamento')
-        .insert({
+        .insert([{
           id_cliente: Number(selectedClient.id),
           id_companhia: user?.id_companhia,
           data_agendar: newDate,
           hora_inicio: newStartTime,
           hora_fim: newEndTime,
           status_procedimento: "pendente",
-          confirmacao: null,
-          // Add other fields as necessary based on schema
-        })
+          confirmacao: null
+        }])
         .select()
         .single();
 
