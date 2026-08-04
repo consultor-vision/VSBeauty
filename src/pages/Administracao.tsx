@@ -24,7 +24,7 @@ import type { Database } from "@/integrations/supabase/types";
 
 type Companhia = Database["public"]["Tables"]["companhia"]["Row"];
 type Usuario = Database["public"]["Tables"]["usuarios"]["Row"];
-type Versao = Database["public"]["Tables"]["tb_versoes"]["Row"];
+type Versao = Database["public"]["Tables"]["vsb_cadastr_versao"]["Row"];
 
 const Administracao = () => {
   const { user } = useAuth();
@@ -55,7 +55,7 @@ const Administracao = () => {
       const [compRes, userRes, versRes] = await Promise.all([
         supabase.from("companhia").select("*").order("nome"),
         supabase.from("usuarios").select("*").order("nome"),
-        supabase.from("tb_versoes").select("*").order("created_at", { ascending: false }),
+        supabase.from("vsb_cadastr_versao").select("*").order("created_at", { ascending: false }),
       ]);
 
       if (compRes.data) setCompanhias(compRes.data);
