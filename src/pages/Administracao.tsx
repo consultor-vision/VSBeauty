@@ -11,6 +11,7 @@ import { NewCompanyModal } from "@/components/admin/NewCompanyModal";
 import { EditUserModal } from "@/components/admin/EditUserModal";
 import { NewUserModal } from "@/components/admin/NewUserModal";
 import { EditCompanyModal } from "@/components/admin/EditCompanyModal";
+import { EditVersionModal } from "@/components/admin/EditVersionModal";
 import { NewVersionModal } from "@/components/admin/NewVersionModal";
 import {
   Dialog,
@@ -37,8 +38,10 @@ const Administracao = () => {
   const [isNewUserModalOpen, setIsNewUserModalOpen] = useState(false);
   const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
   const [isEditCompanyModalOpen, setIsEditCompanyModalOpen] = useState(false);
+  const [isEditVersionModalOpen, setIsEditVersionModalOpen] = useState(false);
   const [selectedCompanhia, setSelectedCompanhia] = useState<Companhia | null>(null);
   const [selectedUser, setSelectedUser] = useState<Usuario | null>(null);
+  const [selectedVersion, setSelectedVersion] = useState<Versao | null>(null);
   const [isNewVersionModalOpen, setIsNewVersionModalOpen] = useState(false);
 
 
@@ -267,7 +270,13 @@ const Administracao = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <button className="text-gold hover:text-gold-light transition-colors">
+                        <button 
+                          onClick={() => {
+                            setSelectedVersion(v);
+                            setIsEditVersionModalOpen(true);
+                          }}
+                          className="text-gold hover:text-gold-light transition-colors"
+                        >
                           <ChevronRight className="w-5 h-5 ml-auto" />
                         </button>
                       </td>
@@ -349,6 +358,13 @@ const Administracao = () => {
       <NewVersionModal 
         isOpen={isNewVersionModalOpen}
         onClose={() => setIsNewVersionModalOpen(false)}
+        onSuccess={fetchData}
+      />
+
+      <EditVersionModal 
+        isOpen={isEditVersionModalOpen}
+        onClose={() => setIsEditVersionModalOpen(false)}
+        version={selectedVersion}
         onSuccess={fetchData}
       />
     </Layout>
