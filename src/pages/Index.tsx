@@ -261,6 +261,7 @@ const Index = () => {
   // Appointment detail popup & context menu
   const [detailPopup, setDetailPopup] = useState<{ app: Appointment; x: number; y: number } | null>(null);
   const [contextMenu, setContextMenu] = useState<{ app: Appointment; x: number; y: number } | null>(null);
+  const [confirmStatusChange, setConfirmStatusChange] = useState<{ appId: string; status: Appointment["statusProcedimento"] } | null>(null);
   const [showStatusSubmenu, setShowStatusSubmenu] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
   const contextRef = useRef<HTMLDivElement>(null);
@@ -293,17 +294,19 @@ const Index = () => {
   };
 
   const handleChangeStatus = async (appId: string, status: Appointment["statusProcedimento"]) => {
+    // Requirements: Show confirmation dialog first
+    setConfirmStatusChange({ appId, status });
+  };
+
+  const executeStatusUpdate = async (appId: string, status: Appointment["statusProcedimento"]) => {
     try {
       // 1. Map UI status to confirmation/status fields
-      // Requirement: confirmed -> true, cancelled -> status reflection, otherwise null
-      // Assuming 'confirmado' maps to confirmacao = true, and others update the status_procedimento
-      
       const updateData: any = { status_procedimento: status };
       
       if (status === "confirmado") {
         updateData.confirmacao = true;
       } else if (status === "cancelado") {
-        updateData.confirmacao = false; // Or null if preferred, but usually cancelled implies not confirmed
+        updateData.confirmacao = false;
       } else {
         updateData.confirmacao = null;
       }
@@ -323,6 +326,8 @@ const Index = () => {
     } finally {
       setContextMenu(null);
       setShowStatusSubmenu(false);
+      setConfirmStatusChange(null);
+      setDetailPopup(null);
     }
   };
 
@@ -1055,6 +1060,32 @@ const Index = () => {
                   </button>
                 </div>
               )}
+              {app.statusProcedimento === 'cancelado' && (
+                <div className="flex items-center gap-2 pt-2 border-t border-border">
+                  <button
+                    onClick={() => {
+                      handleChangeStatus(app.id, 'confirmado');
+                      setDetailPopup(null);
+                    }}
+                    className="w-full text-xs font-medium px-3 py-1.5 rounded-md bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-600/30 transition-colors"
+                  >
+                    Alterar para Confirmado
+                  </button>
+                </div>
+              )}
+              {app.statusProcedimento === 'confirmado' && (
+                <div className="flex items-center gap-2 pt-2 border-t border-border">
+                  <button
+                    onClick={() => {
+                      handleChangeStatus(app.id, 'cancelado');
+                      setDetailPopup(null);
+                    }}
+                    className="w-full text-xs font-medium px-3 py-1.5 rounded-md bg-red-600/20 text-red-400 border border-red-500/30 hover:bg-red-600/30 transition-colors"
+                  >
+                    Deseja cancelar?
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         );
@@ -1320,10 +1351,47 @@ const Index = () => {
                 </div>
               </div>
               <div className="flex justify-center">
-                <button onClick={confirmTimePicker} className="px-10 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold hover:bg-gold-light transition-all">
-                  OK
+                <button
+                  onClick={() => {
+                    const time = `${timePickerHour.padStart(2, "0")}:${timePickerMinute.padStart(2, "0")}`;
+                    if (showTimePickerModal === "start") setNewStartTime(time);
+                    else setNewEndTime(time);
+                    setShowTimePickerModal(null);
+                  }}
+                  className="px-12 py-2 rounded-lg bg-gold text-primary-foreground font-semibold hover:bg-gold-light transition-all"
+                >
+                  Confirmar
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========== STATUS CHANGE CONFIRMATION MODAL ========== */}
+      {confirmStatusChange && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="glass-panel gold-glow w-full max-w-sm p-6 animate-in fade-in zoom-in-95 duration-200 text-center">
+            <h3 className="text-lg font-bold text-foreground mb-4">
+              {confirmStatusChange.status === "confirmado" 
+                ? "Cancelado, deseja alterar para Confirmado?" 
+                : "Deseja cancelar?"}
+            </h3>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setConfirmStatusChange(null)}
+                className="flex-1 py-2.5 rounded-lg border border-border text-foreground font-medium hover:bg-muted transition-all"
+              >
+                Não
+              </button>
+              <button
+                onClick={() => executeStatusUpdate(confirmStatusChange.appId, confirmStatusChange.status)}
+                className={`flex-1 py-2.5 rounded-lg text-primary-foreground font-bold transition-all ${
+                  confirmStatusChange.status === "confirmado" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-red-600 hover:bg-red-700"
+                }`}
+              >
+                Sim, Confirmar
+              </button>
             </div>
           </div>
         </div>
