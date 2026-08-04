@@ -8,6 +8,12 @@ import { Plus, UserCog, ChevronRight, Edit2, CheckSquare, Square } from "lucide-
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { NewCompanyModal } from "@/components/admin/NewCompanyModal";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 import type { Database } from "@/integrations/supabase/types";
 
@@ -23,6 +29,8 @@ const Administracao = () => {
   const [versoes, setVersoes] = useState<Versao[]>([]);
   const [loading, setLoading] = useState(true);
   const [isNewCompanyModalOpen, setIsNewCompanyModalOpen] = useState(false);
+  const [isEditChoiceModalOpen, setIsEditChoiceModalOpen] = useState(false);
+  const [selectedCompanhia, setSelectedCompanhia] = useState<Companhia | null>(null);
 
 
   useEffect(() => {
@@ -63,6 +71,11 @@ const Administracao = () => {
     } catch (error) {
       toast.error("Erro ao atualizar status do usuário");
     }
+  };
+
+  const handleAccessClick = (comp: Companhia) => {
+    setSelectedCompanhia(comp);
+    setIsEditChoiceModalOpen(true);
   };
 
   return (
@@ -142,7 +155,10 @@ const Administracao = () => {
                         {comp.inicio_contrato ? format(new Date(comp.inicio_contrato), "d/M/yyyy") : "-"}
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <button className="text-gold hover:text-gold-light transition-colors">
+                        <button 
+                          onClick={() => handleAccessClick(comp)}
+                          className="text-gold hover:text-gold-light transition-colors"
+                        >
                           <ChevronRight className="w-5 h-5 ml-auto" />
                         </button>
                       </td>
@@ -248,6 +264,39 @@ const Administracao = () => {
         onClose={() => setIsNewCompanyModalOpen(false)}
         onSuccess={fetchData}
       />
+
+      <Dialog open={isEditChoiceModalOpen} onOpenChange={setIsEditChoiceModalOpen}>
+        <DialogContent className="max-w-sm bg-[#15191F] border-gold/20 text-white p-6">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold text-gold text-center">Editar Informações</DialogTitle>
+          </DialogHeader>
+          <div className="py-6 text-center">
+            <p className="text-sm text-foreground">Você gostaria de editar as informações da companhia ou do usuário?</p>
+          </div>
+          <div className="flex gap-4 justify-center">
+            <Button 
+              className="bg-[#2D336B] hover:bg-[#3D438B] text-white px-8"
+              onClick={() => {
+                setIsEditChoiceModalOpen(false);
+                // Future: Open User Edit Modal
+                toast.info("Funcionalidade de edição de usuário em breve");
+              }}
+            >
+              Usuário
+            </Button>
+            <Button 
+              className="bg-gold hover:bg-gold-light text-black px-8"
+              onClick={() => {
+                setIsEditChoiceModalOpen(false);
+                // Future: Open Company Edit Modal (can reuse NewCompanyModal with initialData)
+                toast.info("Funcionalidade de edição de companhia em breve");
+              }}
+            >
+              Companhia
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };
