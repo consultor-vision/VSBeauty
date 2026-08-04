@@ -311,7 +311,7 @@ const Index = () => {
       const { error } = await supabase
         .from('agendamento')
         .update(updateData)
-        .eq('id', appId);
+        .eq('id', Number(appId));
 
       if (error) throw error;
 
