@@ -510,28 +510,56 @@ const Index = () => {
     return !appointments.some((a) => a.date === date && a.startTime === startTime);
   };
 
-  const handleSaveAppointment = () => {
-    if (!selectedClient || !newProcedimento || !newProfissional || !newDate || !newStartTime || !newEndTime) return;
-    if (!isTimeAvailable(newDate, newStartTime)) {
-      alert("Este horário já está ocupado!");
+  const handleSaveAppointment = async () => {
+    if (!selectedClient || !newProcedimento || !newProfissional || !newDate || !newStartTime || !newEndTime) {
+      toast.error("Preencha todos os campos");
       return;
     }
-    const newApp: Appointment = {
-      id: String(Date.now()),
-      clientId: selectedClient.id,
-      clientName: selectedClient.nome,
-      date: newDate,
-      startTime: newStartTime,
-      endTime: newEndTime,
-      profissional: newProfissional,
-      procedimento: newProcedimento,
-      plano: "-",
-      statusProcedimento: "pendente",
-      statusFinanceiro: "pendente",
-      valor: 0,
-    };
-    setAppointments((prev) => [...prev, newApp]);
-    setShowAppointmentModal(false);
+    
+    if (!isTimeAvailable(newDate, newStartTime)) {
+      toast.error("Este horário já está ocupado!");
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('agendamento')
+        .insert({
+          id_cliente: Number(selectedClient.id),
+          id_companhia: user?.id_companhia,
+          data_agendar: newDate,
+          hora_inicio: newStartTime,
+          hora_fim: newEndTime,
+          status_procedimento: "pendente",
+          confirmacao: null,
+          // Add other fields as necessary based on schema
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const newApp: Appointment = {
+        id: String(data.id),
+        clientId: selectedClient.id,
+        clientName: selectedClient.nome,
+        date: newDate,
+        startTime: newStartTime,
+        endTime: newEndTime,
+        profissional: newProfissional,
+        procedimento: newProcedimento,
+        plano: "-",
+        statusProcedimento: "pendente",
+        statusFinanceiro: "pendente",
+        valor: 0,
+      };
+      setAppointments((prev) => [...prev, newApp]);
+      setShowAppointmentModal(false);
+      toast.success("Agendamento criado com sucesso!");
+    } catch (error: any) {
+      console.error('Error saving appointment:', error);
+      toast.error("Erro ao salvar agendamento no Supabase");
+    }
   };
 
   // Get appointments for a specific date
