@@ -100,7 +100,7 @@ const Administracao = () => {
                 value="clientes" 
                 className="bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-gold data-[state=active]:border-b-2 data-[state=active]:border-gold rounded-none px-0 pb-2 text-muted-foreground font-medium transition-all"
               >
-                Clientes
+                Companhia
               </TabsTrigger>
               <TabsTrigger 
                 value="usuarios" 
@@ -121,7 +121,7 @@ const Administracao = () => {
                 onClick={() => setIsNewCompanyModalOpen(true)}
                 className="bg-green-600 hover:bg-green-700 text-white gap-2 h-9 px-4"
               >
-                <Plus className="w-4 h-4" /> Cadastrar Cliente
+                <Plus className="w-4 h-4" /> Cadastrar Companhia
               </Button>
             )}
             {activeTab === "usuarios" && (
