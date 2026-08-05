@@ -36,12 +36,6 @@ export const NewCompanyModal = ({ isOpen, onClose, onSuccess }: NewCompanyModalP
     inicio_contrato: "",
     fim_contrato: "",
     relatorio_analytics: "",
-    resp_nome: "",
-    resp_cpf: "",
-    resp_nascimento: "",
-    resp_email: "",
-    resp_telefone: "",
-    resp_senha: "",
   });
 
   const handleCEPBlur = async () => {
