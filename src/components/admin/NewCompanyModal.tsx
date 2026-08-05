@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Camera, Search, Calendar as CalendarIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -21,7 +20,6 @@ interface NewCompanyModalProps {
 
 export const NewCompanyModal = ({ isOpen, onClose, onSuccess }: NewCompanyModalProps) => {
   const [loading, setLoading] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   
   const [formData, setFormData] = useState({
     nome: "",
@@ -35,7 +33,6 @@ export const NewCompanyModal = ({ isOpen, onClose, onSuccess }: NewCompanyModalP
     uf: "",
     inicio_contrato: "",
     fim_contrato: "",
-    
   });
 
   const handleCEPBlur = async () => {
@@ -237,11 +234,10 @@ export const NewCompanyModal = ({ isOpen, onClose, onSuccess }: NewCompanyModalP
                     />
                     <CalendarIcon className="w-4 h-4 absolute left-3 top-3 text-gold/50" />
                   </div>
-              {/* Relatório Analytics removed */}
+                </div>
+              </div>
             </div>
           </div>
-
-          {/* Dados do Responsável removed */}
 
           <div className="pt-4">
             <Button 
