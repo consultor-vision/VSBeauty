@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Camera, Clock } from "lucide-react";
+import { Camera, Clock, Building2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
@@ -12,6 +12,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type { Database } from "@/integrations/supabase/types";
+
+type Companhia = Database["public"]["Tables"]["companhia"]["Row"];
 
 interface NewUserModalProps {
   isOpen: boolean;
@@ -23,7 +33,7 @@ export const NewUserModal = ({ isOpen, onClose, onSuccess }: NewUserModalProps) 
   const [loading, setLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [acesso, setAcesso] = useState(true);
-  const [isCEO, setIsCEO] = useState(false); // Sempre false por padrão conforme solicitado
+  const [companhias, setCompanhias] = useState<Companhia[]>([]);
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
@@ -31,7 +41,27 @@ export const NewUserModal = ({ isOpen, onClose, onSuccess }: NewUserModalProps) 
     cpf: "",
     data_nascimento: "",
     password: "",
+    id_companhia: "",
   });
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchCompanhias();
+    }
+  }, [isOpen]);
+
+  const fetchCompanhias = async () => {
+    const { data, error } = await supabase
+      .from("companhia")
+      .select("*")
+      .order("nome");
+    
+    if (error) {
+      toast.error("Erro ao carregar companhias");
+      return;
+    }
+    setCompanhias(data || []);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,12 +89,13 @@ export const NewUserModal = ({ isOpen, onClose, onSuccess }: NewUserModalProps) 
             data_nascimento: formData.data_nascimento || null,
             vsb_adm: isAdmin,
             acesso: acesso,
-            CEO: false, // Garantindo que colaboradores criados pelo sistema sempre sejam CEO = false
+            CEO: false,
+            id_companhia: formData.id_companhia ? parseInt(formData.id_companhia) : null,
           });
 
         if (dbError) throw dbError;
         
-        toast.success("Colaborador cadastrado com sucesso!");
+        toast.success("Usuário cadastrado com sucesso!");
         onSuccess();
         onClose();
         setFormData({
@@ -74,11 +105,12 @@ export const NewUserModal = ({ isOpen, onClose, onSuccess }: NewUserModalProps) 
           cpf: "",
           data_nascimento: "",
           password: "",
+          id_companhia: "",
         });
       }
     } catch (error: any) {
-      console.error("Erro ao cadastrar colaborador:", error);
-      toast.error(error.message || "Erro ao cadastrar colaborador");
+      console.error("Erro ao cadastrar usuário:", error);
+      toast.error(error.message || "Erro ao cadastrar usuário");
     } finally {
       setLoading(false);
     }
@@ -89,7 +121,7 @@ export const NewUserModal = ({ isOpen, onClose, onSuccess }: NewUserModalProps) 
       <DialogContent className="max-w-md bg-[#15191F] border-gold/20 text-white p-0 overflow-hidden">
         <div className="p-6 space-y-6">
           <DialogHeader className="text-center space-y-1">
-            <DialogTitle className="text-xl font-semibold text-gold uppercase tracking-wider">CADASTRAR COLABORADOR</DialogTitle>
+            <DialogTitle className="text-xl font-semibold text-gold uppercase tracking-wider">Cadastrar Usuário</DialogTitle>
             <p className="text-sm text-muted-foreground font-medium">Preencha abaixo as informações</p>
           </DialogHeader>
 
@@ -174,6 +206,25 @@ export const NewUserModal = ({ isOpen, onClose, onSuccess }: NewUserModalProps) 
                   className="bg-transparent border-gold/40 focus:border-gold h-12 rounded-lg text-sm placeholder:text-muted-foreground/30"
                 />
               </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold text-white">Associar à Companhia</Label>
+              <Select
+                value={formData.id_companhia}
+                onValueChange={value => setFormData(prev => ({ ...prev, id_companhia: value }))}
+              >
+                <SelectTrigger className="bg-transparent border-gold/40 focus:border-gold h-12 rounded-lg text-sm text-white">
+                  <SelectValue placeholder="Selecione uma companhia" />
+                </SelectTrigger>
+                <SelectContent className="bg-[#15191F] border-gold/20 text-white">
+                  {companhias.map(comp => (
+                    <SelectItem key={comp.id} value={comp.id.toString()}>
+                      {comp.nome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-1.5">

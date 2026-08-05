@@ -129,7 +129,7 @@ const Administracao = () => {
                 onClick={() => setIsNewUserModalOpen(true)}
                 className="bg-green-600 hover:bg-green-700 text-white gap-2 h-9 px-4"
               >
-                <Plus className="w-4 h-4" /> Colaborador
+                <Plus className="w-4 h-4" /> Usuário
               </Button>
             )}
             {activeTab === "atualizacao" && (
