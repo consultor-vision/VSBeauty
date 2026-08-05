@@ -106,7 +106,7 @@ const Administracao = () => {
                 value="usuarios" 
                 className="bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-gold data-[state=active]:border-b-2 data-[state=active]:border-gold rounded-none px-0 pb-2 text-muted-foreground font-medium transition-all"
               >
-                Equipe
+                Usuário
               </TabsTrigger>
               <TabsTrigger 
                 value="atualizacao" 
