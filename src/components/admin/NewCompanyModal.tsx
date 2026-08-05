@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Camera, Search, Calendar as CalendarIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -21,7 +20,6 @@ interface NewCompanyModalProps {
 
 export const NewCompanyModal = ({ isOpen, onClose, onSuccess }: NewCompanyModalProps) => {
   const [loading, setLoading] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   
   const [formData, setFormData] = useState({
     nome: "",
@@ -35,7 +33,6 @@ export const NewCompanyModal = ({ isOpen, onClose, onSuccess }: NewCompanyModalP
     uf: "",
     inicio_contrato: "",
     fim_contrato: "",
-    relatorio_analytics: "",
   });
 
   const handleCEPBlur = async () => {
@@ -239,20 +236,8 @@ export const NewCompanyModal = ({ isOpen, onClose, onSuccess }: NewCompanyModalP
                   </div>
                 </div>
               </div>
-
-              <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Relatório Analytics</Label>
-                <Input 
-                  placeholder="Preencher.." 
-                  className="bg-transparent border-gold/20 focus:border-gold h-10"
-                  value={formData.relatorio_analytics}
-                  onChange={e => setFormData(prev => ({ ...prev, relatorio_analytics: e.target.value }))}
-                />
-              </div>
             </div>
           </div>
-
-          {/* Dados do Responsável removed */}
 
           <div className="pt-4">
             <Button 
