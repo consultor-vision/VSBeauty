@@ -64,48 +64,17 @@ export const NewCompanyModal = ({ isOpen, onClose, onSuccess }: NewCompanyModalP
     setLoading(true);
 
     try {
-      // 1. Create Company
-      const { data: company, error: companyError } = await supabase
+      // Create Company only
+      const { error: companyError } = await supabase
         .from("companhia")
         .insert({
           nome: formData.nome,
-          adm: formData.resp_nome,
           inicio_contrato: formData.inicio_contrato || null,
-        })
-        .select()
-        .single();
+        });
 
       if (companyError) throw companyError;
-
-      // 2. Create Responsible User in Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: formData.resp_email,
-        password: formData.resp_senha,
-      });
-
-      if (authError) throw authError;
-
-      if (authData.user) {
-        // 3. Create record in public.usuarios as CEO and Admin
-        const { error: dbError } = await supabase
-          .from("usuarios")
-          .insert({
-            uid: authData.user.id,
-            nome: formData.resp_nome,
-            email: formData.resp_email,
-            phone: formData.resp_telefone,
-            cpf: formData.resp_cpf,
-            data_nascimento: formData.resp_nascimento || null,
-            vsb_adm: true, // Responsável da empresa é Admin por padrão
-            acesso: true,
-            CEO: true, // Novo cadastro de cliente (empresa) define o responsável como CEO
-            id_companhia: company.id,
-          });
-
-        if (dbError) throw dbError;
-      }
       
-      toast.success("Empresa e responsável cadastrados com sucesso!");
+      toast.success("Empresa cadastrada com sucesso!");
       onSuccess();
       onClose();
     } catch (error: any) {
@@ -283,103 +252,7 @@ export const NewCompanyModal = ({ isOpen, onClose, onSuccess }: NewCompanyModalP
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div className="bg-gold/10 py-1.5 px-4 rounded-sm border-y border-gold/20">
-              <h3 className="text-sm font-semibold text-gold text-center uppercase tracking-wider">Dados do Responsável</h3>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4">
-              <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Nome Completo</Label>
-                <Input 
-                  placeholder="Preencher.." 
-                  className="bg-transparent border-gold/20 focus:border-gold h-10"
-                  value={formData.resp_nome}
-                  onChange={e => setFormData(prev => ({ ...prev, resp_nome: e.target.value }))}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">CPF</Label>
-                  <Input 
-                    placeholder="Preencher.." 
-                    className="bg-transparent border-gold/20 focus:border-gold h-10"
-                    value={formData.resp_cpf}
-                    onChange={e => setFormData(prev => ({ ...prev, resp_cpf: e.target.value }))}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Data de Nascimento</Label>
-                  <div className="relative">
-                    <Input 
-                      type="date"
-                      className="bg-transparent border-gold/20 focus:border-gold h-10 pl-10 [color-scheme:dark]"
-                      value={formData.resp_nascimento}
-                      onChange={e => setFormData(prev => ({ ...prev, resp_nascimento: e.target.value }))}
-                    />
-                    <CalendarIcon className="w-4 h-4 absolute left-3 top-3 text-gold/50" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Email</Label>
-                  <Input 
-                    type="email"
-                    placeholder="Preencher.." 
-                    className="bg-transparent border-gold/20 focus:border-gold h-10"
-                    value={formData.resp_email}
-                    onChange={e => setFormData(prev => ({ ...prev, resp_email: e.target.value }))}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Telefone</Label>
-                  <Input 
-                    placeholder="Preencher.." 
-                    className="bg-transparent border-gold/20 focus:border-gold h-10"
-                    value={formData.resp_telefone}
-                    onChange={e => setFormData(prev => ({ ...prev, resp_telefone: e.target.value }))}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Senha do cliente</Label>
-                <Input 
-                  type="password"
-                  placeholder="Preencher.." 
-                  className="bg-transparent border-gold/20 focus:border-gold h-10"
-                  value={formData.resp_senha}
-                  onChange={e => setFormData(prev => ({ ...prev, resp_senha: e.target.value }))}
-                />
-              </div>
-
-              <div className="flex items-center justify-between py-2">
-                <div className="flex flex-col gap-1">
-                  <Label className="text-xs text-muted-foreground">Acesso</Label>
-                  <div className="flex items-center gap-3">
-                    <span className={`text-xs ${!isAdmin ? 'text-white' : 'text-muted-foreground'}`}>Comum</span>
-                    <Switch 
-                      checked={isAdmin}
-                      onCheckedChange={setIsAdmin}
-                      className="data-[state=checked]:bg-teal"
-                    />
-                    <span className={`text-xs ${isAdmin ? 'text-white' : 'text-muted-foreground'}`}>Administrador</span>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-[10px] text-muted-foreground">ID do relatório</p>
-                  <p className="text-xs font-medium">Criando..</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-[10px] text-muted-foreground">Data de Criação</p>
-                  <p className="text-xs font-medium">Hoje</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* Dados do Responsável removed */}
 
           <div className="pt-4">
             <Button 
