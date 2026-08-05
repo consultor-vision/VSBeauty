@@ -35,7 +35,7 @@ export const NewCompanyModal = ({ isOpen, onClose, onSuccess }: NewCompanyModalP
     uf: "",
     inicio_contrato: "",
     fim_contrato: "",
-    relatorio_analytics: "",
+    
   });
 
   const handleCEPBlur = async () => {
@@ -237,18 +237,7 @@ export const NewCompanyModal = ({ isOpen, onClose, onSuccess }: NewCompanyModalP
                     />
                     <CalendarIcon className="w-4 h-4 absolute left-3 top-3 text-gold/50" />
                   </div>
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Relatório Analytics</Label>
-                <Input 
-                  placeholder="Preencher.." 
-                  className="bg-transparent border-gold/20 focus:border-gold h-10"
-                  value={formData.relatorio_analytics}
-                  onChange={e => setFormData(prev => ({ ...prev, relatorio_analytics: e.target.value }))}
-                />
-              </div>
+              {/* Relatório Analytics removed */}
             </div>
           </div>
 
