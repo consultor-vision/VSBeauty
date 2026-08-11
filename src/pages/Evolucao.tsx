@@ -99,6 +99,12 @@ const Evolucao = () => {
   const fetchSessions = async (planoId: string) => {
     setLoading(true);
     try {
+      // Requirements:
+      // 1. Filter by id_plano
+      // 2. Filter by id_cliente
+      // 3. Filter by id_companhia
+      // 4. Filter only finished sessions - trying 'status_procedimento' as 'status_procedim' failed type check
+      
       const { data, error } = await supabase
         .from("agendamento")
         .select(`
@@ -107,19 +113,16 @@ const Evolucao = () => {
           confirmacao,
           id_profissional,
           id_plano,
+          id_cliente,
+          id_companhia,
           status_procedimento,
-          procedimento:id_procedimento (
-            id,
-            procedimento,
-            valor_procediemtno
-          ),
+          sessao,
           profissional:id_profissional (
             nome
           ),
           plano:id_plano (
             id,
-            nome_plano,
-            valor_total
+            nome_plano
           ),
           evolucao_cliente (
             id,
@@ -129,20 +132,19 @@ const Evolucao = () => {
           )
         `)
         .eq("id_plano", parseInt(planoId))
-        .eq("confirmacao", true)
+        .eq("id_cliente", selectedClient?.id)
+        .eq("id_companhia", user?.id_companhia)
+        .eq("status_procedimento", "Concluído")
         .order("data_inicio", { ascending: false });
 
       if (error) throw error;
       setSessions(data || []);
       
-      // Reset details when changing procedure
+      // Reset details when changing procedure/plan
       setSelectedSessionIdx(-1);
       setObservacao("");
       setProducts([]);
 
-      // Requirement says: "Ao selecionar um procedimento/plano, carregar as observações relacionadas."
-      // If we want a summary observation of the PLAN, we might need another source, 
-      // but for now we follow the instruction: "Ao acessar uma sessão específica, priorizar as observações registradas naquela sessão."
     } catch (error: any) {
       toast.error("Erro ao carregar sessões: " + error.message);
     } finally {
@@ -152,9 +154,28 @@ const Evolucao = () => {
 
   const fetchSessionDetails = async (session: any) => {
     try {
-      // 1. Load observation from evolucao_cliente
-      const evol = session.evolucao_cliente?.[0];
-      setObservacao(evol?.observacao || "Nenhuma observação registrada");
+      // Requirements:
+      // 1. Load observation from evolucao_cliente by id_agendamento
+      // 2. Load products from estoque_evolucao by id_agendamento
+      
+      const { data: evolData, error: evolError } = await supabase
+        .from("evolucao_cliente")
+        .select("*")
+        .eq("id_agendamento", session.id)
+        .eq("id_companhia", user?.id_companhia)
+        .maybeSingle();
+
+      if (evolError) throw evolError;
+      
+      setObservacao(evolData?.observacao || "Nenhuma observação registrada para esta sessão");
+
+      // Update session record locally with latest evolution data if it wasn't pre-loaded or changed
+      const updatedSessions = [...sessions];
+      const sessionIdx = updatedSessions.findIndex(s => s.id === session.id);
+      if (sessionIdx !== -1) {
+        updatedSessions[sessionIdx].evolucao_cliente = evolData ? [evolData] : [];
+        setSessions(updatedSessions);
+      }
 
       // 2. Load products from estoque_evolucao
       const { data: prodData, error: prodError } = await supabase
@@ -336,9 +357,19 @@ const Evolucao = () => {
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <Select value={selectedProcedimento || undefined} onValueChange={setSelectedProcedimento}>
-              <SelectTrigger className="flex-1 bg-input border-border text-foreground focus:ring-gold">
-                <SelectValue placeholder={procedimentos.length > 0 ? "Selecione Procedimento" : "Nenhum procedimento registrado para este cliente"} />
+            <Select 
+              value={selectedProcedimento || undefined} 
+              onValueChange={(val) => {
+                setSelectedProcedimento(val);
+                // Clear child selections when plan changes
+                setSelectedSessionIdx(-1);
+                setObservacao("");
+                setProducts([]);
+                setSessions([]);
+              }}
+            >
+              <SelectTrigger className="flex-1 bg-input border-border text-foreground focus:ring-gold min-w-[300px]">
+                <SelectValue placeholder={procedimentos.length > 0 ? "Selecione o Plano" : "Nenhum plano registrado para este cliente"} />
               </SelectTrigger>
               <SelectContent>
                 {procedimentos.map((p) => (
@@ -356,10 +387,10 @@ const Evolucao = () => {
                 setSessions([]);
               }}
               className="p-2.5 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"
+              title="Limpar Seleção"
             >
               <Trash2 className="w-4 h-4" />
             </button>
-
           </div>
         </div>
 
@@ -390,7 +421,9 @@ const Evolucao = () => {
                           fetchSessionDetails(s);
                         }}
                       >
-                        <TableCell className="text-sm">{s.data_inicio ? format(new Date(s.data_inicio), "dd/MM/yyyy") : "-"}</TableCell>
+                        <TableCell className="text-sm">
+                          {s.data_inicio ? format(new Date(s.data_inicio), "dd/MM/yyyy") : "-"}
+                        </TableCell>
                         <TableCell className="text-sm">
                           {s.plano?.nome_plano || selectedProcLabel.split(" | ")[0]}
                         </TableCell>
@@ -402,9 +435,9 @@ const Evolucao = () => {
                             className="p-1 hover:bg-muted rounded transition-colors"
                             onClick={(e) => {
                               e.stopPropagation();
-                              // Implement session edit logic here if needed
                               toast.info("Funcionalidade de edição de sessão em desenvolvimento");
                             }}
+                            title="Editar Sessão"
                           >
                             <Wrench className="w-4 h-4 text-foreground" />
                           </button>
@@ -417,11 +450,11 @@ const Evolucao = () => {
                               setSelectedSessionIdx(idx);
                               fetchSessionDetails(s);
                             }}
+                            title="Acessar Sessão"
                           >
                             <Play className="w-4 h-4 text-accent-foreground" />
                           </button>
                         </TableCell>
-
                       </TableRow>
                     ))
                   ) : (
@@ -429,7 +462,11 @@ const Evolucao = () => {
                       <TableCell colSpan={5} className="h-40">
                         <div className="flex flex-col items-center justify-center text-muted-foreground gap-2">
                           <ClipboardList className="w-10 h-10 text-gold/30" />
-                          <p className="text-sm">Aqui tem que aparecer os agendamento referentes a este planos selecionado</p>
+                          <p className="text-sm px-10 text-center">
+                            {selectedProcedimento 
+                              ? "Nenhuma sessão concluída encontrada para este plano" 
+                              : "Selecione um plano para visualizar os agendamentos concluídos"}
+                          </p>
                         </div>
                       </TableCell>
                     </TableRow>
