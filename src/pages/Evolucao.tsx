@@ -369,7 +369,7 @@ const Evolucao = () => {
               }}
             >
               <SelectTrigger className="flex-1 bg-input border-border text-foreground focus:ring-gold min-w-[300px]">
-                <SelectValue placeholder={procedimentos.length > 0 ? "Selecione o Plano" : "Nenhum plano registrado para este cliente"} />
+                <SelectValue placeholder="Selecione o Plano" />
               </SelectTrigger>
               <SelectContent>
                 {procedimentos.map((p) => (
