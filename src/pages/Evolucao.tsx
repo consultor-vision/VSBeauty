@@ -402,7 +402,9 @@ const Evolucao = () => {
                           fetchSessionDetails(s);
                         }}
                       >
-                        <TableCell className="text-sm">{s.data_inicio ? format(new Date(s.data_inicio), "dd/MM/yyyy") : "-"}</TableCell>
+                        <TableCell className="text-sm">
+                          {s.data_inicio ? format(new Date(s.data_inicio), "dd/MM/yyyy") : "-"}
+                        </TableCell>
                         <TableCell className="text-sm">
                           {s.plano?.nome_plano || selectedProcLabel.split(" | ")[0]}
                         </TableCell>
@@ -414,9 +416,9 @@ const Evolucao = () => {
                             className="p-1 hover:bg-muted rounded transition-colors"
                             onClick={(e) => {
                               e.stopPropagation();
-                              // Implement session edit logic here if needed
                               toast.info("Funcionalidade de edição de sessão em desenvolvimento");
                             }}
+                            title="Editar Sessão"
                           >
                             <Wrench className="w-4 h-4 text-foreground" />
                           </button>
@@ -429,11 +431,11 @@ const Evolucao = () => {
                               setSelectedSessionIdx(idx);
                               fetchSessionDetails(s);
                             }}
+                            title="Acessar Sessão"
                           >
                             <Play className="w-4 h-4 text-accent-foreground" />
                           </button>
                         </TableCell>
-
                       </TableRow>
                     ))
                   ) : (
@@ -441,7 +443,11 @@ const Evolucao = () => {
                       <TableCell colSpan={5} className="h-40">
                         <div className="flex flex-col items-center justify-center text-muted-foreground gap-2">
                           <ClipboardList className="w-10 h-10 text-gold/30" />
-                          <p className="text-sm">Aqui tem que aparecer os agendamento referentes a este planos selecionado</p>
+                          <p className="text-sm px-10 text-center">
+                            {selectedProcedimento 
+                              ? "Nenhuma sessão concluída encontrada para este plano" 
+                              : "Selecione um plano para visualizar os agendamentos concluídos"}
+                          </p>
                         </div>
                       </TableCell>
                     </TableRow>
