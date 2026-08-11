@@ -106,6 +106,7 @@ const Evolucao = () => {
           id_plano,
           status_procedimento,
           evolucao_cliente (
+            id,
             observacao,
             antes,
             depois
@@ -119,8 +120,12 @@ const Evolucao = () => {
       setSessions(data || []);
       if (data && data.length > 0) {
         setSelectedSessionIdx(0);
+        // Load evolution data for the first session by default
         const evol = data[0].evolucao_cliente?.[0];
         setObservacao(evol?.observacao || "");
+      } else {
+        setSelectedSessionIdx(0);
+        setObservacao("");
       }
     } catch (error: any) {
       toast.error("Erro ao carregar sessões: " + error.message);
@@ -329,7 +334,7 @@ const Evolucao = () => {
                       >
                         <TableCell className="text-sm">{s.data_inicio ? format(new Date(s.data_inicio), "dd/MM/yyyy") : "-"}</TableCell>
                         <TableCell className="text-sm">{selectedProcLabel.split(" | ")[0]}</TableCell>
-                        <TableCell className="text-sm">Profissional {s.id_profissional || ""}</TableCell>
+                        <TableCell className="text-sm">Profissional {s.id_profissional || "-"}</TableCell>
                         <TableCell className="text-center">
                           <button className="p-1 hover:bg-muted rounded transition-colors">
                             <Wrench className="w-4 h-4 text-foreground" />
