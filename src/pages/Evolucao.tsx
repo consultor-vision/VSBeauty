@@ -47,9 +47,10 @@ const Evolucao = () => {
   const [procedimentos, setProcedimentos] = useState<{ value: string; label: string }[]>([]);
   const [selectedProcedimento, setSelectedProcedimento] = useState<string>("");
   const [sessions, setSessions] = useState<any[]>([]);
-  const [selectedSessionIdx, setSelectedSessionIdx] = useState<number>(0);
+  const [selectedSessionIdx, setSelectedSessionIdx] = useState<number>(-1);
   const [observacao, setObservacao] = useState("");
   const [photoView, setPhotoView] = useState<"antes" | "depois">("antes");
+  const [products, setProducts] = useState<any[]>([]);
 
   useEffect(() => {
     if (user?.id_companhia) {
@@ -81,7 +82,8 @@ const Evolucao = () => {
         .from("planos")
         .select("id, nome_plano, created_at")
         .eq("id_cliente", clientId)
-        .eq("id_companhia", user?.id_companhia);
+        .eq("id_companhia", user?.id_companhia)
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       const formatted = (data || []).map(p => ({
@@ -95,6 +97,7 @@ const Evolucao = () => {
   };
 
   const fetchSessions = async (planoId: string) => {
+    setLoading(true);
     try {
       const { data, error } = await supabase
         .from("agendamento")
@@ -118,17 +121,46 @@ const Evolucao = () => {
 
       if (error) throw error;
       setSessions(data || []);
-      if (data && data.length > 0) {
-        setSelectedSessionIdx(0);
-        // Load evolution data for the first session by default
-        const evol = data[0].evolucao_cliente?.[0];
-        setObservacao(evol?.observacao || "");
-      } else {
-        setSelectedSessionIdx(0);
-        setObservacao("");
-      }
+      
+      // Reset details when changing procedure
+      setSelectedSessionIdx(-1);
+      setObservacao("");
+      setProducts([]);
+
+      // Requirement says: "Ao selecionar um procedimento/plano, carregar as observações relacionadas."
+      // If we want a summary observation of the PLAN, we might need another source, 
+      // but for now we follow the instruction: "Ao acessar uma sessão específica, priorizar as observações registradas naquela sessão."
     } catch (error: any) {
       toast.error("Erro ao carregar sessões: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchSessionDetails = async (session: any) => {
+    try {
+      // 1. Load observation from evolucao_cliente
+      const evol = session.evolucao_cliente?.[0];
+      setObservacao(evol?.observacao || "Nenhuma observação registrada");
+
+      // 2. Load products from estoque_evolucao
+      const { data: prodData, error: prodError } = await supabase
+        .from("estoque_evolucao")
+        .select(`
+          id,
+          quantidade,
+          tipo_embalagem,
+          produtos (
+            produtos
+          )
+        `)
+        .eq("id_agendamento", session.id);
+
+      if (prodError) throw prodError;
+      setProducts(prodData || []);
+    } catch (error: any) {
+      console.error("Erro ao carregar detalhes da sessão:", error);
+      toast.error("Erro ao carregar detalhes: " + error.message);
     }
   };
 
@@ -138,12 +170,21 @@ const Evolucao = () => {
     } else {
       setSessions([]);
       setObservacao("");
+      setProducts([]);
+      setSelectedSessionIdx(-1);
     }
   }, [selectedProcedimento]);
 
   const handleSelectClient = (client: Client) => {
     setSelectedClient(client);
     setShowClientModal(false);
+    // Clear previous states when changing client
+    setSelectedProcedimento("");
+    setSessions([]);
+    setObservacao("");
+    setProducts([]);
+    setSelectedSessionIdx(-1);
+    
     fetchClientPlans(client.id);
   };
 
@@ -158,6 +199,7 @@ const Evolucao = () => {
   const selectedProcLabel = procedimentos.find(p => p.value === selectedProcedimento)?.label || "";
 
   const canCloseModal = selectedClient !== null;
+
 
   if (!selectedClient || showClientModal) {
     return (
@@ -256,7 +298,7 @@ const Evolucao = () => {
     );
   }
 
-  const currentEvol = sessions[selectedSessionIdx]?.evolucao_cliente?.[0];
+  const currentEvol = selectedSessionIdx !== -1 ? sessions[selectedSessionIdx]?.evolucao_cliente?.[0] : null;
 
   return (
     <Layout title="Evolução do Cliente">
@@ -283,7 +325,7 @@ const Evolucao = () => {
           <div className="flex items-center gap-2">
             <Select value={selectedProcedimento || undefined} onValueChange={setSelectedProcedimento}>
               <SelectTrigger className="flex-1 bg-input border-border text-foreground focus:ring-gold">
-                <SelectValue placeholder="Selecione Procedimento" />
+                <SelectValue placeholder={procedimentos.length > 0 ? "Selecione Procedimento" : "Nenhum procedimento registrado para este cliente"} />
               </SelectTrigger>
               <SelectContent>
                 {procedimentos.map((p) => (
@@ -296,12 +338,15 @@ const Evolucao = () => {
                 setSelectedProcedimento("");
                 setObservacao("");
                 setPhotoView("antes");
-                setSelectedSessionIdx(0);
+                setSelectedSessionIdx(-1);
+                setProducts([]);
+                setSessions([]);
               }}
               className="p-2.5 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"
             >
               <Trash2 className="w-4 h-4" />
             </button>
+
           </div>
         </div>
 
@@ -329,22 +374,37 @@ const Evolucao = () => {
                         }`}
                         onClick={() => {
                           setSelectedSessionIdx(idx);
-                          setObservacao(s.evolucao_cliente?.[0]?.observacao || "");
+                          fetchSessionDetails(s);
                         }}
                       >
                         <TableCell className="text-sm">{s.data_inicio ? format(new Date(s.data_inicio), "dd/MM/yyyy") : "-"}</TableCell>
                         <TableCell className="text-sm">{selectedProcLabel.split(" | ")[0]}</TableCell>
                         <TableCell className="text-sm">Profissional {s.id_profissional || "-"}</TableCell>
                         <TableCell className="text-center">
-                          <button className="p-1 hover:bg-muted rounded transition-colors">
+                          <button 
+                            className="p-1 hover:bg-muted rounded transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // Implement session edit logic here if needed
+                              toast.info("Funcionalidade de edição de sessão em desenvolvimento");
+                            }}
+                          >
                             <Wrench className="w-4 h-4 text-foreground" />
                           </button>
                         </TableCell>
                         <TableCell className="text-center">
-                          <button className="p-1 hover:bg-muted rounded transition-colors">
+                          <button 
+                            className="p-1 hover:bg-muted rounded transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedSessionIdx(idx);
+                              fetchSessionDetails(s);
+                            }}
+                          >
                             <Play className="w-4 h-4 text-accent-foreground" />
                           </button>
                         </TableCell>
+
                       </TableRow>
                     ))
                   ) : (
@@ -383,21 +443,33 @@ const Evolucao = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow className="hover:bg-transparent">
-                    <TableCell colSpan={3} className="h-40">
-                      <div className="flex flex-col items-center justify-center text-muted-foreground gap-2">
-                        <Package className="w-10 h-10 text-gold/30" />
-                        <p className="text-sm">Nenhum produto registrado</p>
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                  {products.length > 0 ? (
+                    products.map((p) => (
+                      <TableRow key={p.id} className="border-border hover:bg-muted/30">
+                        <TableCell className="text-sm text-center">{p.produtos?.produtos || "-"}</TableCell>
+                        <TableCell className="text-sm text-center">{p.tipo_embalagem || "-"}</TableCell>
+                        <TableCell className="text-sm text-center">{p.quantidade || 0}</TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow className="hover:bg-transparent">
+                      <TableCell colSpan={3} className="h-40">
+                        <div className="flex flex-col items-center justify-center text-muted-foreground gap-2">
+                          <Package className="w-10 h-10 text-gold/30" />
+                          <p className="text-sm">Nenhum produto registrado</p>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+
                 </TableBody>
               </Table>
             </div>
           </div>
 
           <div className="flex flex-col gap-3 min-h-0 overflow-hidden h-full">
-            {hasSessions ? (
+            {selectedSessionIdx !== -1 ? (
+
               <>
                 <h3 className="text-center text-foreground font-semibold text-lg">
                   {photoView === "antes" ? "Antes" : "Depois"}
