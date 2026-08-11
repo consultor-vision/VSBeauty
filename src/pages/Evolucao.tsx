@@ -338,9 +338,19 @@ const Evolucao = () => {
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <Select value={selectedProcedimento || undefined} onValueChange={setSelectedProcedimento}>
-              <SelectTrigger className="flex-1 bg-input border-border text-foreground focus:ring-gold">
-                <SelectValue placeholder={procedimentos.length > 0 ? "Selecione Procedimento" : "Nenhum procedimento registrado para este cliente"} />
+            <Select 
+              value={selectedProcedimento || undefined} 
+              onValueChange={(val) => {
+                setSelectedProcedimento(val);
+                // Clear child selections when plan changes
+                setSelectedSessionIdx(-1);
+                setObservacao("");
+                setProducts([]);
+                setSessions([]);
+              }}
+            >
+              <SelectTrigger className="flex-1 bg-input border-border text-foreground focus:ring-gold min-w-[300px]">
+                <SelectValue placeholder={procedimentos.length > 0 ? "Selecione o Plano" : "Nenhum plano registrado para este cliente"} />
               </SelectTrigger>
               <SelectContent>
                 {procedimentos.map((p) => (
@@ -358,10 +368,10 @@ const Evolucao = () => {
                 setSessions([]);
               }}
               className="p-2.5 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"
+              title="Limpar Seleção"
             >
               <Trash2 className="w-4 h-4" />
             </button>
-
           </div>
         </div>
 
