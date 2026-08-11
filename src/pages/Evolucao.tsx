@@ -103,7 +103,7 @@ const Evolucao = () => {
       // 1. Filter by id_plano
       // 2. Filter by id_cliente
       // 3. Filter by id_companhia
-      // 4. Filter only finished sessions (status_procedim = 'Concluído') - using the real field from prompt
+      // 4. Filter only finished sessions - trying 'status_procedimento' as 'status_procedim' failed type check
       
       const { data, error } = await supabase
         .from("agendamento")
@@ -115,7 +115,7 @@ const Evolucao = () => {
           id_plano,
           id_cliente,
           id_companhia,
-          status_procedim,
+          status_procedimento,
           sessao,
           profissional:id_profissional (
             nome
@@ -134,7 +134,7 @@ const Evolucao = () => {
         .eq("id_plano", parseInt(planoId))
         .eq("id_cliente", selectedClient?.id)
         .eq("id_companhia", user?.id_companhia)
-        .eq("status_procedim", "Concluído")
+        .eq("status_procedimento", "Concluído")
         .order("data_inicio", { ascending: false });
 
       if (error) throw error;
