@@ -108,6 +108,19 @@ const Evolucao = () => {
           id_profissional,
           id_plano,
           status_procedimento,
+          procedimento:id_procedimento (
+            id,
+            procedimento,
+            valor_procediemtno
+          ),
+          profissional:id_profissional (
+            nome
+          ),
+          plano:id_plano (
+            id,
+            nome_plano,
+            valor_total
+          ),
           evolucao_cliente (
             id,
             observacao,
@@ -378,8 +391,12 @@ const Evolucao = () => {
                         }}
                       >
                         <TableCell className="text-sm">{s.data_inicio ? format(new Date(s.data_inicio), "dd/MM/yyyy") : "-"}</TableCell>
-                        <TableCell className="text-sm">{selectedProcLabel.split(" | ")[0]}</TableCell>
-                        <TableCell className="text-sm">Profissional {s.id_profissional || "-"}</TableCell>
+                        <TableCell className="text-sm">
+                          {s.plano?.nome_plano || selectedProcLabel.split(" | ")[0]}
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          {s.profissional?.nome || `Profissional ${s.id_profissional || "-"}`}
+                        </TableCell>
                         <TableCell className="text-center">
                           <button 
                             className="p-1 hover:bg-muted rounded transition-colors"
@@ -412,7 +429,7 @@ const Evolucao = () => {
                       <TableCell colSpan={5} className="h-40">
                         <div className="flex flex-col items-center justify-center text-muted-foreground gap-2">
                           <ClipboardList className="w-10 h-10 text-gold/30" />
-                          <p className="text-sm">Carregar e exibir os agendamentos do plano selecionado na tela de Evolução.</p>
+                          <p className="text-sm">Aqui tem que aparecer os agendamento referentes a este planos selecionado</p>
                         </div>
                       </TableCell>
                     </TableRow>
