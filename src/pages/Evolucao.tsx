@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "@/components/Layout";
-import { Trash2, Package, ClipboardList, Wrench, Play, ImageIcon, Search, ExternalLink, X } from "lucide-react";
+import { Trash2, Package, ClipboardList, Wrench, Play, ImageIcon, Search, ExternalLink, X, User } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -18,66 +18,69 @@ import {
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
+import { format } from "date-fns";
 
 interface Client {
-  id: string;
+  id: number;
   nome: string;
   cpf: string;
   telefone: string;
   email: string;
   cidade: string;
-  uf: string;
-  dataNascimento: string;
+  estado: string;
+  data_nascimento: string;
+  imagem: string | null;
 }
 
-const mockClients: Client[] = [
-  { id: "1", nome: "Alana Silva", cpf: "325.215.852-33", telefone: "+55(11) 95176-3258", email: "alana@gmail.com", cidade: "São Paulo", uf: "SP", dataNascimento: "2002-01-05" },
-  { id: "2", nome: "Alfredo Nunes", cpf: "000.000.000-00", telefone: "+55(11) 95209-6182", email: "alfredo.nn@gmail.com", cidade: "Cidade", uf: "UF", dataNascimento: "1987-05-21" },
-  { id: "3", nome: "Ana Luz", cpf: "000.000.000-01", telefone: "+55(11) 95209-6182", email: "ana.luz@gmail.com", cidade: "Cidade", uf: "UF", dataNascimento: "1990-04-12" },
-  { id: "4", nome: "Ana Maria Pereira", cpf: "999.999.999-99", telefone: "+55(11) 99999-9999", email: "anamaria@gmail.com", cidade: "São Paulo", uf: "SP", dataNascimento: "1985-04-08" },
-  { id: "5", nome: "Angélica Lemes", cpf: "070.186.649-77", telefone: "+55(11) 99928-3182", email: "lemesangelica39@gmail.com", cidade: "Barueri", uf: "SP", dataNascimento: "1992-07-15" },
-  { id: "6", nome: "Barbara Fernandes", cpf: "093.765.184-20", telefone: "+55(31) 99829-8853", email: "luz_fernandes@ssp.com", cidade: "Belo Horizonte", uf: "MG", dataNascimento: "1988-12-03" },
-  { id: "7", nome: "Bianca Silva", cpf: "333.333.333-33", telefone: "+55(11) 33333-3333", email: "biancasilva@gmail.com", cidade: "Sertãozinho", uf: "SP", dataNascimento: "1995-04-22" },
-];
-
-const mockProcedimentos = [
-  { value: "botox_15052025", label: "Botox | 15/05/2025" },
-  { value: "celulite_28112025", label: "Tratamentos para Celulite | 28/11/2025" },
-  { value: "dreno_30032026", label: "Dreno Detox | 30/03/2026" },
-];
-
-const mockSessions = [
-  { data: "26/6/2025", plano: "Botox | 15/05/2025", profissional: "Eduardo Yto" },
-  { data: "26/6/2025", plano: "Botox | 15/05/2025", profissional: "Profissional" },
-  { data: "25/6/2025", plano: "Botox | 15/05/2025", profissional: "Profissional" },
-];
-
-const formatDateBR = (dateStr: string) => {
-  const [y, m, d] = dateStr.split("-");
-  return `${d}/${m}/${y}`;
-};
-
 const Evolucao = () => {
+  const { user } = useAuth();
+  const [clients, setClients] = useState<Client[]>([]);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [showClientModal, setShowClientModal] = useState(true);
   const [clientSearch, setClientSearch] = useState("");
-  const [searchField, setSearchField] = useState<"nome" | "cpf" | "telefone" | "email" | "cidade" | "uf">("nome");
+  const [searchField, setSearchField] = useState<"nome" | "cpf" | "telefone" | "email" | "cidade" | "estado">("nome");
+  const [loading, setLoading] = useState(false);
 
+  const [procedimentos, setProcedimentos] = useState<{ value: string; label: string }[]>([]);
   const [selectedProcedimento, setSelectedProcedimento] = useState<string>("");
-  const [observacao, setObservacao] = useState("Botox para teste plus");
-  const [photoView, setPhotoView] = useState<"antes" | "depois">("antes");
+  const [sessions, setSessions] = useState<any[]>([]);
   const [selectedSessionIdx, setSelectedSessionIdx] = useState<number>(0);
+  const [observacao, setObservacao] = useState("");
+  const [photoView, setPhotoView] = useState<"antes" | "depois">("antes");
 
-  const filteredClients = mockClients.filter((c) => {
-    const term = clientSearch.toLowerCase();
-    if (!term) return true;
-    return c[searchField]?.toLowerCase().includes(term);
-  });
+  useEffect(() => {
+    if (user?.id_companhia) {
+      fetchClients();
+    }
+  }, [user?.id_companhia]);
+
+  const fetchClients = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("clientes")
+        .select("*")
+        .eq("id_companhia", user?.id_companhia)
+        .order("nome", { ascending: true });
+
+      if (error) throw error;
+      setClients(data || []);
+    } catch (error: any) {
+      toast.error("Erro ao carregar clientes: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSelectClient = (client: Client) => {
     setSelectedClient(client);
     setShowClientModal(false);
+    fetchClientPlans(client.id);
   };
+
 
   const hasSessions = selectedProcedimento !== "";
   const selectedProcLabel = mockProcedimentos.find(p => p.value === selectedProcedimento)?.label || "";
