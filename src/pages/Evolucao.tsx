@@ -99,6 +99,12 @@ const Evolucao = () => {
   const fetchSessions = async (planoId: string) => {
     setLoading(true);
     try {
+      // Requirements:
+      // 1. Filter by id_plano
+      // 2. Filter by id_cliente
+      // 3. Filter by id_companhia
+      // 4. Filter only finished sessions (status_procedim = 'Concluído') - using the real field from prompt
+      
       const { data, error } = await supabase
         .from("agendamento")
         .select(`
@@ -107,19 +113,16 @@ const Evolucao = () => {
           confirmacao,
           id_profissional,
           id_plano,
-          status_procedimento,
-          procedimento:id_procedimento (
-            id,
-            procedimento,
-            valor_procediemtno
-          ),
+          id_cliente,
+          id_companhia,
+          status_procedim,
+          sessao,
           profissional:id_profissional (
             nome
           ),
           plano:id_plano (
             id,
-            nome_plano,
-            valor_total
+            nome_plano
           ),
           evolucao_cliente (
             id,
@@ -129,20 +132,19 @@ const Evolucao = () => {
           )
         `)
         .eq("id_plano", parseInt(planoId))
-        .eq("confirmacao", true)
+        .eq("id_cliente", selectedClient?.id)
+        .eq("id_companhia", user?.id_companhia)
+        .eq("status_procedim", "Concluído")
         .order("data_inicio", { ascending: false });
 
       if (error) throw error;
       setSessions(data || []);
       
-      // Reset details when changing procedure
+      // Reset details when changing procedure/plan
       setSelectedSessionIdx(-1);
       setObservacao("");
       setProducts([]);
 
-      // Requirement says: "Ao selecionar um procedimento/plano, carregar as observações relacionadas."
-      // If we want a summary observation of the PLAN, we might need another source, 
-      // but for now we follow the instruction: "Ao acessar uma sessão específica, priorizar as observações registradas naquela sessão."
     } catch (error: any) {
       toast.error("Erro ao carregar sessões: " + error.message);
     } finally {
