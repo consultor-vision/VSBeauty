@@ -108,6 +108,19 @@ const Evolucao = () => {
           id_profissional,
           id_plano,
           status_procedimento,
+          procedimento:id_procedimento (
+            id,
+            procedimento,
+            valor_procediemtno
+          ),
+          profissional:id_profissional (
+            nome
+          ),
+          plano:id_plano (
+            id,
+            nome_plano,
+            valor_total
+          ),
           evolucao_cliente (
             id,
             observacao,
