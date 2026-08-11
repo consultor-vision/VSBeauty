@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "@/components/Layout";
-import { Trash2, Package, ClipboardList, Wrench, Play, ImageIcon, Search, ExternalLink, X } from "lucide-react";
+import { Trash2, Package, ClipboardList, Wrench, Play, ImageIcon, Search, ExternalLink, X, User } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -18,76 +18,145 @@ import {
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
+import { format } from "date-fns";
 
 interface Client {
-  id: string;
+  id: number;
   nome: string;
   cpf: string;
   telefone: string;
   email: string;
   cidade: string;
-  uf: string;
-  dataNascimento: string;
+  estado: string;
+  data_nascimento: string;
+  imagem: string | null;
 }
 
-const mockClients: Client[] = [
-  { id: "1", nome: "Alana Silva", cpf: "325.215.852-33", telefone: "+55(11) 95176-3258", email: "alana@gmail.com", cidade: "São Paulo", uf: "SP", dataNascimento: "2002-01-05" },
-  { id: "2", nome: "Alfredo Nunes", cpf: "000.000.000-00", telefone: "+55(11) 95209-6182", email: "alfredo.nn@gmail.com", cidade: "Cidade", uf: "UF", dataNascimento: "1987-05-21" },
-  { id: "3", nome: "Ana Luz", cpf: "000.000.000-01", telefone: "+55(11) 95209-6182", email: "ana.luz@gmail.com", cidade: "Cidade", uf: "UF", dataNascimento: "1990-04-12" },
-  { id: "4", nome: "Ana Maria Pereira", cpf: "999.999.999-99", telefone: "+55(11) 99999-9999", email: "anamaria@gmail.com", cidade: "São Paulo", uf: "SP", dataNascimento: "1985-04-08" },
-  { id: "5", nome: "Angélica Lemes", cpf: "070.186.649-77", telefone: "+55(11) 99928-3182", email: "lemesangelica39@gmail.com", cidade: "Barueri", uf: "SP", dataNascimento: "1992-07-15" },
-  { id: "6", nome: "Barbara Fernandes", cpf: "093.765.184-20", telefone: "+55(31) 99829-8853", email: "luz_fernandes@ssp.com", cidade: "Belo Horizonte", uf: "MG", dataNascimento: "1988-12-03" },
-  { id: "7", nome: "Bianca Silva", cpf: "333.333.333-33", telefone: "+55(11) 33333-3333", email: "biancasilva@gmail.com", cidade: "Sertãozinho", uf: "SP", dataNascimento: "1995-04-22" },
-];
-
-const mockProcedimentos = [
-  { value: "botox_15052025", label: "Botox | 15/05/2025" },
-  { value: "celulite_28112025", label: "Tratamentos para Celulite | 28/11/2025" },
-  { value: "dreno_30032026", label: "Dreno Detox | 30/03/2026" },
-];
-
-const mockSessions = [
-  { data: "26/6/2025", plano: "Botox | 15/05/2025", profissional: "Eduardo Yto" },
-  { data: "26/6/2025", plano: "Botox | 15/05/2025", profissional: "Profissional" },
-  { data: "25/6/2025", plano: "Botox | 15/05/2025", profissional: "Profissional" },
-];
-
-const formatDateBR = (dateStr: string) => {
-  const [y, m, d] = dateStr.split("-");
-  return `${d}/${m}/${y}`;
-};
-
 const Evolucao = () => {
+  const { user } = useAuth();
+  const [clients, setClients] = useState<Client[]>([]);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [showClientModal, setShowClientModal] = useState(true);
   const [clientSearch, setClientSearch] = useState("");
-  const [searchField, setSearchField] = useState<"nome" | "cpf" | "telefone" | "email" | "cidade" | "uf">("nome");
+  const [searchField, setSearchField] = useState<"nome" | "cpf" | "telefone" | "email" | "cidade" | "estado">("nome");
+  const [loading, setLoading] = useState(false);
 
+  const [procedimentos, setProcedimentos] = useState<{ value: string; label: string }[]>([]);
   const [selectedProcedimento, setSelectedProcedimento] = useState<string>("");
-  const [observacao, setObservacao] = useState("Botox para teste plus");
-  const [photoView, setPhotoView] = useState<"antes" | "depois">("antes");
+  const [sessions, setSessions] = useState<any[]>([]);
   const [selectedSessionIdx, setSelectedSessionIdx] = useState<number>(0);
+  const [observacao, setObservacao] = useState("");
+  const [photoView, setPhotoView] = useState<"antes" | "depois">("antes");
 
-  const filteredClients = mockClients.filter((c) => {
-    const term = clientSearch.toLowerCase();
-    if (!term) return true;
-    return c[searchField]?.toLowerCase().includes(term);
-  });
+  useEffect(() => {
+    if (user?.id_companhia) {
+      fetchClients();
+    }
+  }, [user?.id_companhia]);
+
+  const fetchClients = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("clientes")
+        .select("*")
+        .eq("id_companhia", user?.id_companhia)
+        .order("nome", { ascending: true });
+
+      if (error) throw error;
+      setClients(data || []);
+    } catch (error: any) {
+      toast.error("Erro ao carregar clientes: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchClientPlans = async (clientId: number) => {
+    try {
+      const { data, error } = await supabase
+        .from("planos")
+        .select("id, nome_plano, created_at")
+        .eq("id_cliente", clientId)
+        .eq("id_companhia", user?.id_companhia);
+
+      if (error) throw error;
+      const formatted = (data || []).map(p => ({
+        value: p.id.toString(),
+        label: `${p.nome_plano} | ${format(new Date(p.created_at), "dd/MM/yyyy")}`
+      }));
+      setProcedimentos(formatted);
+    } catch (error: any) {
+      toast.error("Erro ao carregar planos: " + error.message);
+    }
+  };
+
+  const fetchSessions = async (planoId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("agendamento")
+        .select(`
+          id,
+          data_inicio,
+          confirmacao,
+          id_profissional,
+          id_plano,
+          status_procedimento,
+          evolucao_cliente (
+            observacao,
+            antes,
+            depois
+          )
+        `)
+        .eq("id_plano", parseInt(planoId))
+        .eq("confirmacao", true)
+        .order("data_inicio", { ascending: false });
+
+      if (error) throw error;
+      setSessions(data || []);
+      if (data && data.length > 0) {
+        setSelectedSessionIdx(0);
+        const evol = data[0].evolucao_cliente?.[0];
+        setObservacao(evol?.observacao || "");
+      }
+    } catch (error: any) {
+      toast.error("Erro ao carregar sessões: " + error.message);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedProcedimento) {
+      fetchSessions(selectedProcedimento);
+    } else {
+      setSessions([]);
+      setObservacao("");
+    }
+  }, [selectedProcedimento]);
 
   const handleSelectClient = (client: Client) => {
     setSelectedClient(client);
     setShowClientModal(false);
+    fetchClientPlans(client.id);
   };
 
-  const hasSessions = selectedProcedimento !== "";
-  const selectedProcLabel = mockProcedimentos.find(p => p.value === selectedProcedimento)?.label || "";
+  const filteredClients = clients.filter((c) => {
+    const term = clientSearch.toLowerCase();
+    if (!term) return true;
+    const value = c[searchField];
+    return value ? value.toString().toLowerCase().includes(term) : false;
+  });
+
+  const hasSessions = selectedProcedimento !== "" && sessions.length > 0;
+  const selectedProcLabel = procedimentos.find(p => p.value === selectedProcedimento)?.label || "";
 
   const canCloseModal = selectedClient !== null;
 
   if (!selectedClient || showClientModal) {
     return (
       <Layout title="Evolução do Cliente">
-        {selectedClient && !showClientModal ? null : (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 pb-20">
           <div className="glass-panel gold-glow w-full max-w-5xl max-h-[85vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between p-4 border-b border-border">
@@ -110,7 +179,7 @@ const Evolucao = () => {
                     <SelectItem value="telefone">Telefone</SelectItem>
                     <SelectItem value="email">Email</SelectItem>
                     <SelectItem value="cidade">Cidade</SelectItem>
-                    <SelectItem value="uf">UF</SelectItem>
+                    <SelectItem value="estado">UF</SelectItem>
                   </SelectContent>
                 </Select>
                 <div className="relative flex-1 min-w-[200px]">
@@ -139,11 +208,19 @@ const Evolucao = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredClients.map((client) => (
-                    <TableRow key={client.id} className="border-border hover:bg-muted/50 cursor-pointer">
+                  {loading ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center py-8">Carregando...</TableCell>
+                    </TableRow>
+                  ) : filteredClients.map((client) => (
+                    <TableRow key={client.id} className="border-border hover:bg-muted/50 cursor-pointer" onClick={() => handleSelectClient(client)}>
                       <TableCell>
-                        <div className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center">
-                          <span className="text-xs text-muted-foreground">{client.nome.charAt(0)}</span>
+                        <div className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center overflow-hidden">
+                          {client.imagem ? (
+                            <img src={client.imagem} alt={client.nome} className="w-full h-full object-cover" />
+                          ) : (
+                            <User className="w-5 h-5 text-muted-foreground" />
+                          )}
                         </div>
                       </TableCell>
                       <TableCell className="text-sm">{client.nome}</TableCell>
@@ -151,10 +228,13 @@ const Evolucao = () => {
                       <TableCell className="text-sm">{client.telefone}</TableCell>
                       <TableCell className="text-sm">{client.email}</TableCell>
                       <TableCell className="text-sm">{client.cidade}</TableCell>
-                      <TableCell className="text-sm">{client.uf}</TableCell>
+                      <TableCell className="text-sm">{client.estado}</TableCell>
                       <TableCell>
                         <button
-                          onClick={() => handleSelectClient(client)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSelectClient(client);
+                          }}
                           className="p-1.5 rounded hover:bg-muted transition-colors"
                         >
                           <ExternalLink className="w-4 h-4 text-gold" />
@@ -167,22 +247,24 @@ const Evolucao = () => {
             </div>
           </div>
         </div>
-        )}
       </Layout>
     );
   }
 
+  const currentEvol = sessions[selectedSessionIdx]?.evolucao_cliente?.[0];
+
   return (
     <Layout title="Evolução do Cliente">
       <div className="flex flex-col gap-3 h-[calc(100vh-110px)] overflow-hidden">
-        {/* Top row: Client info (left) + Procedure filter (right) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-center">
           <div className="flex items-center gap-2 text-sm text-foreground flex-wrap">
             <span className="text-muted-foreground">Nome: </span>
             <span className="text-gold font-medium">{selectedClient.nome}</span>
             <span className="text-muted-foreground">|</span>
             <span className="text-muted-foreground">Data de Nascimento: </span>
-            <span className="text-gold font-medium">{formatDateBR(selectedClient.dataNascimento)}</span>
+            <span className="text-gold font-medium">
+              {selectedClient.data_nascimento ? format(new Date(selectedClient.data_nascimento), "dd/MM/yyyy") : "-"}
+            </span>
             <span className="text-muted-foreground">|</span>
             <span className="text-muted-foreground">CPF: </span>
             <span className="text-gold font-medium">{selectedClient.cpf}</span>
@@ -199,7 +281,7 @@ const Evolucao = () => {
                 <SelectValue placeholder="Selecione Procedimento" />
               </SelectTrigger>
               <SelectContent>
-                {mockProcedimentos.map((p) => (
+                {procedimentos.map((p) => (
                   <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
                 ))}
               </SelectContent>
@@ -218,11 +300,8 @@ const Evolucao = () => {
           </div>
         </div>
 
-        {/* Two column layout: Sessions/Obs/Products (left) + Photos (right) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-stretch flex-1 min-h-0">
-          {/* Left: sessions, observation, products */}
           <div className="flex flex-col gap-3 min-h-0 overflow-hidden">
-            {/* Sessions Table */}
             <div className="glass-panel p-4 gold-glow h-[270px] overflow-auto">
               <h3 className="text-center text-gold font-semibold text-sm mb-0.5">Relatório de Planos</h3>
               <Table>
@@ -237,17 +316,20 @@ const Evolucao = () => {
                 </TableHeader>
                 <TableBody>
                   {hasSessions ? (
-                    mockSessions.map((s, idx) => (
+                    sessions.map((s, idx) => (
                       <TableRow
-                        key={idx}
+                        key={s.id}
                         className={`border-border cursor-pointer transition-colors ${
                           selectedSessionIdx === idx ? "bg-muted/50 border-l-2 border-l-gold" : "hover:bg-muted/30"
                         }`}
-                        onClick={() => setSelectedSessionIdx(idx)}
+                        onClick={() => {
+                          setSelectedSessionIdx(idx);
+                          setObservacao(s.evolucao_cliente?.[0]?.observacao || "");
+                        }}
                       >
-                        <TableCell className="text-sm">{s.data}</TableCell>
-                        <TableCell className="text-sm">{s.plano}</TableCell>
-                        <TableCell className="text-sm">{s.profissional}</TableCell>
+                        <TableCell className="text-sm">{s.data_inicio ? format(new Date(s.data_inicio), "dd/MM/yyyy") : "-"}</TableCell>
+                        <TableCell className="text-sm">{selectedProcLabel.split(" | ")[0]}</TableCell>
+                        <TableCell className="text-sm">Profissional {s.id_profissional || ""}</TableCell>
                         <TableCell className="text-center">
                           <button className="p-1 hover:bg-muted rounded transition-colors">
                             <Wrench className="w-4 h-4 text-foreground" />
@@ -274,18 +356,17 @@ const Evolucao = () => {
               </Table>
             </div>
 
-            {/* Observation */}
             <div className="glass-panel p-4 gold-glow h-[200px]">
               <h3 className="text-center text-gold font-semibold text-sm mb-0.5">Observação</h3>
               <Textarea
                 placeholder="Nenhuma observação registrada"
                 value={observacao}
                 onChange={(e) => setObservacao(e.target.value)}
+                readOnly
                 className="min-h-0 h-full bg-transparent border-0 text-foreground placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none"
               />
             </div>
 
-            {/* Products */}
             <div className="glass-panel p-4 gold-glow h-[260px] overflow-auto">
               <h3 className="text-center text-gold font-semibold text-sm mb-0.5">Produtos Utilizados</h3>
               <Table>
@@ -310,20 +391,32 @@ const Evolucao = () => {
             </div>
           </div>
 
-          {/* Right: Photo area (Antes/Depois) */}
           <div className="flex flex-col gap-3 min-h-0 overflow-hidden h-full">
             {hasSessions ? (
               <>
-                
                 <h3 className="text-center text-foreground font-semibold text-lg">
                   {photoView === "antes" ? "Antes" : "Depois"}
                 </h3>
-                <div className="glass-panel gold-glow aspect-[5/4] flex items-center justify-center">
-                  <div className="flex flex-col items-center gap-3 text-muted-foreground">
-                    <ImageIcon className="w-16 h-16 text-gold/30" />
-                    <p className="text-sm">Foto {photoView === "antes" ? "Antes" : "Depois"}</p>
-                    <p className="text-xs text-muted-foreground/60">Clique para adicionar foto</p>
-                  </div>
+                <div className="glass-panel gold-glow aspect-[5/4] flex items-center justify-center overflow-hidden">
+                  {photoView === "antes" ? (
+                    currentEvol?.antes ? (
+                      <img src={currentEvol.antes} alt="Antes" className="w-full h-full object-contain" />
+                    ) : (
+                      <div className="flex flex-col items-center gap-3 text-muted-foreground">
+                        <ImageIcon className="w-16 h-16 text-gold/30" />
+                        <p className="text-sm">Sem foto "Antes"</p>
+                      </div>
+                    )
+                  ) : (
+                    currentEvol?.depois ? (
+                      <img src={currentEvol.depois} alt="Depois" className="w-full h-full object-contain" />
+                    ) : (
+                      <div className="flex flex-col items-center gap-3 text-muted-foreground">
+                        <ImageIcon className="w-16 h-16 text-gold/30" />
+                        <p className="text-sm">Sem foto "Depois"</p>
+                      </div>
+                    )
+                  )}
                 </div>
                 <div className="flex justify-between px-4">
                   <button
@@ -350,7 +443,7 @@ const Evolucao = () => {
               </>
             ) : (
               <div className="glass-panel gold-glow flex items-center justify-center h-[755px] w-full">
-                <p className="text-muted-foreground text-sm text-center">Selecione um procedimento para visualizar fotos</p>
+                <p className="text-muted-foreground text-sm text-center">Selecione um procedimento para visualizar a evolução</p>
               </div>
             )}
           </div>
