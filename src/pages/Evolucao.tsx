@@ -106,6 +106,7 @@ const Evolucao = () => {
           id_plano,
           status_procedimento,
           evolucao_cliente (
+            id,
             observacao,
             antes,
             depois
@@ -119,8 +120,12 @@ const Evolucao = () => {
       setSessions(data || []);
       if (data && data.length > 0) {
         setSelectedSessionIdx(0);
+        // Load evolution data for the first session by default
         const evol = data[0].evolucao_cliente?.[0];
         setObservacao(evol?.observacao || "");
+      } else {
+        setSelectedSessionIdx(0);
+        setObservacao("");
       }
     } catch (error: any) {
       toast.error("Erro ao carregar sessões: " + error.message);
