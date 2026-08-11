@@ -47,6 +47,7 @@ const Evolucao = () => {
   const [procedimentos, setProcedimentos] = useState<{ value: string; label: string }[]>([]);
   const [selectedProcedimento, setSelectedProcedimento] = useState<string>("");
   const [sessions, setSessions] = useState<any[]>([]);
+  const [professionals, setProfessionals] = useState<Record<number, string>>({});
   const [selectedSessionIdx, setSelectedSessionIdx] = useState<number>(-1);
   const [observacao, setObservacao] = useState("");
   const [photoView, setPhotoView] = useState<"antes" | "depois">("antes");
@@ -99,12 +100,6 @@ const Evolucao = () => {
   const fetchSessions = async (planoId: string) => {
     setLoading(true);
     try {
-      // Requirements:
-      // 1. Filter by id_plano
-      // 2. Filter by id_cliente
-      // 3. Filter by id_companhia
-      // 4. Filter only finished sessions - trying 'status_procedimento' as 'status_procedim' failed type check
-      
       const { data, error } = await supabase
         .from("agendamento")
         .select(`
@@ -116,20 +111,7 @@ const Evolucao = () => {
           id_cliente,
           id_companhia,
           status_procedimento,
-          sessao,
-          profissional:id_profissional (
-            nome
-          ),
-          plano:id_plano (
-            id,
-            nome_plano
-          ),
-          evolucao_cliente (
-            id,
-            observacao,
-            antes,
-            depois
-          )
+          sessao
         `)
         .eq("id_plano", parseInt(planoId))
         .eq("id_cliente", selectedClient?.id)
@@ -138,9 +120,27 @@ const Evolucao = () => {
         .order("data_inicio", { ascending: false });
 
       if (error) throw error;
-      setSessions(data || []);
       
-      // Reset details when changing procedure/plan
+      const sessionData = data || [];
+      setSessions(sessionData);
+      
+      // Fetch professionals separately
+      const profIds = [...new Set(sessionData.map(s => s.id_profissional).filter(Boolean))];
+      if (profIds.length > 0) {
+        const { data: profData, error: profError } = await supabase
+          .from("usuarios")
+          .select("id, nome")
+          .in("id", profIds);
+        
+        if (!profError && profData) {
+          const profMap: Record<number, string> = {};
+          profData.forEach(p => {
+            profMap[p.id] = p.nome;
+          });
+          setProfessionals(prev => ({ ...prev, ...profMap }));
+        }
+      }
+      
       setSelectedSessionIdx(-1);
       setObservacao("");
       setProducts([]);
@@ -169,11 +169,11 @@ const Evolucao = () => {
       
       setObservacao(evolData?.observacao || "Nenhuma observação registrada para esta sessão");
 
-      // Update session record locally with latest evolution data if it wasn't pre-loaded or changed
+      // Update session record locally with latest evolution data
       const updatedSessions = [...sessions];
       const sessionIdx = updatedSessions.findIndex(s => s.id === session.id);
       if (sessionIdx !== -1) {
-        updatedSessions[sessionIdx].evolucao_cliente = evolData ? [evolData] : [];
+        updatedSessions[sessionIdx].evol_data = evolData;
         setSessions(updatedSessions);
       }
 
@@ -332,7 +332,7 @@ const Evolucao = () => {
     );
   }
 
-  const currentEvol = selectedSessionIdx !== -1 ? sessions[selectedSessionIdx]?.evolucao_cliente?.[0] : null;
+  const currentEvol = selectedSessionIdx !== -1 ? sessions[selectedSessionIdx]?.evol_data : null;
 
   return (
     <Layout title="Evolução do Cliente">
@@ -425,10 +425,10 @@ const Evolucao = () => {
                           {s.data_inicio ? format(new Date(s.data_inicio), "dd/MM/yyyy") : "-"}
                         </TableCell>
                         <TableCell className="text-sm">
-                          {s.plano?.nome_plano || selectedProcLabel.split(" | ")[0]}
+                          {selectedProcLabel.split(" | ")[0]}
                         </TableCell>
                         <TableCell className="text-sm">
-                          {s.profissional?.nome || `Profissional ${s.id_profissional || "-"}`}
+                          {professionals[s.id_profissional] || (s.id_profissional ? `Profissional ${s.id_profissional}` : "Profissional não identificado")}
                         </TableCell>
                         <TableCell className="text-center">
                           <button 
