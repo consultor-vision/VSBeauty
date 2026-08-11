@@ -391,8 +391,12 @@ const Evolucao = () => {
                         }}
                       >
                         <TableCell className="text-sm">{s.data_inicio ? format(new Date(s.data_inicio), "dd/MM/yyyy") : "-"}</TableCell>
-                        <TableCell className="text-sm">{selectedProcLabel.split(" | ")[0]}</TableCell>
-                        <TableCell className="text-sm">Profissional {s.id_profissional || "-"}</TableCell>
+                        <TableCell className="text-sm">
+                          {s.plano?.nome_plano || selectedProcLabel.split(" | ")[0]}
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          {s.profissional?.nome || `Profissional ${s.id_profissional || "-"}`}
+                        </TableCell>
                         <TableCell className="text-center">
                           <button 
                             className="p-1 hover:bg-muted rounded transition-colors"
