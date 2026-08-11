@@ -154,9 +154,28 @@ const Evolucao = () => {
 
   const fetchSessionDetails = async (session: any) => {
     try {
-      // 1. Load observation from evolucao_cliente
-      const evol = session.evolucao_cliente?.[0];
-      setObservacao(evol?.observacao || "Nenhuma observação registrada");
+      // Requirements:
+      // 1. Load observation from evolucao_cliente by id_agendamento
+      // 2. Load products from estoque_evolucao by id_agendamento
+      
+      const { data: evolData, error: evolError } = await supabase
+        .from("evolucao_cliente")
+        .select("*")
+        .eq("id_agendamento", session.id)
+        .eq("id_companhia", user?.id_companhia)
+        .maybeSingle();
+
+      if (evolError) throw evolError;
+      
+      setObservacao(evolData?.observacao || "Nenhuma observação registrada para esta sessão");
+
+      // Update session record locally with latest evolution data if it wasn't pre-loaded or changed
+      const updatedSessions = [...sessions];
+      const sessionIdx = updatedSessions.findIndex(s => s.id === session.id);
+      if (sessionIdx !== -1) {
+        updatedSessions[sessionIdx].evolucao_cliente = evolData ? [evolData] : [];
+        setSessions(updatedSessions);
+      }
 
       // 2. Load products from estoque_evolucao
       const { data: prodData, error: prodError } = await supabase
