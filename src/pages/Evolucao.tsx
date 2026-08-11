@@ -412,7 +412,7 @@ const Evolucao = () => {
                       <TableCell colSpan={5} className="h-40">
                         <div className="flex flex-col items-center justify-center text-muted-foreground gap-2">
                           <ClipboardList className="w-10 h-10 text-gold/30" />
-                          <p className="text-sm">Carregar e exibir os agendamentos relacionados ao plano selecionado dentro da tela de Evolução.</p>
+                          <p className="text-sm">Carregar e exibir os agendamentos do plano selecionado na tela de Evolução.</p>
                         </div>
                       </TableCell>
                     </TableRow>
