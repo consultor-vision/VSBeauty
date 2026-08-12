@@ -190,7 +190,8 @@ const Evolucao = () => {
             produtos
           )
         `)
-        .eq("id_agendamento", session.id);
+        .eq("id_agendamento", session.id)
+        .eq("id_companhia", user?.id_companhia);
 
       if (prodError) throw prodError;
       setProducts(prodData || []);
