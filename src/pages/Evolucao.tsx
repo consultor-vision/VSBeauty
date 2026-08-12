@@ -157,7 +157,7 @@ const Evolucao = () => {
       // Requirements:
       // 1. Load observation from evolucao_cliente by id_agendamento
       // 2. Load products from estoque_evolucao by id_agendamento
-      // Note: "Data de Execução" uses data_inicio from the agendamento table.
+      // Note: "Data de Execução" correctly uses data_inicio from the agendamento table.
       
       const { data: evolData, error: evolError } = await supabase
         .from("evolucao_cliente")
