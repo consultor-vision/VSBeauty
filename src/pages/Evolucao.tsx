@@ -89,7 +89,7 @@ const Evolucao = () => {
       if (error) throw error;
       const formatted = (data || []).map(p => ({
         value: p.id.toString(),
-        label: `${p.nome_plano} | ${format(new Date(p.created_at), "dd/MM/yyyy")}`
+        label: `${p.nome_plano} | ${format(new Date(p.created_at), "d/M/yyyy")} | ${format(new Date(p.created_at), "dd/MM/yyyy")}`
       }));
       setProcedimentos(formatted);
     } catch (error: any) {
