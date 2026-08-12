@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "@/components/Layout";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -7,6 +7,9 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend, LabelList,
 } from "recharts";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
+import { Loader2 } from "lucide-react";
 
 const financialByYear: Record<string, { faturamento: string; lucro: string; despesas: string; monthly: { mes: string; faturamento: number; lucro: number; despesas: number; recebido: number; pendente: number; atrasado: number }[] }> = {
   "2026": {
