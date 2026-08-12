@@ -53,8 +53,8 @@ const Administracao = () => {
     setLoading(true);
     try {
       const [compRes, userRes, versRes] = await Promise.all([
-        supabase.from("companhia").select("*").eq("id", user?.id_companhia).order("nome"),
-        supabase.from("usuarios").select("*").eq("id_companhia", user?.id_companhia).order("nome"),
+        supabase.from("companhia").select("*").order("nome"),
+        supabase.from("usuarios").select("*").order("nome"),
         supabase.from("vsb_cadastr_versao").select("*").order("created_at", { ascending: false }),
       ]);
 
@@ -176,7 +176,8 @@ const Administracao = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-sm text-foreground">
-                        {usuarios.find(u => u.id_companhia === comp.id && u.CEO === true)?.uid || "-"}
+                        {usuarios.find(u => u.id_companhia === comp.id && u.CEO === true)?.nome || 
+                         usuarios.find(u => u.id_companhia === comp.id)?.nome || "-"}
                       </td>
                       <td className="px-6 py-4 text-sm text-foreground">
                         {comp.inicio_contrato ? format(new Date(comp.inicio_contrato), "d/M/yyyy") : "-"}
@@ -203,6 +204,7 @@ const Administracao = () => {
                   <tr>
                     <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Nome Completo</th>
                     <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Email</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Companhia</th>
                     <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider text-center">Editar</th>
                     <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider text-right">ADM?</th>
                   </tr>
@@ -225,6 +227,9 @@ const Administracao = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-sm text-muted-foreground">{u.email}</td>
+                      <td className="px-6 py-4 text-sm text-muted-foreground">
+                        {companhias.find(c => c.id === u.id_companhia)?.nome || "Sem Companhia"}
+                      </td>
                       <td className="px-6 py-4 text-center">
                         <button 
                           onClick={() => {
