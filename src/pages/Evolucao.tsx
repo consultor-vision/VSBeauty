@@ -463,7 +463,7 @@ const Evolucao = () => {
                     ))
                   ) : (
                     <TableRow className="hover:bg-transparent">
-                      <TableCell colSpan={3} className="h-40">
+                      <TableCell colSpan={5} className="h-40">
                         <div className="flex flex-col items-center justify-center text-muted-foreground gap-2">
                           <ClipboardList className="w-10 h-10 text-gold/30" />
                           <p className="text-sm px-10 text-center">
