@@ -408,7 +408,7 @@ const Evolucao = () => {
                     <TableHead className="text-gold text-xs">Plano</TableHead>
                     <TableHead className="text-gold text-xs">Profissional</TableHead>
                     <TableHead className="text-gold text-xs">Editar a Sessão</TableHead>
-                    <TableHead className="text-gold text-xs">Anexo</TableHead>
+                    
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -445,19 +445,6 @@ const Evolucao = () => {
                             title="Editar Sessão"
                           >
                             <Wrench className="w-4 h-4 text-foreground" />
-                          </button>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <button 
-                            className="p-1 hover:bg-muted rounded transition-colors"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedSessionIdx(idx);
-                              fetchSessionDetails(s);
-                            }}
-                            title="Acessar Sessão"
-                          >
-                            <Play className="w-4 h-4 text-accent-foreground" />
                           </button>
                         </TableCell>
                       </TableRow>
