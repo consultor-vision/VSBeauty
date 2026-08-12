@@ -655,9 +655,9 @@ const Gestao = () => {
             <div className="border-t border-border pt-4">
               <h4 className="text-center text-sm font-semibold text-foreground mb-3">Listagem de Categorias</h4>
               <div className="space-y-2 max-h-48 overflow-y-auto">
-                {mockCategorias.map(cat => (
-                  <div key={cat} className="flex items-center justify-between px-3 py-2 border-b border-border/50">
-                    <span className="text-sm text-foreground">{cat}</span>
+                {categorias.map(cat => (
+                  <div key={cat.id} className="flex items-center justify-between px-3 py-2 border-b border-border/50">
+                    <span className="text-sm text-foreground">{cat.nome}</span>
                     <button className="px-4 py-1.5 rounded-md bg-accent text-accent-foreground text-xs font-semibold hover:bg-accent/80 transition-colors">Editar</button>
                   </div>
                 ))}
