@@ -732,13 +732,13 @@ const Gestao = () => {
               </div>
               <div><label className="text-xs text-gold mb-1 block">Categoria</label>
                 <div className="flex items-center gap-2">
-                  <Select defaultValue={editingContaPagar.categoria}><SelectTrigger className="flex-1 bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent>{mockCategorias.map(c=>(<SelectItem key={c} value={c}>{c}</SelectItem>))}</SelectContent></Select>
+                  <Select defaultValue={editingContaPagar.categoria}><SelectTrigger className="flex-1 bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent>{categorias.map(c=>(<SelectItem key={c.id} value={c.nome}>{c.nome}</SelectItem>))}</SelectContent></Select>
                   <button className="p-2 rounded-full bg-gold/80 text-primary-foreground hover:bg-gold transition-colors"><PlusCircle className="w-5 h-5" /></button>
                 </div>
               </div>
               <div><label className="text-xs text-gold mb-1 block">Item</label>
                 <div className="flex items-center gap-2">
-                  <Select defaultValue={editingContaPagar.item}><SelectTrigger className="flex-1 bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent>{mockItens.map(i=>(<SelectItem key={i} value={i}>{i}</SelectItem>))}</SelectContent></Select>
+                  <Select defaultValue={editingContaPagar.item}><SelectTrigger className="flex-1 bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent>{itensFinanceiros.map(i=>(<SelectItem key={i.id} value={i.nome}>{i.nome}</SelectItem>))}</SelectContent></Select>
                   <button className="p-2 rounded-full bg-gold/80 text-primary-foreground hover:bg-gold transition-colors"><PlusCircle className="w-5 h-5" /></button>
                 </div>
               </div>
