@@ -272,9 +272,9 @@ const Gestao = () => {
       .from("categoria")
       .select("*")
       .eq("id_companhia", user?.id_companhia)
-      .order("nome", { ascending: true });
+      .order("Nome", { ascending: true });
     if (error) throw error;
-    setCategorias(data || []);
+    setCategorias((data || []).map(c => ({ id: c.id, nome: (c as any).Nome || "" })));
   };
 
   const fetchItensFinanceiros = async () => {
@@ -282,9 +282,9 @@ const Gestao = () => {
       .from("item_financeiro")
       .select("*")
       .eq("id_companhia", user?.id_companhia)
-      .order("nome", { ascending: true });
+      .order("item", { ascending: true });
     if (error) throw error;
-    setItensFinanceiros(data || []);
+    setItensFinanceiros((data || []).map(i => ({ id: i.id, nome: (i as any).item || "" })));
   };
 
   const handleEditColab = (c: Colaborador) => { setEditingColab(c); setAdminToggle(c.acessoAdministrativo === "Liberado"); setShowEditarColab(true); };
