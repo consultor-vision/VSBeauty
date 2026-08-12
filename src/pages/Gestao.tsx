@@ -297,7 +297,7 @@ const Gestao = () => {
 
   return (
     <Layout title={`Gestão - ${viewLabels[currentView]}`}>
-      <div className="flex flex-col gap-4 relative">
+      <div className="flex flex-col gap-4 relative h-full overflow-hidden">
         {/* Top bar */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2 flex-wrap">

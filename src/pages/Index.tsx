@@ -151,6 +151,14 @@ const timeToMinutes = (t: string) => {
 
 // --- Component ---
 const Index = () => {
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+
+  useEffect(() => {
+    const handleResize = () => setWindowHeight(window.innerHeight);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const { user, company, logout } = useAuth();
   const navigate = useNavigate();
   const today = new Date();
