@@ -157,8 +157,7 @@ const Evolucao = () => {
       // Requirements:
       // 1. Load observation from evolucao_cliente by id_agendamento
       // 2. Load products from estoque_evolucao by id_agendamento
-      // Não usar a data da coluna created_at e sim o da coluna data_inicio
-      // Note: "Data de Execução" correctly uses data_inicio from the agendamento table.
+      // A data de execução agora deve ser pega da tabela evolucao_cliente (created_at)
       
       const { data: evolData, error: evolError } = await supabase
         .from("evolucao_cliente")
@@ -426,7 +425,9 @@ const Evolucao = () => {
                         }}
                       >
                         <TableCell className="text-sm">
-                          {s.data_inicio ? format(new Date(s.data_inicio), "dd/MM/yyyy") : "-"}
+                          {s.evol_data?.created_at 
+                            ? format(new Date(s.evol_data.created_at), "dd/MM/yyyy") 
+                            : (s.data_inicio ? format(new Date(s.data_inicio), "dd/MM/yyyy") : "-")}
                         </TableCell>
                         <TableCell className="text-sm">
                           {selectedProcLabel.split(" | ")[0]}
