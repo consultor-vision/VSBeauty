@@ -117,7 +117,7 @@ const Evolucao = () => {
         .eq("id_cliente", selectedClient?.id)
         .eq("id_companhia", user?.id_companhia)
         .eq("status_procedimento", "Concluído")
-        .order("data_inicio", { ascending: false });
+        .order("data_inicio", { ascending: true });
 
       if (error) throw error;
       
