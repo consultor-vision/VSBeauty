@@ -53,8 +53,8 @@ const Administracao = () => {
     setLoading(true);
     try {
       const [compRes, userRes, versRes] = await Promise.all([
-        supabase.from("companhia").select("*").order("nome"),
-        supabase.from("usuarios").select("*").order("nome"),
+        supabase.from("companhia").select("*").eq("id", user?.id_companhia).order("nome"),
+        supabase.from("usuarios").select("*").eq("id_companhia", user?.id_companhia).order("nome"),
         supabase.from("vsb_cadastr_versao").select("*").order("created_at", { ascending: false }),
       ]);
 
