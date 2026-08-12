@@ -380,12 +380,12 @@ const Gestao = () => {
         )}
 
         {/* VIEWS */}
-        {currentView === "colaborador" && <ColaboradorView colaboradores={mockColaboradores} onEdit={handleEditColab} />}
-        {currentView === "procedimento" && <ProcedimentoView procedimentos={mockProcedimentos} onEdit={handleEditProc} />}
-        {currentView === "anamnese" && <AnamneseView onEdit={handleEditAnamnese} />}
-        {currentView === "estoque" && <EstoqueView estoque={mockEstoque} onEdit={handleEditEstoque} />}
-        {currentView === "contas_pagar" && <ContasPagarView contas={mockContasPagar} onDescricao={(c) => { setDescricaoPagarConta(c); setShowDescricaoPagar(true); }} onEdit={(c) => { setEditingContaPagar(c); setShowEditarContaPagar(true); }} />}
-        {currentView === "contas_receber" && <ContasReceberView contas={mockContasReceber} onDescricao={(c) => { setDescricaoReceberConta(c); setShowDescricaoReceber(true); }} onEdit={(c) => { setEditingContaReceber(c); setShowEditarContaReceber(true); }} />}
+        {currentView === "colaborador" && <ColaboradorView colaboradores={colaboradores} onEdit={handleEditColab} />}
+        {currentView === "procedimento" && <ProcedimentoView procedimentos={procedimentos} onEdit={handleEditProc} />}
+        {currentView === "anamnese" && <AnamneseView perguntas={anamnesePerguntas} onEdit={handleEditAnamnese} />}
+        {currentView === "estoque" && <EstoqueView estoque={estoque} onEdit={handleEditEstoque} />}
+        {currentView === "contas_pagar" && <ContasPagarView contas={contasPagar} onDescricao={(c) => { setDescricaoPagarConta(c); setShowDescricaoPagar(true); }} onEdit={(c) => { setEditingContaPagar(c); setShowEditarContaPagar(true); }} />}
+        {currentView === "contas_receber" && <ContasReceberView contas={contasReceber} onDescricao={(c) => { setDescricaoReceberConta(c); setShowDescricaoReceber(true); }} onEdit={(c) => { setEditingContaReceber(c); setShowEditarContaReceber(true); }} />}
       </div>
 
       {/* ── MODAIS COLABORADOR ── */}
