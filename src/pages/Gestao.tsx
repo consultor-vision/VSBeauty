@@ -297,7 +297,7 @@ const Gestao = () => {
 
   return (
     <Layout title={`Gestão - ${viewLabels[currentView]}`}>
-      <div className="flex flex-col gap-4 relative">
+      <div className="flex flex-col gap-4 relative h-full overflow-hidden">
         {/* Top bar */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2 flex-wrap">
@@ -380,13 +380,18 @@ const Gestao = () => {
         )}
 
         {/* VIEWS */}
-        {currentView === "colaborador" && <ColaboradorView colaboradores={colaboradores} onEdit={handleEditColab} />}
-        {currentView === "procedimento" && <ProcedimentoView procedimentos={procedimentos} onEdit={handleEditProc} />}
-        {currentView === "anamnese" && <AnamneseView perguntas={anamnesePerguntas} onEdit={handleEditAnamnese} />}
-        {currentView === "estoque" && <EstoqueView estoque={estoque} onEdit={handleEditEstoque} />}
-        {currentView === "contas_pagar" && <ContasPagarView contas={contasPagar} onDescricao={(c) => { setDescricaoPagarConta(c); setShowDescricaoPagar(true); }} onEdit={(c) => { setEditingContaPagar(c); setShowEditarContaPagar(true); }} />}
-        {currentView === "contas_receber" && <ContasReceberView contas={contasReceber} onDescricao={(c) => { setDescricaoReceberConta(c); setShowDescricaoReceber(true); }} onEdit={(c) => { setEditingContaReceber(c); setShowEditarContaReceber(true); }} />}
+        <div className="flex-1 min-h-0 glass-panel border-gold/20 overflow-hidden flex flex-col">
+          <div className="flex-1 overflow-auto custom-scrollbar p-1">
+            {currentView === "colaborador" && <ColaboradorView colaboradores={colaboradores} onEdit={handleEditColab} />}
+            {currentView === "procedimento" && <ProcedimentoView procedimentos={procedimentos} onEdit={handleEditProc} />}
+            {currentView === "anamnese" && <AnamneseView perguntas={anamnesePerguntas} onEdit={handleEditAnamnese} />}
+            {currentView === "estoque" && <EstoqueView estoque={estoque} onEdit={handleEditEstoque} />}
+            {currentView === "contas_pagar" && <ContasPagarView contas={contasPagar} onDescricao={(c) => { setDescricaoPagarConta(c); setShowDescricaoPagar(true); }} onEdit={(c) => { setEditingContaPagar(c); setShowEditarContaPagar(true); }} />}
+            {currentView === "contas_receber" && <ContasReceberView contas={contasReceber} onDescricao={(c) => { setDescricaoReceberConta(c); setShowDescricaoReceber(true); }} onEdit={(c) => { setEditingContaReceber(c); setShowEditarContaReceber(true); }} />}
+          </div>
+        </div>
       </div>
+
 
       {/* ── MODAIS COLABORADOR ── */}
       <Dialog open={showNovoColab} onOpenChange={setShowNovoColab}>
