@@ -895,12 +895,12 @@ const ProcedimentoView = ({ procedimentos, onEdit }: { procedimentos: Procedimen
   </div>
 );
 
-const AnamneseView = ({ onEdit }: { onEdit: (q: { pergunta: string; complemento: string }) => void }) => (
+const AnamneseView = ({ perguntas, onEdit }: { perguntas: any[]; onEdit: (q: any) => void }) => (
   <div className="glass-panel p-4 gold-glow">
     <div className="flex items-center gap-2 mb-4">
       <Select>
         <SelectTrigger className="max-w-lg bg-input border-border text-foreground h-9"><SelectValue placeholder="Pergunta" /></SelectTrigger>
-        <SelectContent>{anamnesePerguntas.map((q, i) => (<SelectItem key={i} value={String(i)}>{q.pergunta}</SelectItem>))}</SelectContent>
+        <SelectContent>{perguntas.map((q, i) => (<SelectItem key={i} value={String(q.id)}>{q.pergunta}</SelectItem>))}</SelectContent>
       </Select>
       <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
     </div>
@@ -910,11 +910,11 @@ const AnamneseView = ({ onEdit }: { onEdit: (q: { pergunta: string; complemento:
         <span className="text-gold text-xs font-medium">Pergunta</span>
         <span className="text-gold text-xs font-medium">Caso seja necessário complementar a pergunta</span>
       </div>
-      {anamnesePerguntas.map((q, idx) => (
+      {perguntas.map((q, idx) => (
         <div key={idx} className="flex items-center justify-between px-4 py-3 border-t border-border/50 hover:bg-muted/20 transition-colors">
           <span className="text-sm text-foreground">{q.pergunta}</span>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">{q.complemento}</span>
+            <span className="text-sm text-muted-foreground">{q.caso_sim}</span>
             <button onClick={() => onEdit(q)} className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors"><Pencil className="w-4 h-4 text-accent-foreground" /></button>
           </div>
         </div>
