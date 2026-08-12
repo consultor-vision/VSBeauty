@@ -53,28 +53,48 @@ const viewLabels: Record<GestaoView, string> = {
 };
 
 const Gestao = () => {
+  const { user } = useAuth();
   const [currentView, setCurrentView] = useState<GestaoView>("colaborador");
   const [showMenu, setShowMenu] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  // Colaborador
+  // States for real data
+  const [colaboradores, setColaboradores] = useState<Colaborador[]>([]);
+  const [procedimentos, setProcedimentos] = useState<Procedimento[]>([]);
+  const [anamnesePerguntas, setAnamnesePerguntas] = useState<{ id: number; pergunta: string; caso_sim: string }[]>([]);
+  const [estoque, setEstoque] = useState<EstoqueItem[]>([]);
+  const [contasPagar, setContasPagar] = useState<ContaPagar[]>([]);
+  const [contasReceber, setContasReceber] = useState<ContaReceber[]>([]);
+  const [produtos, setProdutos] = useState<{ id: number; produtos: string; tipo_embalagem: string }[]>([]);
+  const [categorias, setCategorias] = useState<{ id: number; nome: string }[]>([]);
+  const [itensFinanceiros, setItensFinanceiros] = useState<{ id: number; nome: string }[]>([]);
+
+  // Filters
   const [acessoFilter, setAcessoFilter] = useState("liberado");
+  const [yearFilter, setYearFilter] = useState("2026");
+  const [monthFilter, setMonthFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [categoriaFilter, setCategoriaFilter] = useState("");
+  const [itemFilter, setItemFilter] = useState("");
+  const [procedimentoFilter, setProcedimentoFilter] = useState("");
+  const [clienteFilter, setClienteFilter] = useState("");
+  const [produtoFilter, setProdutoFilter] = useState("");
+
+  // Modals
   const [showNovoColab, setShowNovoColab] = useState(false);
   const [showEditarColab, setShowEditarColab] = useState(false);
   const [editingColab, setEditingColab] = useState<Colaborador | null>(null);
   const [adminToggle, setAdminToggle] = useState(false);
   const [novoColabForm, setNovoColabForm] = useState({ nome: "", nascimento: "", cpf: "", telefone: "", email: "", admin: false });
 
-  // Procedimento
   const [showNovoProc, setShowNovoProc] = useState(false);
   const [showEditarProc, setShowEditarProc] = useState(false);
   const [editingProc, setEditingProc] = useState<Procedimento | null>(null);
   const [novoProcForm, setNovoProcForm] = useState({ nome: "", duracao: "", intervalo: "", valor: "", trabalhando: true });
 
-  // Anamnese
   const [showEditarAnamnese, setShowEditarAnamnese] = useState(false);
-  const [editingAnamnese, setEditingAnamnese] = useState<{ pergunta: string; complemento: string } | null>(null);
+  const [editingAnamnese, setEditingAnamnese] = useState<{ id: number; pergunta: string; caso_sim: string } | null>(null);
 
-  // Estoque
   const [showNovoEstoque, setShowNovoEstoque] = useState(false);
   const [novoEstoqueForm, setNovoEstoqueForm] = useState({ produto: "", sistemaMedidas: "", quantidade: "" });
   const [showNovosProdutos, setShowNovosProdutos] = useState(false);
@@ -84,7 +104,6 @@ const Gestao = () => {
   const [showEditarEstoque, setShowEditarEstoque] = useState(false);
   const [editingEstoque, setEditingEstoque] = useState<EstoqueItem | null>(null);
 
-  // Contas a Pagar
   const [showNovaContaPagar, setShowNovaContaPagar] = useState(false);
   const [novaContaForm, setNovaContaForm] = useState({ dataEmissao: "", dataVencimento: "", categoria: "", item: "", valor: "", parcela: "", tipoPagamento: "", status: "Pendente", observacao: "" });
   const [showNovaCategoria, setShowNovaCategoria] = useState(false);
@@ -96,15 +115,181 @@ const Gestao = () => {
   const [showEditarContaPagar, setShowEditarContaPagar] = useState(false);
   const [editingContaPagar, setEditingContaPagar] = useState<ContaPagar | null>(null);
 
-  // Contas a Receber
   const [showDescricaoReceber, setShowDescricaoReceber] = useState(false);
   const [descricaoReceberConta, setDescricaoReceberConta] = useState<ContaReceber | null>(null);
   const [showEditarContaReceber, setShowEditarContaReceber] = useState(false);
   const [editingContaReceber, setEditingContaReceber] = useState<ContaReceber | null>(null);
 
+  // Fetchers
+  useEffect(() => {
+    if (!user?.id_companhia) return;
+    fetchData();
+  }, [user?.id_companhia, currentView]);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      if (currentView === "colaborador") await fetchColaboradores();
+      if (currentView === "procedimento") await fetchProcedimentos();
+      if (currentView === "anamnese") await fetchAnamnese();
+      if (currentView === "estoque") {
+        await fetchEstoque();
+        await fetchProdutos();
+      }
+      if (currentView === "contas_pagar") {
+        await fetchContasPagar();
+        await fetchCategorias();
+        await fetchItensFinanceiros();
+      }
+      if (currentView === "contas_receber") await fetchContasReceber();
+    } catch (error) {
+      console.error("Error fetching gestao data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchColaboradores = async () => {
+    const { data, error } = await supabase
+      .from("usuarios")
+      .select("*")
+      .eq("id_companhia", user?.id_companhia)
+      .order("nome", { ascending: true });
+    if (error) throw error;
+    setColaboradores(data.map(u => ({
+      id: u.id,
+      nome: u.nome || "",
+      cpf: u.cpf || "",
+      email: u.email || "",
+      telefone: u.phone || "",
+      acessoPlataforma: u.acesso ? "Liberado" : "Bloqueado",
+      acessoAdministrativo: u.adm ? "Liberado" : "Bloqueado",
+      nascimento: u.data_nascimento || ""
+    })));
+  };
+
+  const fetchProcedimentos = async () => {
+    const { data, error } = await supabase
+      .from("procedimentos")
+      .select("*")
+      .eq("id_companhia", user?.id_companhia)
+      .order("nome", { ascending: true });
+    if (error) throw error;
+    setProcedimentos(data.map(p => ({
+      id: p.id,
+      nome: p.nome || "",
+      valor: (p.valor || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+      duracao: `${p.duracao || 0} Min`,
+      intervalo: `${p.intervalo || 0} dias`,
+      trabalhando: p.Trabalhado || false
+    })));
+  };
+
+  const fetchAnamnese = async () => {
+    const { data, error } = await supabase
+      .from("anamnese")
+      .select("*")
+      .eq("id_companhia", user?.id_companhia)
+      .order("Ordem", { ascending: true });
+    if (error) throw error;
+    setAnamnesePerguntas(data.map(q => ({
+      id: q.id,
+      pergunta: q.pergunta || "",
+      caso_sim: q.caso_sim || "Qual?"
+    })));
+  };
+
+  const fetchEstoque = async () => {
+    const { data, error } = await supabase
+      .from("estoque")
+      .select("*, produtos(produtos, tipo_embalagem)")
+      .eq("id_companhia", user?.id_companhia);
+    if (error) throw error;
+    setEstoque(data.map(e => ({
+      id: e.id,
+      produto: (e.produtos as any)?.produtos || "Desconhecido",
+      sistemaMedidas: (e.produtos as any)?.tipo_embalagem || "-",
+      quantidade: e.quantidade || 0
+    })));
+  };
+
+  const fetchProdutos = async () => {
+    const { data, error } = await supabase
+      .from("produtos")
+      .select("*")
+      .eq("id_companhia", user?.id_companhia)
+      .order("produtos", { ascending: true });
+    if (error) throw error;
+    setProdutos(data || []);
+  };
+
+  const fetchContasPagar = async () => {
+    const { data, error } = await supabase
+      .from("conta_pagar")
+      .select("*, categoria(nome), item_financeiro(nome)")
+      .eq("id_companhia", user?.id_companhia)
+      .order("data_operacao", { ascending: false });
+    if (error) throw error;
+    setContasPagar(data.map(c => ({
+      id: c.id,
+      status: c.Status || "Pendente",
+      dataVencimento: c.data_operacao ? format(new Date(c.data_operacao), "dd/MM/yyyy") : "-",
+      categoria: (c.categoria as any)?.nome || "-",
+      item: (c.item_financeiro as any)?.nome || "-",
+      valor: (c.valor || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+      dataEmissao: c.Data_Emissao ? format(new Date(c.Data_Emissao), "dd/MM/yyyy") : "-",
+      tipoPagamento: c.Tipo_Pagamento || "-",
+      parcela: String(c.Parcela || 1),
+      descricao: c.Observacao || ""
+    })));
+  };
+
+  const fetchContasReceber = async () => {
+    const { data, error } = await supabase
+      .from("conta_receber")
+      .select("*, clientes(nome), planos(nome_plano)")
+      .eq("id_companhia", user?.id_companhia)
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    setContasReceber(data.map(c => ({
+      id: c.id,
+      status: c.status_financeiro || "Pendente",
+      dataVencimento: c.Data_Vencimento ? format(new Date(c.Data_Vencimento), "dd/MM/yyyy") : "-",
+      procedimento: (c.planos as any)?.nome_plano || "-",
+      cliente: (c.clientes as any)?.nome || "-",
+      valor: (c.valor_procediemtno || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+      dataEmissao: c.created_at ? format(new Date(c.created_at), "dd/MM/yyyy") : "-",
+      tipoPagamento: c.forma_pagamento || "-",
+      parcela: String(c.parcelas || 1),
+      descricao: c.Observacao || "",
+      qtdSessoes: String(c.sessoes || 1),
+      statusFinanceiro: c.status_financeiro || "Pendente"
+    })));
+  };
+
+  const fetchCategorias = async () => {
+    const { data, error } = await supabase
+      .from("categoria")
+      .select("*")
+      .eq("id_companhia", user?.id_companhia)
+      .order("nome", { ascending: true });
+    if (error) throw error;
+    setCategorias(data || []);
+  };
+
+  const fetchItensFinanceiros = async () => {
+    const { data, error } = await supabase
+      .from("item_financeiro")
+      .select("*")
+      .eq("id_companhia", user?.id_companhia)
+      .order("nome", { ascending: true });
+    if (error) throw error;
+    setItensFinanceiros(data || []);
+  };
+
   const handleEditColab = (c: Colaborador) => { setEditingColab(c); setAdminToggle(c.acessoAdministrativo === "Liberado"); setShowEditarColab(true); };
   const handleEditProc = (p: Procedimento) => { setEditingProc(p); setShowEditarProc(true); };
-  const handleEditAnamnese = (q: { pergunta: string; complemento: string }) => { setEditingAnamnese({ ...q }); setShowEditarAnamnese(true); };
+  const handleEditAnamnese = (q: any) => { setEditingAnamnese({ ...q }); setShowEditarAnamnese(true); };
   const handleEditEstoque = (e: EstoqueItem) => { setEditingEstoque(e); setShowEditarEstoque(true); };
   const handleMenuSelect = (view: GestaoView) => { setCurrentView(view); setShowMenu(false); };
 
