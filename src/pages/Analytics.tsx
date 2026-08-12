@@ -11,83 +11,26 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
 
-const financialByYear: Record<string, { faturamento: string; lucro: string; despesas: string; monthly: { mes: string; faturamento: number; lucro: number; despesas: number; recebido: number; pendente: number; atrasado: number }[] }> = {
-  "2026": {
-    faturamento: "R$ 10.250,00", lucro: "R$ 7.850,00", despesas: "R$ 2.400,00",
-    monthly: [
-      { mes: "Jan", faturamento: 2500, lucro: 2000, despesas: 500, recebido: 2000, pendente: 300, atrasado: 200 },
-      { mes: "Fev", faturamento: 3200, lucro: 2500, despesas: 700, recebido: 2500, pendente: 500, atrasado: 200 },
-      { mes: "Mar", faturamento: 2800, lucro: 2100, despesas: 700, recebido: 2100, pendente: 400, atrasado: 300 },
-      { mes: "Abr", faturamento: 1750, lucro: 1250, despesas: 500, recebido: 1250, pendente: 300, atrasado: 200 },
-      { mes: "Mai", faturamento: 0, lucro: 0, despesas: 0, recebido: 0, pendente: 0, atrasado: 0 },
-      { mes: "Jun", faturamento: 0, lucro: 0, despesas: 0, recebido: 0, pendente: 0, atrasado: 0 },
-      { mes: "Jul", faturamento: 0, lucro: 0, despesas: 0, recebido: 0, pendente: 0, atrasado: 0 },
-      { mes: "Ago", faturamento: 0, lucro: 0, despesas: 0, recebido: 0, pendente: 0, atrasado: 0 },
-      { mes: "Set", faturamento: 0, lucro: 0, despesas: 0, recebido: 0, pendente: 0, atrasado: 0 },
-      { mes: "Out", faturamento: 0, lucro: 0, despesas: 0, recebido: 0, pendente: 0, atrasado: 0 },
-      { mes: "Nov", faturamento: 0, lucro: 0, despesas: 0, recebido: 0, pendente: 0, atrasado: 0 },
-      { mes: "Dez", faturamento: 0, lucro: 0, despesas: 0, recebido: 0, pendente: 0, atrasado: 0 },
-    ],
-  },
-  "2025": {
-    faturamento: "R$ 237.064,55", lucro: "R$ 192.967,00", despesas: "R$ 44.097,55",
-    monthly: [
-      { mes: "Jan", faturamento: 15000, lucro: 12000, despesas: 3000, recebido: 12000, pendente: 2000, atrasado: 1000 },
-      { mes: "Fev", faturamento: 18000, lucro: 14500, despesas: 3500, recebido: 14500, pendente: 2500, atrasado: 1000 },
-      { mes: "Mar", faturamento: 20000, lucro: 16000, despesas: 4000, recebido: 16000, pendente: 2500, atrasado: 1500 },
-      { mes: "Abr", faturamento: 22000, lucro: 18000, despesas: 4000, recebido: 18000, pendente: 2500, atrasado: 1500 },
-      { mes: "Mai", faturamento: 19000, lucro: 15500, despesas: 3500, recebido: 15500, pendente: 2000, atrasado: 1500 },
-      { mes: "Jun", faturamento: 21000, lucro: 17000, despesas: 4000, recebido: 17000, pendente: 2500, atrasado: 1500 },
-      { mes: "Jul", faturamento: 45000, lucro: 38000, despesas: 7000, recebido: 38000, pendente: 4000, atrasado: 3000 },
-      { mes: "Ago", faturamento: 18000, lucro: 14500, despesas: 3500, recebido: 14500, pendente: 2000, atrasado: 1500 },
-      { mes: "Set", faturamento: 17000, lucro: 13500, despesas: 3500, recebido: 13500, pendente: 2000, atrasado: 1500 },
-      { mes: "Out", faturamento: 16000, lucro: 12500, despesas: 3500, recebido: 12500, pendente: 2000, atrasado: 1500 },
-      { mes: "Nov", faturamento: 14000, lucro: 11000, despesas: 3000, recebido: 11000, pendente: 1500, atrasado: 1500 },
-      { mes: "Dez", faturamento: 12064, lucro: 10467, despesas: 1597, recebido: 10467, pendente: 1000, atrasado: 597 },
-    ],
-  },
-};
+// Types for analytics data
+interface FinancialData {
+  faturamento: string;
+  lucro: string;
+  despesas: string;
+  monthly: { mes: string; faturamento: number; lucro: number; despesas: number }[];
+}
 
-const clientsByYear: Record<string, { total: number; feminino: number; masculino: number }> = {
-  "2026": { total: 15, feminino: 9, masculino: 6 },
-  "2025": { total: 64, feminino: 30, masculino: 34 },
-};
+interface ClientsData {
+  total: number;
+  feminino: number;
+  masculino: number;
+}
 
-const topProcByYear: Record<string, { nome: string; qtd: number }[]> = {
-  "2026": [
-    { nome: "Peeling Químico", qtd: 5 },
-    { nome: "Botox", qtd: 4 },
-    { nome: "Tratamento de Cicatriz", qtd: 2 },
-  ],
-  "2025": [
-    { nome: "Botox", qtd: 25 },
-    { nome: "Peeling Químico", qtd: 18 },
-    { nome: "Limpeza de Pele", qtd: 14 },
-    { nome: "Preenchimento", qtd: 10 },
-    { nome: "Microagulhamento", qtd: 8 },
-  ],
-};
-
-const perfByYear: Record<string, { volume: number; concluido: number; pendente: number; cancelado: number }> = {
-  "2026": { volume: 37, concluido: 8, pendente: 29, cancelado: 0 },
-  "2025": { volume: 240, concluido: 200, pendente: 30, cancelado: 10 },
-};
-
-const periodoByYear: Record<string, { periodo: string; qtd: number }[]> = {
-  "2026": [{ periodo: "Tarde", qtd: 5 }, { periodo: "Manhã", qtd: 4 }, { periodo: "Noite", qtd: 2 }],
-  "2025": [{ periodo: "Tarde", qtd: 95 }, { periodo: "Manhã", qtd: 80 }, { periodo: "Noite", qtd: 65 }],
-};
-
-const semanaByYear: Record<string, { dia: string; qtd: number }[]> = {
-  "2026": [
-    { dia: "Domingo", qtd: 0 }, { dia: "Segunda", qtd: 3 }, { dia: "Terça", qtd: 4 },
-    { dia: "Quarta", qtd: 5 }, { dia: "Quinta", qtd: 3 }, { dia: "Sexta", qtd: 2 }, { dia: "Sábado", qtd: 1 },
-  ],
-  "2025": [
-    { dia: "Domingo", qtd: 5 }, { dia: "Segunda", qtd: 30 }, { dia: "Terça", qtd: 40 },
-    { dia: "Quarta", qtd: 50 }, { dia: "Quinta", qtd: 38 }, { dia: "Sexta", qtd: 45 }, { dia: "Sábado", qtd: 22 },
-  ],
-};
+interface PerformanceData {
+  volume: number;
+  concluido: number;
+  pendente: number;
+  cancelado: number;
+}
 
 const GENDER_COLORS: Record<string, string> = {
   Feminino: "hsl(330 80% 60%)",
