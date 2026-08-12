@@ -613,7 +613,7 @@ const Gestao = () => {
               <div className="flex items-center gap-2">
                 <Select value={novaContaForm.item} onValueChange={(v) => setNovaContaForm(p => ({ ...p, item: v }))}>
                   <SelectTrigger className="flex-1 bg-input border-border text-foreground h-10"><SelectValue placeholder="Item" /></SelectTrigger>
-                  <SelectContent>{mockItens.map(i=>(<SelectItem key={i} value={i}>{i}</SelectItem>))}</SelectContent>
+                  <SelectContent>{itensFinanceiros.map(i=>(<SelectItem key={i.id} value={i.nome}>{i.nome}</SelectItem>))}</SelectContent>
                 </Select>
                 <button onClick={() => { setNovoItemForm(""); setShowNovoItem(true); }} className="p-2 rounded-full bg-gold/80 text-primary-foreground hover:bg-gold transition-colors"><PlusCircle className="w-5 h-5" /></button>
               </div>
