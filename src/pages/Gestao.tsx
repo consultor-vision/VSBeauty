@@ -38,86 +38,8 @@ interface ContaReceber {
   dataEmissao: string; tipoPagamento: string; parcela: string; descricao: string; qtdSessoes: string; statusFinanceiro: string;
 }
 
-// ── Mock Data ──
-const mockColaboradores: Colaborador[] = [
-  { id: 1, nome: "Alan Mazzonelis", cpf: "0", email: "alangalvaogg@gmail.com", telefone: "+55(11)97576-3217", acessoPlataforma: "Liberado", acessoAdministrativo: "Liberado", nascimento: "01/01/2025" },
-  { id: 2, nome: "Bruna Kansaon", cpf: "789.456.123-75", email: "bruna.kansaon@ytonihon.com.br", telefone: "+55(11)95209-6182", acessoPlataforma: "Liberado", acessoAdministrativo: "Liberado" },
-  { id: 3, nome: "Eduardo Yto", cpf: "0", email: "yto@ytonihon.com.br", telefone: "+55(11)97576-3217", acessoPlataforma: "Liberado", acessoAdministrativo: "Liberado" },
-  { id: 4, nome: "Evelyn Azevedo", cpf: "123.369.852-21", email: "e_azevedo79@gmail.com", telefone: "+55(11)96632-2587", acessoPlataforma: "Liberado", acessoAdministrativo: "Liberado" },
-  { id: 5, nome: "Everton Alcantara", cpf: "0", email: "everton.alcantara@ytonihontreinamentos.onmicrosoft.com", telefone: "+55(11)98554-2787", acessoPlataforma: "Liberado", acessoAdministrativo: "Liberado" },
-  { id: 6, nome: "Filipe Pereira da Silva", cpf: "356.440.788-09", email: "fl_2105@hotmail.com", telefone: "+55(11)95209-6182", acessoPlataforma: "Liberado", acessoAdministrativo: "Liberado" },
-  { id: 7, nome: "Pinkerton Fagundes", cpf: "0", email: "pinkerton.fagundes@ytonihon.com.br", telefone: "+55(11)97576-3217", acessoPlataforma: "Liberado", acessoAdministrativo: "Liberado" },
-  { id: 8, nome: "Ricardo Rodrigues", cpf: "123.369.985-21", email: "Rrodrigues@gmail.com", telefone: "+55(11)99999-6666", acessoPlataforma: "Liberado", acessoAdministrativo: "Liberado" },
-];
-
-const mockProcedimentos: Procedimento[] = [
-  { id: 1, nome: "Bioestimulador de Colágeno", valor: "R$ 750,00", duracao: "60 Min", intervalo: "60 dias", trabalhando: true },
-  { id: 2, nome: "Botox", valor: "R$ 100,00", duracao: "60 Min", intervalo: "60 dias", trabalhando: true },
-  { id: 3, nome: "Botox premium", valor: "R$ 2.000,00", duracao: "60 Min", intervalo: "60 dias", trabalhando: true },
-  { id: 4, nome: "Botox (Toxina Botulínica)", valor: "R$ 1.000,00", duracao: "30 Min", intervalo: "30 dias", trabalhando: true },
-  { id: 5, nome: "Cicatriz na mão", valor: "R$ 57,85", duracao: "15 Min", intervalo: "45 dias", trabalhando: true },
-  { id: 6, nome: "Criolipólise", valor: "R$ 800,00", duracao: "60 Min", intervalo: "60 dias", trabalhando: true },
-  { id: 7, nome: "Depilação a Laser", valor: "R$ 300,00", duracao: "15 Min", intervalo: "15 dias", trabalhando: true },
-  { id: 8, nome: "Dreno Detox", valor: "R$ 250,00", duracao: "45 Min", intervalo: "45 dias", trabalhando: true },
-  { id: 9, nome: "Harmonização Facial", valor: "R$ 10.000,00", duracao: "30 Min", intervalo: "30 dias", trabalhando: true },
-  { id: 10, nome: "Laser4", valor: "R$ 500,00", duracao: "60 Min", intervalo: "60 dias", trabalhando: true },
-  { id: 11, nome: "Laser Body", valor: "R$ 100,00", duracao: "60 Min", intervalo: "60 dias", trabalhando: true },
-  { id: 12, nome: "Laser Plus", valor: "R$ 250,00", duracao: "45 Min", intervalo: "45 dias", trabalhando: true },
-];
-
-const mockEstoque: EstoqueItem[] = [
-  { id: 1, produto: "Luva", sistemaMedidas: "Unidade (Un)", quantidade: 54 },
-  { id: 2, produto: "Mascara", sistemaMedidas: "Unidade (Un)", quantidade: 796 },
-  { id: 3, produto: "Touca", sistemaMedidas: "Unidade (Un)", quantidade: 16 },
-  { id: 4, produto: "Gazes", sistemaMedidas: "Unidade (Un)", quantidade: 15 },
-  { id: 5, produto: "Espátula", sistemaMedidas: "Unidade (Un)", quantidade: 7 },
-  { id: 6, produto: "Creme de Limpeza", sistemaMedidas: "Miligrama (mg)", quantidade: 100 },
-];
-
-const mockProdutos = ["Luva", "Mascara", "Seringas", "Touca", "Gazes", "Espátula", "Pincel"];
-
-const mockContasPagar: ContaPagar[] = [
-  { id: 1, status: "Pago", dataVencimento: "07/02/2026", categoria: "Vitamina", item: "Mounjaro", valor: "R$ 500", dataEmissao: "06/01/2026", tipoPagamento: "Cartão de Crédito", parcela: "2", descricao: "Injeção para Emagrecimento.Pago" },
-  { id: 2, status: "Pago", dataVencimento: "01/02/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300", dataEmissao: "01/01/2026", tipoPagamento: "Pix", parcela: "1", descricao: "" },
-  { id: 3, status: "Pago", dataVencimento: "01/02/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300", dataEmissao: "01/01/2026", tipoPagamento: "Pix", parcela: "1", descricao: "" },
-  { id: 4, status: "Atrasado", dataVencimento: "22/01/2026", categoria: "Computador", item: "Teclado", valor: "R$ 50", dataEmissao: "01/01/2026", tipoPagamento: "Boleto", parcela: "1", descricao: "" },
-  { id: 5, status: "Atrasado", dataVencimento: "09/01/2026", categoria: "Salário", item: "Colaborador - Filipe", valor: "R$ 1.000", dataEmissao: "01/01/2026", tipoPagamento: "Pix", parcela: "1", descricao: "" },
-  { id: 6, status: "Atrasado", dataVencimento: "07/01/2026", categoria: "Vitamina", item: "Mounjaro", valor: "R$ 500", dataEmissao: "01/01/2026", tipoPagamento: "Cartão", parcela: "1", descricao: "" },
-  { id: 7, status: "Pago", dataVencimento: "06/01/2026", categoria: "Bonus", item: "PLR", valor: "R$ 500", dataEmissao: "01/01/2026", tipoPagamento: "Pix", parcela: "1", descricao: "" },
-  { id: 8, status: "Pago", dataVencimento: "06/01/2026", categoria: "Bonus", item: "PLR", valor: "R$ 500", dataEmissao: "01/01/2026", tipoPagamento: "Pix", parcela: "1", descricao: "" },
-  { id: 9, status: "Pago", dataVencimento: "01/01/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300", dataEmissao: "01/12/2025", tipoPagamento: "Dinheiro", parcela: "1", descricao: "" },
-  { id: 10, status: "Atrasado", dataVencimento: "01/01/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300", dataEmissao: "01/12/2025", tipoPagamento: "Pix", parcela: "1", descricao: "" },
-  { id: 11, status: "Pago", dataVencimento: "23/12/2025", categoria: "Diversos", item: "Festa de Final de Ano da Firma", valor: "R$ 1.600", dataEmissao: "01/12/2025", tipoPagamento: "Pix", parcela: "1", descricao: "" },
-];
-
-const mockContasReceber: ContaReceber[] = [
-  { id: 1, status: "Pendente", dataVencimento: "09/04/2026", procedimento: "Harmonização Facial", cliente: "Everton", valor: "R$ 15.000,00", dataEmissao: "09/02/2026", tipoPagamento: "Cartão de Crédito Recorrente", parcela: "3", descricao: "Observacao", qtdSessoes: "3", statusFinanceiro: "Pendente" },
-  { id: 2, status: "Pago", dataVencimento: "31/03/2026", procedimento: "Bioestimulador de Colágeno", cliente: "Jota Pe Silva", valor: "R$ 1.500,00", dataEmissao: "01/03/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Pago" },
-  { id: 3, status: "Pago", dataVencimento: "31/03/2026", procedimento: "Botox", cliente: "Filipe Pereira da Silva", valor: "R$ 1.000,00", dataEmissao: "01/03/2026", tipoPagamento: "Cartão", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Pago" },
-  { id: 4, status: "Pago", dataVencimento: "30/03/2026", procedimento: "Dreno Detox", cliente: "Eduardo Yto Cliente", valor: "R$ 1.250,00", dataEmissao: "01/03/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Pago" },
-  { id: 5, status: "Atrasado", dataVencimento: "19/03/2026", procedimento: "Bioestimulador de Colágeno", cliente: "Everton", valor: "R$ 750,00", dataEmissao: "01/03/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Atrasado" },
-  { id: 6, status: "Atrasado", dataVencimento: "09/03/2026", procedimento: "Harmonização Facial", cliente: "Everton", valor: "R$ 15.000,00", dataEmissao: "01/03/2026", tipoPagamento: "Cartão", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Atrasado" },
-  { id: 7, status: "Pago", dataVencimento: "05/03/2026", procedimento: "Botox", cliente: "Pinkerton Fagundes", valor: "R$ 1.000,00", dataEmissao: "01/03/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Pago" },
-  { id: 8, status: "Atrasado", dataVencimento: "27/02/2026", procedimento: "Tratamentos para Celulite", cliente: "Eduardo Yto Cliente", valor: "R$ 500,00", dataEmissao: "01/02/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Atrasado" },
-  { id: 9, status: "Atrasado", dataVencimento: "22/02/2026", procedimento: "Botox premium", cliente: "Geraldo Nunes da Silva", valor: "R$ 2.000,00", dataEmissao: "01/02/2026", tipoPagamento: "Boleto", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Atrasado" },
-  { id: 10, status: "Atrasado", dataVencimento: "13/02/2026", procedimento: "Botox (Toxina Botulínica)", cliente: "teste 13-02", valor: "R$ 2.000,00", dataEmissao: "01/02/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Atrasado" },
-  { id: 11, status: "Atrasado", dataVencimento: "09/02/2026", procedimento: "Harmonização Facial", cliente: "Everton", valor: "R$ 15.000,00", dataEmissao: "09/02/2026", tipoPagamento: "Cartão de Crédito Recorrente", parcela: "3", descricao: "Observacao", qtdSessoes: "3", statusFinanceiro: "Pendente" },
-];
-
-const mockCategorias = ["Aluguel", "Salário", "Diversos", "Energia", "Condominio", "Premiação"];
-const mockItens = ["Salão", "Colaborador - Filipe", "Roupa", "Colaborador - Bianca", "Festa de Final de Ano da Firma", "Presente de Natal"];
-
-const anamnesePerguntas = [
-  { pergunta: "Já teve alguma reação ruim em tratamentos estéticos?", complemento: "Qual(is)?" },
-  { pergunta: "Já fez alguma cirurgia estética ou reparadora?", complemento: "Quais?" },
-  { pergunta: "Tem algum tipo de implante?", complemento: "Qual?" },
-  { pergunta: "Você usa algum medicamento todos os dias?", complemento: "Qual?" },
-  { pergunta: "Tem alguma alergia?", complemento: "Qual?" },
-  { pergunta: "Tem alguma doença crônica?", complemento: "Qual?" },
-  { pergunta: "Usa anticoagulantes ou remédios que afinam o sangue?", complemento: "Qual?" },
-  { pergunta: "Já teve doenças de pele?", complemento: "Qual?" },
-  { pergunta: "Tem alguma outra condição de saúde que devemos saber?", complemento: "Qual?" },
-];
+// ── Real Data Fetchers will be implemented below ──
+const proceduresList = ["Botox", "Preenchimento Labial", "Tratamentos para Celulite", "Dreno Detox", "Laser4", "Limpeza de Pele", "Peeling"];
 
 type GestaoView = "colaborador" | "procedimento" | "anamnese" | "estoque" | "contas_pagar" | "contas_receber";
 
