@@ -434,18 +434,6 @@ const Evolucao = () => {
                         <TableCell className="text-sm">
                           {professionals[s.id_profissional] || (s.id_profissional ? `Profissional ${s.id_profissional}` : "Profissional não identificado")}
                         </TableCell>
-                        <TableCell className="text-center">
-                          <button 
-                            className="p-1 hover:bg-muted rounded transition-colors"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toast.info("Funcionalidade de edição de sessão em desenvolvimento");
-                            }}
-                            title="Editar Sessão"
-                          >
-                            <Wrench className="w-4 h-4 text-foreground" />
-                          </button>
-                        </TableCell>
                       </TableRow>
                     ))
                   ) : (
