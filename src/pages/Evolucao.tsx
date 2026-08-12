@@ -431,6 +431,9 @@ const Evolucao = () => {
                         <TableCell className="text-sm">
                           {selectedProcLabel.split(" | ")[0]}
                         </TableCell>
+                        <TableCell className="text-sm">
+                          {professionals[s.id_profissional] || (s.id_profissional ? `Profissional ${s.id_profissional}` : "Profissional não identificado")}
+                        </TableCell>
                         <TableCell className="text-sm text-center">
                           <button 
                             className="p-1.5 rounded hover:bg-gold/10 transition-colors"
@@ -442,9 +445,6 @@ const Evolucao = () => {
                           >
                             <Wrench className="w-4 h-4 text-gold" />
                           </button>
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {professionals[s.id_profissional] || (s.id_profissional ? `Profissional ${s.id_profissional}` : "Profissional não identificado")}
                         </TableCell>
                         <TableCell className="text-sm text-right">
                           <button 
