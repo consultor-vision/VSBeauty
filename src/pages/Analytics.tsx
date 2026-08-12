@@ -219,41 +219,45 @@ const Analytics = () => {
 
   return (
     <Layout title="Visão Analítica" headerRight={yearSelector}>
-      <div className="flex flex-col gap-2 h-full min-h-0">
-
-        {/* Row 1 */}
-        <div className="flex flex-wrap gap-2 min-h-0">
-          <div className="glass-panel p-3 gold-glow flex flex-col w-[550px] h-[250px] justify-self-start self-start">
-            <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Painel de Desempenho Financeiro</h3>
-            <div className="flex-1 flex flex-col justify-around min-h-0">
-              <div className="text-left"><span className="text-2xl font-bold text-[#257943]">{data.faturamento}</span><p className="text-xs text-[#257943]">Faturamento</p></div>
-              <div className="text-center"><span className="text-2xl font-bold text-gold">{data.lucro}</span><p className="text-xs text-gold text-center">Lucro</p></div>
-              <div className="text-right"><span className="text-2xl font-bold text-[hsl(0,75%,65%)]">{data.despesas}</span><p className="text-xs text-[hsl(0,75%,65%)]">Despesas</p></div>
-            </div>
-          </div>
-          <div className="glass-panel p-3 gold-glow flex flex-col h-[250px] flex-1 min-w-0">
-            <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Desempenho Financeiro por Mês</h3>
-            <div className="flex-1 min-h-0">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data.monthly} margin={{ top: 14, right: 8, bottom: 0, left: 8 }}>
-                  <XAxis dataKey="mes" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} tickLine={false} axisLine={{ stroke: "hsl(var(--border))" }} />
-                  <Tooltip cursor={false} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
-                  <Bar dataKey="faturamento" fill="#AD842F" radius={[2, 2, 0, 0]}>
-                    <LabelList
-                      dataKey="faturamento"
-                      position="top"
-                      fill="hsl(var(--foreground))"
-                      fontSize={9}
-                      formatter={(value: number) =>
-                        value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0, maximumFractionDigits: 0 })
-                      }
-                    />
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
+      {loading ? (
+        <div className="flex items-center justify-center h-full">
+          <Loader2 className="w-8 h-8 animate-spin text-gold" />
         </div>
+      ) : (
+        <div className="flex flex-col gap-2 h-full min-h-0">
+          {/* Row 1 */}
+          <div className="flex flex-wrap gap-2 min-h-0">
+            <div className="glass-panel p-3 gold-glow flex flex-col w-[550px] h-[250px] justify-self-start self-start">
+              <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Painel de Desempenho Financeiro</h3>
+              <div className="flex-1 flex flex-col justify-around min-h-0">
+                <div className="text-left"><span className="text-2xl font-bold text-[#257943]">{financialData.faturamento}</span><p className="text-xs text-[#257943]">Faturamento</p></div>
+                <div className="text-center"><span className="text-2xl font-bold text-gold">{financialData.lucro}</span><p className="text-xs text-gold text-center">Lucro</p></div>
+                <div className="text-right"><span className="text-2xl font-bold text-[hsl(0,75%,65%)]">{financialData.despesas}</span><p className="text-xs text-[hsl(0,75%,65%)]">Despesas</p></div>
+              </div>
+            </div>
+            <div className="glass-panel p-3 gold-glow flex flex-col h-[250px] flex-1 min-w-0">
+              <h3 className="text-gold text-sm font-semibold border-b border-gold/30 pb-1.5 mb-2">Desempenho Financeiro por Mês</h3>
+              <div className="flex-1 min-h-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={financialData.monthly} margin={{ top: 14, right: 8, bottom: 0, left: 8 }}>
+                    <XAxis dataKey="mes" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} tickLine={false} axisLine={{ stroke: "hsl(var(--border))" }} />
+                    <Tooltip cursor={false} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
+                    <Bar dataKey="faturamento" fill="#AD842F" radius={[2, 2, 0, 0]}>
+                      <LabelList
+                        dataKey="faturamento"
+                        position="top"
+                        fill="hsl(var(--foreground))"
+                        fontSize={9}
+                        formatter={(value: number) =>
+                          value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0, maximumFractionDigits: 0 })
+                        }
+                      />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
 
         {/* Row 2 */}
         <div className="flex flex-wrap gap-2 min-h-0">
