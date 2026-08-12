@@ -157,7 +157,7 @@ const Evolucao = () => {
       // Requirements:
       // 1. Load observation from evolucao_cliente by id_agendamento
       // 2. Load products from estoque_evolucao by id_agendamento
-      // Validar no código e nas queries que a coluna Data de Execução usa exclusivamente agendamento.data_inicio, sem fallback para agendamento.created_at.
+      // Não usar a data da coluna created_at e sim o da coluna data_inicio
       // Note: "Data de Execução" correctly uses data_inicio from the agendamento table.
       
       const { data: evolData, error: evolError } = await supabase
