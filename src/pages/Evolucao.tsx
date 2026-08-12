@@ -161,7 +161,7 @@ const Evolucao = () => {
       
       const { data: evolData, error: evolError } = await supabase
         .from("evolucao_cliente")
-        .select("*")
+        .select("id, id_agendamento, observacao, antes, depois, created_at, id_companhia")
         .eq("id_agendamento", session.id)
         .eq("id_companhia", user?.id_companhia)
         .maybeSingle();
