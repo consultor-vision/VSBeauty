@@ -116,6 +116,7 @@ const Analytics = () => {
       .from("vw_analytics_total_clientes")
       .select("*")
       .eq("id_companhia", user?.id_companhia)
+      .eq("ano", Number(year))
       .maybeSingle();
 
     if (totalError) throw totalError;
@@ -123,14 +124,15 @@ const Analytics = () => {
     const { data: genderData, error: genderError } = await supabase
       .from("vw_analytics_clientes_genero")
       .select("*")
-      .eq("id_companhia", user?.id_companhia);
+      .eq("id_companhia", user?.id_companhia)
+      .eq("ano", Number(year));
 
     if (genderError) throw genderError;
 
     setClients({
-      total: totalData?.total || 0,
-      feminino: genderData?.find(g => g.sexo === "F")?.quantidade || 0,
-      masculino: genderData?.find(g => g.sexo === "M")?.quantidade || 0
+      total: totalData?.total_clientes || 0,
+      feminino: genderData?.find(g => g.genero === "Feminino")?.total_clientes || 0,
+      masculino: genderData?.find(g => g.genero === "Masculino")?.total_clientes || 0
     });
   };
 
@@ -138,13 +140,14 @@ const Analytics = () => {
     const { data, error } = await supabase
       .from("vw_analytics_procedimentos_top10")
       .select("*")
-      .eq("id_companhia", user?.id_companhia);
+      .eq("id_companhia", user?.id_companhia)
+      .eq("ano", Number(year));
 
     if (error) throw error;
 
     setTopProc((data || []).map(p => ({
-      nome: p.procedimento || "Desconhecido",
-      qtd: p.quantidade || 0
+      nome: p.nome_procedimento || "Desconhecido",
+      qtd: p.total_realizados || 0
     })));
   };
 
@@ -153,15 +156,16 @@ const Analytics = () => {
       .from("vw_analytics_atendimentos_resumo")
       .select("*")
       .eq("id_companhia", user?.id_companhia)
+      .eq("ano", Number(year))
       .maybeSingle();
 
     if (error) throw error;
 
     setPerf({
-      volume: data?.total || 0,
-      concluido: data?.concluidos || 0,
-      pendente: data?.pendentes || 0,
-      cancelado: data?.cancelados || 0
+      volume: data?.total_atendimentos || 0,
+      concluido: data?.atendimentos_concluidos || 0,
+      pendente: data?.atendimentos_agendados || 0,
+      cancelado: data?.atendimentos_cancelados || 0
     });
   };
 
@@ -169,13 +173,14 @@ const Analytics = () => {
     const { data, error } = await supabase
       .from("vw_analytics_periodo_dia")
       .select("*")
-      .eq("id_companhia", user?.id_companhia);
+      .eq("id_companhia", user?.id_companhia)
+      .eq("ano", Number(year));
 
     if (error) throw error;
 
     setPeriodoData((data || []).map(p => ({
       periodo: p.periodo || "Outro",
-      qtd: p.quantidade || 0
+      qtd: Number(p.total_atendimentos) || 0
     })));
   };
 
@@ -183,17 +188,14 @@ const Analytics = () => {
     const { data, error } = await supabase
       .from("vw_analytics_dia_semana")
       .select("*")
-      .eq("id_companhia", user?.id_companhia);
+      .eq("id_companhia", user?.id_companhia)
+      .eq("ano", Number(year));
 
     if (error) throw error;
 
-    const diaNomes: Record<number, string> = {
-      0: "Domingo", 1: "Segunda", 2: "Terça", 3: "Quarta", 4: "Quinta", 5: "Sexta", 6: "Sábado"
-    };
-
     setSemanaData((data || []).map(d => ({
-      dia: diaNomes[d.dia_semana] || "Desconhecido",
-      qtd: d.quantidade || 0
+      dia: d.dia_semana || "Desconhecido",
+      qtd: Number(d.total_atendimentos) || 0
     })));
   };
 
