@@ -406,9 +406,8 @@ const Evolucao = () => {
                   <TableRow className="border-border hover:bg-transparent">
                     <TableHead className="text-gold text-xs">Data de Execução</TableHead>
                     <TableHead className="text-gold text-xs">Plano</TableHead>
-                    <TableHead className="text-gold text-xs text-center">Editar</TableHead>
                     <TableHead className="text-gold text-xs">Profissional</TableHead>
-                    <TableHead className="text-gold text-xs"></TableHead>
+                    <TableHead className="text-gold text-xs text-center">Editar</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
