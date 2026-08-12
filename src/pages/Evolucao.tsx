@@ -339,7 +339,7 @@ const Evolucao = () => {
 
   return (
     <Layout title="Evolução do Cliente">
-      <div className="flex flex-col gap-3 h-[calc(100vh-110px)] overflow-hidden">
+      <div className="flex flex-col gap-3 h-full overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-center">
           <div className="flex items-center gap-2 text-sm text-foreground flex-wrap">
             <span className="text-muted-foreground">Nome: </span>
@@ -397,9 +397,9 @@ const Evolucao = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-stretch flex-1 min-h-0">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-stretch flex-1 overflow-hidden">
           <div className="flex flex-col gap-3 min-h-0 overflow-hidden">
-            <div className="glass-panel p-4 gold-glow h-[270px] overflow-auto">
+            <div className="glass-panel p-4 gold-glow h-1/3 overflow-auto">
               <h3 className="text-center text-gold font-semibold text-sm mb-0.5">Relatório de Planos</h3>
               <Table>
                 <TableHeader>
@@ -478,7 +478,7 @@ const Evolucao = () => {
               </Table>
             </div>
 
-            <div className="glass-panel p-4 gold-glow h-[200px]">
+            <div className="glass-panel p-4 gold-glow h-[120px]">
               <h3 className="text-center text-gold font-semibold text-sm mb-0.5">Observação</h3>
               <Textarea
                 placeholder="Nenhuma observação registrada"
@@ -489,7 +489,7 @@ const Evolucao = () => {
               />
             </div>
 
-            <div className="glass-panel p-4 gold-glow h-[260px] overflow-auto">
+            <div className="glass-panel p-4 gold-glow flex-1 min-h-0 overflow-auto">
               <h3 className="text-center text-gold font-semibold text-sm mb-0.5">Produtos Utilizados</h3>
               <Table>
                 <TableHeader>
@@ -531,7 +531,7 @@ const Evolucao = () => {
                 <h3 className="text-center text-foreground font-semibold text-lg">
                   {photoView === "antes" ? "Antes" : "Depois"}
                 </h3>
-                <div className="glass-panel gold-glow aspect-[5/4] flex items-center justify-center overflow-hidden">
+                <div className="glass-panel gold-glow flex-1 min-h-0 flex items-center justify-center overflow-hidden">
                   {photoView === "antes" ? (
                     currentEvol?.antes ? (
                       <img src={currentEvol.antes} alt="Antes" className="w-full h-full object-contain" />
@@ -552,7 +552,7 @@ const Evolucao = () => {
                     )
                   )}
                 </div>
-                <div className="flex justify-between px-4">
+                <div className="flex justify-between px-4 mt-auto py-2">
                   <button
                     onClick={() => setPhotoView("antes")}
                     className={`px-8 py-2.5 rounded-lg font-semibold text-sm transition-all border ${
@@ -576,7 +576,7 @@ const Evolucao = () => {
                 </div>
               </>
             ) : (
-              <div className="glass-panel gold-glow flex items-center justify-center h-[755px] w-full">
+              <div className="glass-panel gold-glow flex items-center justify-center flex-1 w-full">
                 <p className="text-muted-foreground text-sm text-center">Selecione uma sessão para visualizar a evolução</p>
               </div>
             )}
