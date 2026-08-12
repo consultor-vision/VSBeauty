@@ -114,7 +114,14 @@ const Administracao = () => {
               >
                 Atualização
               </TabsTrigger>
+              <TabsTrigger 
+                value="seguranca" 
+                className="bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-gold data-[state=active]:border-b-2 data-[state=active]:border-gold rounded-none px-0 pb-2 text-muted-foreground font-medium transition-all"
+              >
+                Segurança
+              </TabsTrigger>
             </TabsList>
+
 
             {activeTab === "clientes" && (
               <Button 
@@ -291,6 +298,26 @@ const Administracao = () => {
               </table>
             </div>
           </TabsContent>
+
+          <TabsContent value="seguranca" className="mt-0">
+            <div className="glass-panel border-gold/20 p-8 text-center space-y-6">
+              <div className="max-w-md mx-auto space-y-4">
+                <div className="w-16 h-16 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <UserCog className="w-8 h-8 text-gold" />
+                </div>
+                <h3 className="text-xl font-semibold text-gold">Monitoramento de Segurança</h3>
+                <p className="text-muted-foreground">
+                  Load the security issues from the scan results and fix the selected issues.
+                </p>
+                <div className="pt-4">
+                  <Button className="bg-gold hover:bg-gold-light text-black font-medium px-8">
+                    Iniciar Scan de Segurança
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
         </Tabs>
       </div>
 
