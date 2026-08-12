@@ -84,7 +84,7 @@ const Evolucao = () => {
         .select("id, nome_plano, created_at")
         .eq("id_cliente", clientId)
         .eq("id_companhia", user?.id_companhia)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: true });
 
       if (error) throw error;
       const formatted = (data || []).map(p => ({
@@ -117,7 +117,7 @@ const Evolucao = () => {
         .eq("id_cliente", selectedClient?.id)
         .eq("id_companhia", user?.id_companhia)
         .eq("status_procedimento", "Concluído")
-        .order("data_inicio", { ascending: false });
+        .order("data_inicio", { ascending: true });
 
       if (error) throw error;
       
@@ -161,7 +161,7 @@ const Evolucao = () => {
       
       const { data: evolData, error: evolError } = await supabase
         .from("evolucao_cliente")
-        .select("*")
+        .select("id, id_agendamento, observacao, antes, depois, created_at, id_companhia")
         .eq("id_agendamento", session.id)
         .eq("id_companhia", user?.id_companhia)
         .maybeSingle();
