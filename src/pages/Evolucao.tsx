@@ -432,8 +432,32 @@ const Evolucao = () => {
                         <TableCell className="text-sm">
                           {selectedProcLabel.split(" | ")[0]}
                         </TableCell>
+                        <TableCell className="text-sm text-center">
+                          <button 
+                            className="p-1.5 rounded hover:bg-gold/10 transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // Logical placeholder for editing
+                              toast.info("Funcionalidade de edição em breve");
+                            }}
+                          >
+                            <Wrench className="w-4 h-4 text-gold" />
+                          </button>
+                        </TableCell>
                         <TableCell className="text-sm">
                           {professionals[s.id_profissional] || (s.id_profissional ? `Profissional ${s.id_profissional}` : "Profissional não identificado")}
+                        </TableCell>
+                        <TableCell className="text-sm text-right">
+                          <button 
+                            className="p-1.5 rounded hover:bg-gold/10 transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedSessionIdx(idx);
+                              fetchSessionDetails(s);
+                            }}
+                          >
+                            <ExternalLink className="w-4 h-4 text-gold" />
+                          </button>
                         </TableCell>
                       </TableRow>
                     ))
