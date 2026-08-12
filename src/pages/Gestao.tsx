@@ -315,17 +315,17 @@ const Gestao = () => {
                 <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
                 {currentView === "contas_pagar" ? (
                   <>
-                    <Select><SelectTrigger className="w-[180px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione uma Categoria" /></SelectTrigger><SelectContent>{mockCategorias.map(c=>(<SelectItem key={c} value={c}>{c}</SelectItem>))}</SelectContent></Select>
-                    <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
-                    <Select><SelectTrigger className="w-[160px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione um Item" /></SelectTrigger><SelectContent>{mockItens.map(i=>(<SelectItem key={i} value={i}>{i}</SelectItem>))}</SelectContent></Select>
-                    <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+                    <Select value={categoriaFilter} onValueChange={setCategoriaFilter}><SelectTrigger className="w-[180px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione uma Categoria" /></SelectTrigger><SelectContent>{categorias.map(c=>(<SelectItem key={c.id} value={c.nome}>{c.nome}</SelectItem>))}</SelectContent></Select>
+                    <button onClick={() => setCategoriaFilter("")} className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+                    <Select value={itemFilter} onValueChange={setItemFilter}><SelectTrigger className="w-[160px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione um Item" /></SelectTrigger><SelectContent>{itensFinanceiros.map(i=>(<SelectItem key={i.id} value={i.nome}>{i.nome}</SelectItem>))}</SelectContent></Select>
+                    <button onClick={() => setItemFilter("")} className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
                   </>
                 ) : (
                   <>
-                    <Select><SelectTrigger className="w-[200px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione o procedimento" /></SelectTrigger><SelectContent>{mockProcedimentos.map(p=>(<SelectItem key={p.id} value={p.nome}>{p.nome}</SelectItem>))}</SelectContent></Select>
-                    <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
-                    <Select><SelectTrigger className="w-[180px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione o cliente" /></SelectTrigger><SelectContent>{["Everton","Jota Pe Silva","Filipe Pereira da Silva","Eduardo Yto Cliente","Pinkerton Fagundes","Geraldo Nunes da Silva"].map(c=>(<SelectItem key={c} value={c}>{c}</SelectItem>))}</SelectContent></Select>
-                    <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+                    <Select value={procedimentoFilter} onValueChange={setProcedimentoFilter}><SelectTrigger className="w-[200px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione o procedimento" /></SelectTrigger><SelectContent>{procedimentos.map(p=>(<SelectItem key={p.id} value={p.nome}>{p.nome}</SelectItem>))}</SelectContent></Select>
+                    <button onClick={() => setProcedimentoFilter("")} className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+                    <Select value={clienteFilter} onValueChange={setClienteFilter}><SelectTrigger className="w-[180px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione o cliente" /></SelectTrigger><SelectContent>{/* This should ideally be a search input for all clients, but using a placeholder for now */}<SelectItem value="todos">Todos os Clientes</SelectItem></SelectContent></Select>
+                    <button onClick={() => setClienteFilter("")} className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
                   </>
                 )}
               </>
