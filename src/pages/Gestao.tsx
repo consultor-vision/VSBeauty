@@ -565,9 +565,9 @@ const Gestao = () => {
               <h4 className="text-center text-sm font-semibold text-foreground mb-3">Listagem de Produtos</h4>
               <div className="space-y-2 max-h-48 overflow-y-auto">
                 {produtos.map(prod => (
-                  <div key={prod} className="flex items-center justify-between px-3 py-2 border-b border-border/50">
-                    <span className="text-sm text-foreground">{prod}</span>
-                    <button onClick={() => { setEditingProdutoNome(prod); setShowEditarProduto(true); }} className="px-4 py-1.5 rounded-md bg-accent text-accent-foreground text-xs font-semibold hover:bg-accent/80 transition-colors">Editar</button>
+                  <div key={prod.id} className="flex items-center justify-between px-3 py-2 border-b border-border/50">
+                    <span className="text-sm text-foreground">{prod.produtos}</span>
+                    <button onClick={() => { setEditingProdutoNome(prod.produtos); setShowEditarProduto(true); }} className="px-4 py-1.5 rounded-md bg-accent text-accent-foreground text-xs font-semibold hover:bg-accent/80 transition-colors">Editar</button>
                   </div>
                 ))}
               </div>
