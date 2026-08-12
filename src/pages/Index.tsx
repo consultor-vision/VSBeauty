@@ -159,6 +159,16 @@ const Index = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const timeSlotHeight = Math.max(20, (windowHeight - 240) / (TIME_SLOTS.length / 2)); // Dynamic height based on viewport
+
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+
+  useEffect(() => {
+    const handleResize = () => setWindowHeight(window.innerHeight);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const { user, company, logout } = useAuth();
   const navigate = useNavigate();
   const today = new Date();
@@ -596,7 +606,7 @@ const Index = () => {
 
   return (
     <Layout title="Agendamento">
-      <div className="flex flex-col lg:flex-row gap-3 h-[calc(100vh-160px)]">
+      <div className="flex flex-col lg:flex-row gap-3 h-full min-h-0 overflow-hidden">
         {/* Left Column - Calendar + Actions */}
         <div className="lg:w-[420px] flex flex-col gap-3 shrink-0">
           {/* Mini Calendar */}
@@ -877,7 +887,7 @@ const Index = () => {
               {TIME_SLOTS.map((time) => {
                 const isHour = time.endsWith(":00");
                 return (
-                  <div key={time} className="flex" style={{ minHeight: "36.2px" }}>
+                  <div key={time} className="flex" style={{ height: `${timeSlotHeight}px` }}>
                     {/* Time label */}
                     <div className="w-16 shrink-0 text-right pr-2 flex items-start justify-end">
                       {isHour && (
@@ -911,7 +921,8 @@ const Index = () => {
                           const startMin = timeToMinutes(startingApp.startTime);
                           const endMin = timeToMinutes(startingApp.endTime);
                           const durationSlots = Math.max(1, Math.round((endMin - startMin) / 10));
-                          const heightPx = durationSlots * 32;
+                          const heightPx = durationSlots * timeSlotHeight;
+
                           const bgClass = statusBgColors[startingApp.statusProcedimento] || "bg-muted/30 border-border";
 
                           return (
@@ -967,7 +978,7 @@ const Index = () => {
                           const startMin = timeToMinutes(startingApp.startTime);
                           const endMin = timeToMinutes(startingApp.endTime);
                           const durationSlots = Math.max(1, Math.round((endMin - startMin) / 10));
-                          const heightPx = durationSlots * 32;
+                          const heightPx = durationSlots * timeSlotHeight;
                           const bgClass = statusBgColors[startingApp.statusProcedimento] || "bg-muted/30 border-border";
 
                           return (
