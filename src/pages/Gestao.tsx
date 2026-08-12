@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "@/components/Layout";
 import { Menu, Plus, Trash2, Pencil, X, PlusCircle, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,10 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
+import { format, parseISO, isValid } from "date-fns";
 
 // ── Types ──
 interface Colaborador {
@@ -34,86 +38,8 @@ interface ContaReceber {
   dataEmissao: string; tipoPagamento: string; parcela: string; descricao: string; qtdSessoes: string; statusFinanceiro: string;
 }
 
-// ── Mock Data ──
-const mockColaboradores: Colaborador[] = [
-  { id: 1, nome: "Alan Mazzonelis", cpf: "0", email: "alangalvaogg@gmail.com", telefone: "+55(11)97576-3217", acessoPlataforma: "Liberado", acessoAdministrativo: "Liberado", nascimento: "01/01/2025" },
-  { id: 2, nome: "Bruna Kansaon", cpf: "789.456.123-75", email: "bruna.kansaon@ytonihon.com.br", telefone: "+55(11)95209-6182", acessoPlataforma: "Liberado", acessoAdministrativo: "Liberado" },
-  { id: 3, nome: "Eduardo Yto", cpf: "0", email: "yto@ytonihon.com.br", telefone: "+55(11)97576-3217", acessoPlataforma: "Liberado", acessoAdministrativo: "Liberado" },
-  { id: 4, nome: "Evelyn Azevedo", cpf: "123.369.852-21", email: "e_azevedo79@gmail.com", telefone: "+55(11)96632-2587", acessoPlataforma: "Liberado", acessoAdministrativo: "Liberado" },
-  { id: 5, nome: "Everton Alcantara", cpf: "0", email: "everton.alcantara@ytonihontreinamentos.onmicrosoft.com", telefone: "+55(11)98554-2787", acessoPlataforma: "Liberado", acessoAdministrativo: "Liberado" },
-  { id: 6, nome: "Filipe Pereira da Silva", cpf: "356.440.788-09", email: "fl_2105@hotmail.com", telefone: "+55(11)95209-6182", acessoPlataforma: "Liberado", acessoAdministrativo: "Liberado" },
-  { id: 7, nome: "Pinkerton Fagundes", cpf: "0", email: "pinkerton.fagundes@ytonihon.com.br", telefone: "+55(11)97576-3217", acessoPlataforma: "Liberado", acessoAdministrativo: "Liberado" },
-  { id: 8, nome: "Ricardo Rodrigues", cpf: "123.369.985-21", email: "Rrodrigues@gmail.com", telefone: "+55(11)99999-6666", acessoPlataforma: "Liberado", acessoAdministrativo: "Liberado" },
-];
-
-const mockProcedimentos: Procedimento[] = [
-  { id: 1, nome: "Bioestimulador de Colágeno", valor: "R$ 750,00", duracao: "60 Min", intervalo: "60 dias", trabalhando: true },
-  { id: 2, nome: "Botox", valor: "R$ 100,00", duracao: "60 Min", intervalo: "60 dias", trabalhando: true },
-  { id: 3, nome: "Botox premium", valor: "R$ 2.000,00", duracao: "60 Min", intervalo: "60 dias", trabalhando: true },
-  { id: 4, nome: "Botox (Toxina Botulínica)", valor: "R$ 1.000,00", duracao: "30 Min", intervalo: "30 dias", trabalhando: true },
-  { id: 5, nome: "Cicatriz na mão", valor: "R$ 57,85", duracao: "15 Min", intervalo: "45 dias", trabalhando: true },
-  { id: 6, nome: "Criolipólise", valor: "R$ 800,00", duracao: "60 Min", intervalo: "60 dias", trabalhando: true },
-  { id: 7, nome: "Depilação a Laser", valor: "R$ 300,00", duracao: "15 Min", intervalo: "15 dias", trabalhando: true },
-  { id: 8, nome: "Dreno Detox", valor: "R$ 250,00", duracao: "45 Min", intervalo: "45 dias", trabalhando: true },
-  { id: 9, nome: "Harmonização Facial", valor: "R$ 10.000,00", duracao: "30 Min", intervalo: "30 dias", trabalhando: true },
-  { id: 10, nome: "Laser4", valor: "R$ 500,00", duracao: "60 Min", intervalo: "60 dias", trabalhando: true },
-  { id: 11, nome: "Laser Body", valor: "R$ 100,00", duracao: "60 Min", intervalo: "60 dias", trabalhando: true },
-  { id: 12, nome: "Laser Plus", valor: "R$ 250,00", duracao: "45 Min", intervalo: "45 dias", trabalhando: true },
-];
-
-const mockEstoque: EstoqueItem[] = [
-  { id: 1, produto: "Luva", sistemaMedidas: "Unidade (Un)", quantidade: 54 },
-  { id: 2, produto: "Mascara", sistemaMedidas: "Unidade (Un)", quantidade: 796 },
-  { id: 3, produto: "Touca", sistemaMedidas: "Unidade (Un)", quantidade: 16 },
-  { id: 4, produto: "Gazes", sistemaMedidas: "Unidade (Un)", quantidade: 15 },
-  { id: 5, produto: "Espátula", sistemaMedidas: "Unidade (Un)", quantidade: 7 },
-  { id: 6, produto: "Creme de Limpeza", sistemaMedidas: "Miligrama (mg)", quantidade: 100 },
-];
-
-const mockProdutos = ["Luva", "Mascara", "Seringas", "Touca", "Gazes", "Espátula", "Pincel"];
-
-const mockContasPagar: ContaPagar[] = [
-  { id: 1, status: "Pago", dataVencimento: "07/02/2026", categoria: "Vitamina", item: "Mounjaro", valor: "R$ 500", dataEmissao: "06/01/2026", tipoPagamento: "Cartão de Crédito", parcela: "2", descricao: "Injeção para Emagrecimento.Pago" },
-  { id: 2, status: "Pago", dataVencimento: "01/02/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300", dataEmissao: "01/01/2026", tipoPagamento: "Pix", parcela: "1", descricao: "" },
-  { id: 3, status: "Pago", dataVencimento: "01/02/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300", dataEmissao: "01/01/2026", tipoPagamento: "Pix", parcela: "1", descricao: "" },
-  { id: 4, status: "Atrasado", dataVencimento: "22/01/2026", categoria: "Computador", item: "Teclado", valor: "R$ 50", dataEmissao: "01/01/2026", tipoPagamento: "Boleto", parcela: "1", descricao: "" },
-  { id: 5, status: "Atrasado", dataVencimento: "09/01/2026", categoria: "Salário", item: "Colaborador - Filipe", valor: "R$ 1.000", dataEmissao: "01/01/2026", tipoPagamento: "Pix", parcela: "1", descricao: "" },
-  { id: 6, status: "Atrasado", dataVencimento: "07/01/2026", categoria: "Vitamina", item: "Mounjaro", valor: "R$ 500", dataEmissao: "01/01/2026", tipoPagamento: "Cartão", parcela: "1", descricao: "" },
-  { id: 7, status: "Pago", dataVencimento: "06/01/2026", categoria: "Bonus", item: "PLR", valor: "R$ 500", dataEmissao: "01/01/2026", tipoPagamento: "Pix", parcela: "1", descricao: "" },
-  { id: 8, status: "Pago", dataVencimento: "06/01/2026", categoria: "Bonus", item: "PLR", valor: "R$ 500", dataEmissao: "01/01/2026", tipoPagamento: "Pix", parcela: "1", descricao: "" },
-  { id: 9, status: "Pago", dataVencimento: "01/01/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300", dataEmissao: "01/12/2025", tipoPagamento: "Dinheiro", parcela: "1", descricao: "" },
-  { id: 10, status: "Atrasado", dataVencimento: "01/01/2026", categoria: "Diversos", item: "Roupa", valor: "R$ 300", dataEmissao: "01/12/2025", tipoPagamento: "Pix", parcela: "1", descricao: "" },
-  { id: 11, status: "Pago", dataVencimento: "23/12/2025", categoria: "Diversos", item: "Festa de Final de Ano da Firma", valor: "R$ 1.600", dataEmissao: "01/12/2025", tipoPagamento: "Pix", parcela: "1", descricao: "" },
-];
-
-const mockContasReceber: ContaReceber[] = [
-  { id: 1, status: "Pendente", dataVencimento: "09/04/2026", procedimento: "Harmonização Facial", cliente: "Everton", valor: "R$ 15.000,00", dataEmissao: "09/02/2026", tipoPagamento: "Cartão de Crédito Recorrente", parcela: "3", descricao: "Observacao", qtdSessoes: "3", statusFinanceiro: "Pendente" },
-  { id: 2, status: "Pago", dataVencimento: "31/03/2026", procedimento: "Bioestimulador de Colágeno", cliente: "Jota Pe Silva", valor: "R$ 1.500,00", dataEmissao: "01/03/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Pago" },
-  { id: 3, status: "Pago", dataVencimento: "31/03/2026", procedimento: "Botox", cliente: "Filipe Pereira da Silva", valor: "R$ 1.000,00", dataEmissao: "01/03/2026", tipoPagamento: "Cartão", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Pago" },
-  { id: 4, status: "Pago", dataVencimento: "30/03/2026", procedimento: "Dreno Detox", cliente: "Eduardo Yto Cliente", valor: "R$ 1.250,00", dataEmissao: "01/03/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Pago" },
-  { id: 5, status: "Atrasado", dataVencimento: "19/03/2026", procedimento: "Bioestimulador de Colágeno", cliente: "Everton", valor: "R$ 750,00", dataEmissao: "01/03/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Atrasado" },
-  { id: 6, status: "Atrasado", dataVencimento: "09/03/2026", procedimento: "Harmonização Facial", cliente: "Everton", valor: "R$ 15.000,00", dataEmissao: "01/03/2026", tipoPagamento: "Cartão", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Atrasado" },
-  { id: 7, status: "Pago", dataVencimento: "05/03/2026", procedimento: "Botox", cliente: "Pinkerton Fagundes", valor: "R$ 1.000,00", dataEmissao: "01/03/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Pago" },
-  { id: 8, status: "Atrasado", dataVencimento: "27/02/2026", procedimento: "Tratamentos para Celulite", cliente: "Eduardo Yto Cliente", valor: "R$ 500,00", dataEmissao: "01/02/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Atrasado" },
-  { id: 9, status: "Atrasado", dataVencimento: "22/02/2026", procedimento: "Botox premium", cliente: "Geraldo Nunes da Silva", valor: "R$ 2.000,00", dataEmissao: "01/02/2026", tipoPagamento: "Boleto", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Atrasado" },
-  { id: 10, status: "Atrasado", dataVencimento: "13/02/2026", procedimento: "Botox (Toxina Botulínica)", cliente: "teste 13-02", valor: "R$ 2.000,00", dataEmissao: "01/02/2026", tipoPagamento: "Pix", parcela: "1", descricao: "", qtdSessoes: "1", statusFinanceiro: "Atrasado" },
-  { id: 11, status: "Atrasado", dataVencimento: "09/02/2026", procedimento: "Harmonização Facial", cliente: "Everton", valor: "R$ 15.000,00", dataEmissao: "09/02/2026", tipoPagamento: "Cartão de Crédito Recorrente", parcela: "3", descricao: "Observacao", qtdSessoes: "3", statusFinanceiro: "Pendente" },
-];
-
-const mockCategorias = ["Aluguel", "Salário", "Diversos", "Energia", "Condominio", "Premiação"];
-const mockItens = ["Salão", "Colaborador - Filipe", "Roupa", "Colaborador - Bianca", "Festa de Final de Ano da Firma", "Presente de Natal"];
-
-const anamnesePerguntas = [
-  { pergunta: "Já teve alguma reação ruim em tratamentos estéticos?", complemento: "Qual(is)?" },
-  { pergunta: "Já fez alguma cirurgia estética ou reparadora?", complemento: "Quais?" },
-  { pergunta: "Tem algum tipo de implante?", complemento: "Qual?" },
-  { pergunta: "Você usa algum medicamento todos os dias?", complemento: "Qual?" },
-  { pergunta: "Tem alguma alergia?", complemento: "Qual?" },
-  { pergunta: "Tem alguma doença crônica?", complemento: "Qual?" },
-  { pergunta: "Usa anticoagulantes ou remédios que afinam o sangue?", complemento: "Qual?" },
-  { pergunta: "Já teve doenças de pele?", complemento: "Qual?" },
-  { pergunta: "Tem alguma outra condição de saúde que devemos saber?", complemento: "Qual?" },
-];
+// ── Real Data Fetchers will be implemented below ──
+const proceduresList = ["Botox", "Preenchimento Labial", "Tratamentos para Celulite", "Dreno Detox", "Laser4", "Limpeza de Pele", "Peeling"];
 
 type GestaoView = "colaborador" | "procedimento" | "anamnese" | "estoque" | "contas_pagar" | "contas_receber";
 
@@ -127,28 +53,48 @@ const viewLabels: Record<GestaoView, string> = {
 };
 
 const Gestao = () => {
+  const { user } = useAuth();
   const [currentView, setCurrentView] = useState<GestaoView>("colaborador");
   const [showMenu, setShowMenu] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  // Colaborador
+  // States for real data
+  const [colaboradores, setColaboradores] = useState<Colaborador[]>([]);
+  const [procedimentos, setProcedimentos] = useState<Procedimento[]>([]);
+  const [anamnesePerguntas, setAnamnesePerguntas] = useState<{ id: number; pergunta: string; caso_sim: string }[]>([]);
+  const [estoque, setEstoque] = useState<EstoqueItem[]>([]);
+  const [contasPagar, setContasPagar] = useState<ContaPagar[]>([]);
+  const [contasReceber, setContasReceber] = useState<ContaReceber[]>([]);
+  const [produtos, setProdutos] = useState<{ id: number; produtos: string; tipo_embalagem: string }[]>([]);
+  const [categorias, setCategorias] = useState<{ id: number; nome: string }[]>([]);
+  const [itensFinanceiros, setItensFinanceiros] = useState<{ id: number; nome: string }[]>([]);
+
+  // Filters
   const [acessoFilter, setAcessoFilter] = useState("liberado");
+  const [yearFilter, setYearFilter] = useState("2026");
+  const [monthFilter, setMonthFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [categoriaFilter, setCategoriaFilter] = useState("");
+  const [itemFilter, setItemFilter] = useState("");
+  const [procedimentoFilter, setProcedimentoFilter] = useState("");
+  const [clienteFilter, setClienteFilter] = useState("");
+  const [produtoFilter, setProdutoFilter] = useState("");
+
+  // Modals
   const [showNovoColab, setShowNovoColab] = useState(false);
   const [showEditarColab, setShowEditarColab] = useState(false);
   const [editingColab, setEditingColab] = useState<Colaborador | null>(null);
   const [adminToggle, setAdminToggle] = useState(false);
   const [novoColabForm, setNovoColabForm] = useState({ nome: "", nascimento: "", cpf: "", telefone: "", email: "", admin: false });
 
-  // Procedimento
   const [showNovoProc, setShowNovoProc] = useState(false);
   const [showEditarProc, setShowEditarProc] = useState(false);
   const [editingProc, setEditingProc] = useState<Procedimento | null>(null);
   const [novoProcForm, setNovoProcForm] = useState({ nome: "", duracao: "", intervalo: "", valor: "", trabalhando: true });
 
-  // Anamnese
   const [showEditarAnamnese, setShowEditarAnamnese] = useState(false);
-  const [editingAnamnese, setEditingAnamnese] = useState<{ pergunta: string; complemento: string } | null>(null);
+  const [editingAnamnese, setEditingAnamnese] = useState<{ id: number; pergunta: string; caso_sim: string } | null>(null);
 
-  // Estoque
   const [showNovoEstoque, setShowNovoEstoque] = useState(false);
   const [novoEstoqueForm, setNovoEstoqueForm] = useState({ produto: "", sistemaMedidas: "", quantidade: "" });
   const [showNovosProdutos, setShowNovosProdutos] = useState(false);
@@ -158,7 +104,6 @@ const Gestao = () => {
   const [showEditarEstoque, setShowEditarEstoque] = useState(false);
   const [editingEstoque, setEditingEstoque] = useState<EstoqueItem | null>(null);
 
-  // Contas a Pagar
   const [showNovaContaPagar, setShowNovaContaPagar] = useState(false);
   const [novaContaForm, setNovaContaForm] = useState({ dataEmissao: "", dataVencimento: "", categoria: "", item: "", valor: "", parcela: "", tipoPagamento: "", status: "Pendente", observacao: "" });
   const [showNovaCategoria, setShowNovaCategoria] = useState(false);
@@ -170,15 +115,181 @@ const Gestao = () => {
   const [showEditarContaPagar, setShowEditarContaPagar] = useState(false);
   const [editingContaPagar, setEditingContaPagar] = useState<ContaPagar | null>(null);
 
-  // Contas a Receber
   const [showDescricaoReceber, setShowDescricaoReceber] = useState(false);
   const [descricaoReceberConta, setDescricaoReceberConta] = useState<ContaReceber | null>(null);
   const [showEditarContaReceber, setShowEditarContaReceber] = useState(false);
   const [editingContaReceber, setEditingContaReceber] = useState<ContaReceber | null>(null);
 
+  // Fetchers
+  useEffect(() => {
+    if (!user?.id_companhia) return;
+    fetchData();
+  }, [user?.id_companhia, currentView]);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      if (currentView === "colaborador") await fetchColaboradores();
+      if (currentView === "procedimento") await fetchProcedimentos();
+      if (currentView === "anamnese") await fetchAnamnese();
+      if (currentView === "estoque") {
+        await fetchEstoque();
+        await fetchProdutos();
+      }
+      if (currentView === "contas_pagar") {
+        await fetchContasPagar();
+        await fetchCategorias();
+        await fetchItensFinanceiros();
+      }
+      if (currentView === "contas_receber") await fetchContasReceber();
+    } catch (error) {
+      console.error("Error fetching gestao data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchColaboradores = async () => {
+    const { data, error } = await supabase
+      .from("usuarios")
+      .select("*")
+      .eq("id_companhia", user?.id_companhia)
+      .order("nome", { ascending: true });
+    if (error) throw error;
+    setColaboradores(data.map(u => ({
+      id: u.id,
+      nome: u.nome || "",
+      cpf: u.cpf || "",
+      email: u.email || "",
+      telefone: u.phone || "",
+      acessoPlataforma: u.acesso ? "Liberado" : "Bloqueado",
+      acessoAdministrativo: u.adm ? "Liberado" : "Bloqueado",
+      nascimento: u.data_nascimento || ""
+    })));
+  };
+
+  const fetchProcedimentos = async () => {
+    const { data, error } = await supabase
+      .from("procedimentos")
+      .select("*")
+      .eq("id_companhia", user?.id_companhia)
+      .order("nome", { ascending: true });
+    if (error) throw error;
+    setProcedimentos(data.map(p => ({
+      id: p.id,
+      nome: p.nome || "",
+      valor: (p.valor || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+      duracao: `${p.duracao || 0} Min`,
+      intervalo: `${p.intervalo || 0} dias`,
+      trabalhando: p.Trabalhado || false
+    })));
+  };
+
+  const fetchAnamnese = async () => {
+    const { data, error } = await supabase
+      .from("anamnese")
+      .select("*")
+      .eq("id_companhia", user?.id_companhia)
+      .order("Ordem", { ascending: true });
+    if (error) throw error;
+    setAnamnesePerguntas(data.map(q => ({
+      id: q.id,
+      pergunta: q.pergunta || "",
+      caso_sim: q.caso_sim || "Qual?"
+    })));
+  };
+
+  const fetchEstoque = async () => {
+    const { data, error } = await supabase
+      .from("estoque")
+      .select("*, produtos(produtos, tipo_embalagem)")
+      .eq("id_companhia", user?.id_companhia);
+    if (error) throw error;
+    setEstoque(data.map(e => ({
+      id: e.id,
+      produto: (e.produtos as any)?.produtos || "Desconhecido",
+      sistemaMedidas: (e.produtos as any)?.tipo_embalagem || "-",
+      quantidade: e.quantidade || 0
+    })));
+  };
+
+  const fetchProdutos = async () => {
+    const { data, error } = await supabase
+      .from("produtos")
+      .select("*")
+      .eq("id_companhia", user?.id_companhia)
+      .order("produtos", { ascending: true });
+    if (error) throw error;
+    setProdutos(data || []);
+  };
+
+  const fetchContasPagar = async () => {
+    const { data, error } = await supabase
+      .from("conta_pagar")
+      .select("*, categoria(nome), item_financeiro(nome)")
+      .eq("id_companhia", user?.id_companhia)
+      .order("data_operacao", { ascending: false });
+    if (error) throw error;
+    setContasPagar(data.map(c => ({
+      id: c.id,
+      status: c.Status || "Pendente",
+      dataVencimento: c.data_operacao ? format(new Date(c.data_operacao), "dd/MM/yyyy") : "-",
+      categoria: (c.categoria as any)?.nome || "-",
+      item: (c.item_financeiro as any)?.nome || "-",
+      valor: (c.valor || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+      dataEmissao: c.Data_Emissao ? format(new Date(c.Data_Emissao), "dd/MM/yyyy") : "-",
+      tipoPagamento: c.Tipo_Pagamento || "-",
+      parcela: String(c.Parcela || 1),
+      descricao: c.Observacao || ""
+    })));
+  };
+
+  const fetchContasReceber = async () => {
+    const { data, error } = await supabase
+      .from("conta_receber")
+      .select("*, clientes(nome), planos(nome_plano)")
+      .eq("id_companhia", user?.id_companhia)
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    setContasReceber(data.map(c => ({
+      id: c.id,
+      status: c.status_financeiro || "Pendente",
+      dataVencimento: c.Data_Vencimento ? format(new Date(c.Data_Vencimento), "dd/MM/yyyy") : "-",
+      procedimento: (c.planos as any)?.nome_plano || "-",
+      cliente: (c.clientes as any)?.nome || "-",
+      valor: (c.valor_procediemtno || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+      dataEmissao: c.created_at ? format(new Date(c.created_at), "dd/MM/yyyy") : "-",
+      tipoPagamento: c.forma_pagamento || "-",
+      parcela: String(c.parcelas || 1),
+      descricao: c.Observacao || "",
+      qtdSessoes: String(c.sessoes || 1),
+      statusFinanceiro: c.status_financeiro || "Pendente"
+    })));
+  };
+
+  const fetchCategorias = async () => {
+    const { data, error } = await supabase
+      .from("categoria")
+      .select("*")
+      .eq("id_companhia", user?.id_companhia)
+      .order("Nome", { ascending: true });
+    if (error) throw error;
+    setCategorias((data || []).map(c => ({ id: c.id, nome: (c as any).Nome || "" })));
+  };
+
+  const fetchItensFinanceiros = async () => {
+    const { data, error } = await supabase
+      .from("item_financeiro")
+      .select("*")
+      .eq("id_companhia", user?.id_companhia)
+      .order("item", { ascending: true });
+    if (error) throw error;
+    setItensFinanceiros((data || []).map(i => ({ id: i.id, nome: (i as any).item || "" })));
+  };
+
   const handleEditColab = (c: Colaborador) => { setEditingColab(c); setAdminToggle(c.acessoAdministrativo === "Liberado"); setShowEditarColab(true); };
   const handleEditProc = (p: Procedimento) => { setEditingProc(p); setShowEditarProc(true); };
-  const handleEditAnamnese = (q: { pergunta: string; complemento: string }) => { setEditingAnamnese({ ...q }); setShowEditarAnamnese(true); };
+  const handleEditAnamnese = (q: any) => { setEditingAnamnese({ ...q }); setShowEditarAnamnese(true); };
   const handleEditEstoque = (e: EstoqueItem) => { setEditingEstoque(e); setShowEditarEstoque(true); };
   const handleMenuSelect = (view: GestaoView) => { setCurrentView(view); setShowMenu(false); };
 
@@ -204,17 +315,17 @@ const Gestao = () => {
                 <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
                 {currentView === "contas_pagar" ? (
                   <>
-                    <Select><SelectTrigger className="w-[180px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione uma Categoria" /></SelectTrigger><SelectContent>{mockCategorias.map(c=>(<SelectItem key={c} value={c}>{c}</SelectItem>))}</SelectContent></Select>
-                    <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
-                    <Select><SelectTrigger className="w-[160px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione um Item" /></SelectTrigger><SelectContent>{mockItens.map(i=>(<SelectItem key={i} value={i}>{i}</SelectItem>))}</SelectContent></Select>
-                    <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+                    <Select value={categoriaFilter} onValueChange={setCategoriaFilter}><SelectTrigger className="w-[180px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione uma Categoria" /></SelectTrigger><SelectContent>{categorias.map(c=>(<SelectItem key={c.id} value={c.nome}>{c.nome}</SelectItem>))}</SelectContent></Select>
+                    <button onClick={() => setCategoriaFilter("")} className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+                    <Select value={itemFilter} onValueChange={setItemFilter}><SelectTrigger className="w-[160px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione um Item" /></SelectTrigger><SelectContent>{itensFinanceiros.map(i=>(<SelectItem key={i.id} value={i.nome}>{i.nome}</SelectItem>))}</SelectContent></Select>
+                    <button onClick={() => setItemFilter("")} className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
                   </>
                 ) : (
                   <>
-                    <Select><SelectTrigger className="w-[200px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione o procedimento" /></SelectTrigger><SelectContent>{mockProcedimentos.map(p=>(<SelectItem key={p.id} value={p.nome}>{p.nome}</SelectItem>))}</SelectContent></Select>
-                    <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
-                    <Select><SelectTrigger className="w-[180px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione o cliente" /></SelectTrigger><SelectContent>{["Everton","Jota Pe Silva","Filipe Pereira da Silva","Eduardo Yto Cliente","Pinkerton Fagundes","Geraldo Nunes da Silva"].map(c=>(<SelectItem key={c} value={c}>{c}</SelectItem>))}</SelectContent></Select>
-                    <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+                    <Select value={procedimentoFilter} onValueChange={setProcedimentoFilter}><SelectTrigger className="w-[200px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione o procedimento" /></SelectTrigger><SelectContent>{procedimentos.map(p=>(<SelectItem key={p.id} value={p.nome}>{p.nome}</SelectItem>))}</SelectContent></Select>
+                    <button onClick={() => setProcedimentoFilter("")} className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
+                    <Select value={clienteFilter} onValueChange={setClienteFilter}><SelectTrigger className="w-[180px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione o cliente" /></SelectTrigger><SelectContent>{/* This should ideally be a search input for all clients, but using a placeholder for now */}<SelectItem value="todos">Todos os Clientes</SelectItem></SelectContent></Select>
+                    <button onClick={() => setClienteFilter("")} className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
                   </>
                 )}
               </>
@@ -231,7 +342,7 @@ const Gestao = () => {
             )}
 
             {currentView === "estoque" && (
-              <Select><SelectTrigger className="w-[200px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione um Produto" /></SelectTrigger><SelectContent>{mockProdutos.map(p=>(<SelectItem key={p} value={p}>{p}</SelectItem>))}</SelectContent></Select>
+              <Select value={produtoFilter} onValueChange={setProdutoFilter}><SelectTrigger className="w-[200px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione um Produto" /></SelectTrigger><SelectContent>{produtos.map(p=>(<SelectItem key={p.id} value={p.produtos}>{p.produtos}</SelectItem>))}</SelectContent></Select>
             )}
           </div>
 
@@ -269,12 +380,12 @@ const Gestao = () => {
         )}
 
         {/* VIEWS */}
-        {currentView === "colaborador" && <ColaboradorView colaboradores={mockColaboradores} onEdit={handleEditColab} />}
-        {currentView === "procedimento" && <ProcedimentoView procedimentos={mockProcedimentos} onEdit={handleEditProc} />}
-        {currentView === "anamnese" && <AnamneseView onEdit={handleEditAnamnese} />}
-        {currentView === "estoque" && <EstoqueView estoque={mockEstoque} onEdit={handleEditEstoque} />}
-        {currentView === "contas_pagar" && <ContasPagarView contas={mockContasPagar} onDescricao={(c) => { setDescricaoPagarConta(c); setShowDescricaoPagar(true); }} onEdit={(c) => { setEditingContaPagar(c); setShowEditarContaPagar(true); }} />}
-        {currentView === "contas_receber" && <ContasReceberView contas={mockContasReceber} onDescricao={(c) => { setDescricaoReceberConta(c); setShowDescricaoReceber(true); }} onEdit={(c) => { setEditingContaReceber(c); setShowEditarContaReceber(true); }} />}
+        {currentView === "colaborador" && <ColaboradorView colaboradores={colaboradores} onEdit={handleEditColab} />}
+        {currentView === "procedimento" && <ProcedimentoView procedimentos={procedimentos} onEdit={handleEditProc} />}
+        {currentView === "anamnese" && <AnamneseView perguntas={anamnesePerguntas} onEdit={handleEditAnamnese} />}
+        {currentView === "estoque" && <EstoqueView estoque={estoque} onEdit={handleEditEstoque} />}
+        {currentView === "contas_pagar" && <ContasPagarView contas={contasPagar} onDescricao={(c) => { setDescricaoPagarConta(c); setShowDescricaoPagar(true); }} onEdit={(c) => { setEditingContaPagar(c); setShowEditarContaPagar(true); }} />}
+        {currentView === "contas_receber" && <ContasReceberView contas={contasReceber} onDescricao={(c) => { setDescricaoReceberConta(c); setShowDescricaoReceber(true); }} onEdit={(c) => { setEditingContaReceber(c); setShowEditarContaReceber(true); }} />}
       </div>
 
       {/* ── MODAIS COLABORADOR ── */}
@@ -385,7 +496,7 @@ const Gestao = () => {
           {editingAnamnese && (
             <div className="p-5 space-y-4">
               <div><label className="text-xs text-gold mb-1 block">Pergunta da Anamnese</label><Input value={editingAnamnese.pergunta} onChange={(e) => setEditingAnamnese(p => p ? { ...p, pergunta: e.target.value } : p)} className="bg-input border-border text-foreground h-10" /></div>
-              <Input placeholder="No caso da resposta for sim (opcional)" value={editingAnamnese.complemento} onChange={(e) => setEditingAnamnese(p => p ? { ...p, complemento: e.target.value } : p)} className="bg-input border-border text-foreground h-10" />
+              <Input placeholder="No caso da resposta for sim (opcional)" value={editingAnamnese.caso_sim} onChange={(e) => setEditingAnamnese(p => p ? { ...p, caso_sim: e.target.value } : p)} className="bg-input border-border text-foreground h-10" />
               <div className="flex justify-between pt-2">
                 <button className="px-8 py-2.5 rounded-lg bg-destructive text-destructive-foreground font-semibold text-sm hover:bg-destructive/90 transition-all">Excluir</button>
                 <button onClick={() => setShowEditarAnamnese(false)} className="px-12 py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all">Salvar</button>
@@ -404,7 +515,7 @@ const Gestao = () => {
               <div className="flex items-center gap-2">
                 <Select value={novoEstoqueForm.produto} onValueChange={(v) => setNovoEstoqueForm(p => ({ ...p, produto: v }))}>
                   <SelectTrigger className="flex-1 bg-input border-border text-foreground h-10"><SelectValue placeholder="Produto" /></SelectTrigger>
-                  <SelectContent>{mockProdutos.map(p=>(<SelectItem key={p} value={p}>{p}</SelectItem>))}</SelectContent>
+                  <SelectContent>{produtos.map(p=>(<SelectItem key={p.id} value={p.produtos}>{p.produtos}</SelectItem>))}</SelectContent>
                 </Select>
                 <button onClick={() => { setNovoProdutoForm({ nome: "", sistemaMedidas: "" }); setShowNovosProdutos(true); }} className="p-2 rounded-full bg-gold/80 text-primary-foreground hover:bg-gold transition-colors"><PlusCircle className="w-5 h-5" /></button>
               </div>
@@ -453,10 +564,10 @@ const Gestao = () => {
             <div className="border-t border-border pt-4">
               <h4 className="text-center text-sm font-semibold text-foreground mb-3">Listagem de Produtos</h4>
               <div className="space-y-2 max-h-48 overflow-y-auto">
-                {mockProdutos.map(prod => (
-                  <div key={prod} className="flex items-center justify-between px-3 py-2 border-b border-border/50">
-                    <span className="text-sm text-foreground">{prod}</span>
-                    <button onClick={() => { setEditingProdutoNome(prod); setShowEditarProduto(true); }} className="px-4 py-1.5 rounded-md bg-accent text-accent-foreground text-xs font-semibold hover:bg-accent/80 transition-colors">Editar</button>
+                {produtos.map(prod => (
+                  <div key={prod.id} className="flex items-center justify-between px-3 py-2 border-b border-border/50">
+                    <span className="text-sm text-foreground">{prod.produtos}</span>
+                    <button onClick={() => { setEditingProdutoNome(prod.produtos); setShowEditarProduto(true); }} className="px-4 py-1.5 rounded-md bg-accent text-accent-foreground text-xs font-semibold hover:bg-accent/80 transition-colors">Editar</button>
                   </div>
                 ))}
               </div>
@@ -492,7 +603,7 @@ const Gestao = () => {
               <div className="flex items-center gap-2">
                 <Select value={novaContaForm.categoria} onValueChange={(v) => setNovaContaForm(p => ({ ...p, categoria: v }))}>
                   <SelectTrigger className="flex-1 bg-input border-border text-foreground h-10"><SelectValue placeholder="Categoria" /></SelectTrigger>
-                  <SelectContent>{mockCategorias.map(c=>(<SelectItem key={c} value={c}>{c}</SelectItem>))}</SelectContent>
+                  <SelectContent>{categorias.map(c=>(<SelectItem key={c.id} value={c.nome}>{c.nome}</SelectItem>))}</SelectContent>
                 </Select>
                 <button onClick={() => { setNovaCategoriaForm(""); setShowNovaCategoria(true); }} className="p-2 rounded-full bg-gold/80 text-primary-foreground hover:bg-gold transition-colors"><PlusCircle className="w-5 h-5" /></button>
               </div>
@@ -502,7 +613,7 @@ const Gestao = () => {
               <div className="flex items-center gap-2">
                 <Select value={novaContaForm.item} onValueChange={(v) => setNovaContaForm(p => ({ ...p, item: v }))}>
                   <SelectTrigger className="flex-1 bg-input border-border text-foreground h-10"><SelectValue placeholder="Item" /></SelectTrigger>
-                  <SelectContent>{mockItens.map(i=>(<SelectItem key={i} value={i}>{i}</SelectItem>))}</SelectContent>
+                  <SelectContent>{itensFinanceiros.map(i=>(<SelectItem key={i.id} value={i.nome}>{i.nome}</SelectItem>))}</SelectContent>
                 </Select>
                 <button onClick={() => { setNovoItemForm(""); setShowNovoItem(true); }} className="p-2 rounded-full bg-gold/80 text-primary-foreground hover:bg-gold transition-colors"><PlusCircle className="w-5 h-5" /></button>
               </div>
@@ -544,9 +655,9 @@ const Gestao = () => {
             <div className="border-t border-border pt-4">
               <h4 className="text-center text-sm font-semibold text-foreground mb-3">Listagem de Categorias</h4>
               <div className="space-y-2 max-h-48 overflow-y-auto">
-                {mockCategorias.map(cat => (
-                  <div key={cat} className="flex items-center justify-between px-3 py-2 border-b border-border/50">
-                    <span className="text-sm text-foreground">{cat}</span>
+                {categorias.map(cat => (
+                  <div key={cat.id} className="flex items-center justify-between px-3 py-2 border-b border-border/50">
+                    <span className="text-sm text-foreground">{cat.nome}</span>
                     <button className="px-4 py-1.5 rounded-md bg-accent text-accent-foreground text-xs font-semibold hover:bg-accent/80 transition-colors">Editar</button>
                   </div>
                 ))}
@@ -569,9 +680,9 @@ const Gestao = () => {
             <div className="border-t border-border pt-4">
               <h4 className="text-center text-sm font-semibold text-foreground mb-3">Listagem de Categorias</h4>
               <div className="space-y-2 max-h-48 overflow-y-auto">
-                {mockItens.map(item => (
-                  <div key={item} className="flex items-center justify-between px-3 py-2 border-b border-border/50">
-                    <span className="text-sm text-foreground">{item}</span>
+                {itensFinanceiros.map(item => (
+                  <div key={item.id} className="flex items-center justify-between px-3 py-2 border-b border-border/50">
+                    <span className="text-sm text-foreground">{item.nome}</span>
                     <button className="px-4 py-1.5 rounded-md bg-accent text-accent-foreground text-xs font-semibold hover:bg-accent/80 transition-colors">Editar</button>
                   </div>
                 ))}
@@ -621,13 +732,13 @@ const Gestao = () => {
               </div>
               <div><label className="text-xs text-gold mb-1 block">Categoria</label>
                 <div className="flex items-center gap-2">
-                  <Select defaultValue={editingContaPagar.categoria}><SelectTrigger className="flex-1 bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent>{mockCategorias.map(c=>(<SelectItem key={c} value={c}>{c}</SelectItem>))}</SelectContent></Select>
+                  <Select defaultValue={editingContaPagar.categoria}><SelectTrigger className="flex-1 bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent>{categorias.map(c=>(<SelectItem key={c.id} value={c.nome}>{c.nome}</SelectItem>))}</SelectContent></Select>
                   <button className="p-2 rounded-full bg-gold/80 text-primary-foreground hover:bg-gold transition-colors"><PlusCircle className="w-5 h-5" /></button>
                 </div>
               </div>
               <div><label className="text-xs text-gold mb-1 block">Item</label>
                 <div className="flex items-center gap-2">
-                  <Select defaultValue={editingContaPagar.item}><SelectTrigger className="flex-1 bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent>{mockItens.map(i=>(<SelectItem key={i} value={i}>{i}</SelectItem>))}</SelectContent></Select>
+                  <Select defaultValue={editingContaPagar.item}><SelectTrigger className="flex-1 bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent>{itensFinanceiros.map(i=>(<SelectItem key={i.id} value={i.nome}>{i.nome}</SelectItem>))}</SelectContent></Select>
                   <button className="p-2 rounded-full bg-gold/80 text-primary-foreground hover:bg-gold transition-colors"><PlusCircle className="w-5 h-5" /></button>
                 </div>
               </div>
@@ -784,12 +895,12 @@ const ProcedimentoView = ({ procedimentos, onEdit }: { procedimentos: Procedimen
   </div>
 );
 
-const AnamneseView = ({ onEdit }: { onEdit: (q: { pergunta: string; complemento: string }) => void }) => (
+const AnamneseView = ({ perguntas, onEdit }: { perguntas: any[]; onEdit: (q: any) => void }) => (
   <div className="glass-panel p-4 gold-glow">
     <div className="flex items-center gap-2 mb-4">
       <Select>
         <SelectTrigger className="max-w-lg bg-input border-border text-foreground h-9"><SelectValue placeholder="Pergunta" /></SelectTrigger>
-        <SelectContent>{anamnesePerguntas.map((q, i) => (<SelectItem key={i} value={String(i)}>{q.pergunta}</SelectItem>))}</SelectContent>
+        <SelectContent>{perguntas.map((q, i) => (<SelectItem key={i} value={String(q.id)}>{q.pergunta}</SelectItem>))}</SelectContent>
       </Select>
       <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
     </div>
@@ -799,11 +910,11 @@ const AnamneseView = ({ onEdit }: { onEdit: (q: { pergunta: string; complemento:
         <span className="text-gold text-xs font-medium">Pergunta</span>
         <span className="text-gold text-xs font-medium">Caso seja necessário complementar a pergunta</span>
       </div>
-      {anamnesePerguntas.map((q, idx) => (
+      {perguntas.map((q, idx) => (
         <div key={idx} className="flex items-center justify-between px-4 py-3 border-t border-border/50 hover:bg-muted/20 transition-colors">
           <span className="text-sm text-foreground">{q.pergunta}</span>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">{q.complemento}</span>
+            <span className="text-sm text-muted-foreground">{q.caso_sim}</span>
             <button onClick={() => onEdit(q)} className="p-1.5 rounded-full bg-accent hover:bg-accent/80 transition-colors"><Pencil className="w-4 h-4 text-accent-foreground" /></button>
           </div>
         </div>

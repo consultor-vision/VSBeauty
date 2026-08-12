@@ -336,6 +336,7 @@ const Cadastro = () => {
         .from('planos')
         .select('*')
         .eq('id_cliente', clienteId)
+        .eq('id_companhia', user?.id_companhia)
         .order('created_at', { ascending: false });
       if (error) throw error;
 
@@ -392,6 +393,7 @@ const Cadastro = () => {
         .from('anamnese_cliente')
         .select('id')
         .eq('id_cliente', Number(client.id))
+        .eq('id_companhia', user?.id_companhia)
         .limit(1)
         .maybeSingle();
       if (error) throw error;
