@@ -505,7 +505,7 @@ const Evolucao = () => {
 
               <>
                 <h3 className="text-center text-foreground font-semibold text-lg">
-                  {photoView === "antes" ? "Antes" : "Depois"}
+                  Precisa ficar sobre o editar e o botão
                 </h3>
                 <div className="glass-panel gold-glow flex-1 min-h-0 flex items-center justify-center overflow-hidden">
                   {photoView === "antes" ? (
