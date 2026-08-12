@@ -447,19 +447,6 @@ const Evolucao = () => {
                             <Wrench className="w-4 h-4 text-foreground" />
                           </button>
                         </TableCell>
-                        <TableCell className="text-center">
-                          <button 
-                            className="p-1 hover:bg-muted rounded transition-colors"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedSessionIdx(idx);
-                              fetchSessionDetails(s);
-                            }}
-                            title="Acessar Sessão"
-                          >
-                            <Play className="w-4 h-4 text-accent-foreground" />
-                          </button>
-                        </TableCell>
                       </TableRow>
                     ))
                   ) : (
