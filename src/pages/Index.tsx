@@ -161,13 +161,6 @@ const Index = () => {
 
   const timeSlotHeight = Math.max(20, (windowHeight - 240) / (TIME_SLOTS.length / 2)); // Dynamic height based on viewport
 
-  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
-
-  useEffect(() => {
-    const handleResize = () => setWindowHeight(window.innerHeight);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   const { user, company, logout } = useAuth();
   const navigate = useNavigate();
