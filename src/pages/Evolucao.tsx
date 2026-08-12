@@ -407,7 +407,6 @@ const Evolucao = () => {
                     <TableHead className="text-gold text-xs">Data de Execução</TableHead>
                     <TableHead className="text-gold text-xs">Plano</TableHead>
                     <TableHead className="text-gold text-xs">Profissional</TableHead>
-                    <TableHead className="text-gold text-xs">Editar a Sessão</TableHead>
                     
                   </TableRow>
                 </TableHeader>
@@ -435,23 +434,11 @@ const Evolucao = () => {
                         <TableCell className="text-sm">
                           {professionals[s.id_profissional] || (s.id_profissional ? `Profissional ${s.id_profissional}` : "Profissional não identificado")}
                         </TableCell>
-                        <TableCell className="text-center">
-                          <button 
-                            className="p-1 hover:bg-muted rounded transition-colors"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toast.info("Funcionalidade de edição de sessão em desenvolvimento");
-                            }}
-                            title="Editar Sessão"
-                          >
-                            <Wrench className="w-4 h-4 text-foreground" />
-                          </button>
-                        </TableCell>
                       </TableRow>
                     ))
                   ) : (
                     <TableRow className="hover:bg-transparent">
-                      <TableCell colSpan={5} className="h-40">
+                      <TableCell colSpan={3} className="h-40">
                         <div className="flex flex-col items-center justify-center text-muted-foreground gap-2">
                           <ClipboardList className="w-10 h-10 text-gold/30" />
                           <p className="text-sm px-10 text-center">
