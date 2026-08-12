@@ -496,7 +496,7 @@ const Gestao = () => {
           {editingAnamnese && (
             <div className="p-5 space-y-4">
               <div><label className="text-xs text-gold mb-1 block">Pergunta da Anamnese</label><Input value={editingAnamnese.pergunta} onChange={(e) => setEditingAnamnese(p => p ? { ...p, pergunta: e.target.value } : p)} className="bg-input border-border text-foreground h-10" /></div>
-              <Input placeholder="No caso da resposta for sim (opcional)" value={editingAnamnese.complemento} onChange={(e) => setEditingAnamnese(p => p ? { ...p, complemento: e.target.value } : p)} className="bg-input border-border text-foreground h-10" />
+              <Input placeholder="No caso da resposta for sim (opcional)" value={editingAnamnese.caso_sim} onChange={(e) => setEditingAnamnese(p => p ? { ...p, caso_sim: e.target.value } : p)} className="bg-input border-border text-foreground h-10" />
               <div className="flex justify-between pt-2">
                 <button className="px-8 py-2.5 rounded-lg bg-destructive text-destructive-foreground font-semibold text-sm hover:bg-destructive/90 transition-all">Excluir</button>
                 <button onClick={() => setShowEditarAnamnese(false)} className="px-12 py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all">Salvar</button>
