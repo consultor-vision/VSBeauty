@@ -84,7 +84,7 @@ const Evolucao = () => {
         .select("id, nome_plano, created_at")
         .eq("id_cliente", clientId)
         .eq("id_companhia", user?.id_companhia)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: true });
 
       if (error) throw error;
       const formatted = (data || []).map(p => ({
