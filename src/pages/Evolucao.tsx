@@ -407,7 +407,7 @@ const Evolucao = () => {
                     <TableHead className="text-gold text-xs">Plano</TableHead>
                     <TableHead className="text-gold text-xs">Profissional</TableHead>
                     <TableHead className="text-gold text-xs">Editar a Sessão</TableHead>
-                    <TableHead className="text-gold text-xs">Acessar a Sessão</TableHead>
+                    <TableHead className="text-gold text-xs">Anexo</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
