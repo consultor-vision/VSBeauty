@@ -39,13 +39,163 @@ const GENDER_COLORS: Record<string, string> = {
 const OUTROS_COLOR = "hsl(var(--gold))";
 
 const Analytics = () => {
+  const { user } = useAuth();
   const [year, setYear] = useState("2026");
-  const data = financialByYear[year];
-  const clients = clientsByYear[year];
-  const topProc = topProcByYear[year];
-  const perf = perfByYear[year];
-  const periodoData = periodoByYear[year];
-  const semanaData = semanaByYear[year];
+  const [loading, setLoading] = useState(true);
+  
+  const [financialData, setFinancialData] = useState<FinancialData>({
+    faturamento: "R$ 0,00", lucro: "R$ 0,00", despesas: "R$ 0,00",
+    monthly: []
+  });
+  const [clients, setClients] = useState<ClientsData>({ total: 0, feminino: 0, masculino: 0 });
+  const [topProc, setTopProc] = useState<{ nome: string; qtd: number }[]>([]);
+  const [perf, setPerf] = useState<PerformanceData>({ volume: 0, concluido: 0, pendente: 0, cancelado: 0 });
+  const [periodoData, setPeriodoData] = useState<{ periodo: string; qtd: number }[]>([]);
+  const [semanaData, setSemanaData] = useState<{ dia: string; qtd: number }[]>([]);
+
+  useEffect(() => {
+    if (user?.id_companhia) {
+      fetchAllData();
+    }
+  }, [year, user?.id_companhia]);
+
+  const fetchAllData = async () => {
+    setLoading(true);
+    try {
+      await Promise.all([
+        fetchFinancial(),
+        fetchClients(),
+        fetchTopProcedures(),
+        fetchPerformance(),
+        fetchPeriodo(),
+        fetchSemana()
+      ]);
+    } catch (error) {
+      console.error("Error fetching analytics data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchFinancial = async () => {
+    // Totals
+    const { data: annualData, error: annualError } = await supabase
+      .from("vw_analytics_financeiro_anual")
+      .select("*")
+      .eq("id_companhia", user?.id_companhia)
+      .eq("ano", Number(year))
+      .maybeSingle();
+
+    if (annualError) throw annualError;
+
+    // Monthly
+    const { data: monthlyData, error: monthlyError } = await supabase
+      .from("vw_analytics_financeiro_mensal_completo")
+      .select("*")
+      .eq("id_companhia", user?.id_companhia)
+      .eq("ano", Number(year))
+      .order("mes", { ascending: true });
+
+    if (monthlyError) throw monthlyError;
+
+    setFinancialData({
+      faturamento: (annualData?.receita || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+      lucro: (annualData?.lucro || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+      despesas: (annualData?.despesa || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+      monthly: (monthlyData || []).map(m => ({
+        mes: m.nome_mes || "",
+        faturamento: m.receita || 0,
+        lucro: m.lucro || 0,
+        despesas: m.despesa || 0
+      }))
+    });
+  };
+
+  const fetchClients = async () => {
+    const { data: totalData, error: totalError } = await supabase
+      .from("vw_analytics_total_clientes")
+      .select("*")
+      .eq("id_companhia", user?.id_companhia)
+      .maybeSingle();
+
+    if (totalError) throw totalError;
+
+    const { data: genderData, error: genderError } = await supabase
+      .from("vw_analytics_clientes_genero")
+      .select("*")
+      .eq("id_companhia", user?.id_companhia);
+
+    if (genderError) throw genderError;
+
+    setClients({
+      total: totalData?.total || 0,
+      feminino: genderData?.find(g => g.sexo === "F")?.quantidade || 0,
+      masculino: genderData?.find(g => g.sexo === "M")?.quantidade || 0
+    });
+  };
+
+  const fetchTopProcedures = async () => {
+    const { data, error } = await supabase
+      .from("vw_analytics_procedimentos_top10")
+      .select("*")
+      .eq("id_companhia", user?.id_companhia);
+
+    if (error) throw error;
+
+    setTopProc((data || []).map(p => ({
+      nome: p.procedimento || "Desconhecido",
+      qtd: p.quantidade || 0
+    })));
+  };
+
+  const fetchPerformance = async () => {
+    const { data, error } = await supabase
+      .from("vw_analytics_atendimentos_resumo")
+      .select("*")
+      .eq("id_companhia", user?.id_companhia)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    setPerf({
+      volume: data?.total || 0,
+      concluido: data?.concluidos || 0,
+      pendente: data?.pendentes || 0,
+      cancelado: data?.cancelados || 0
+    });
+  };
+
+  const fetchPeriodo = async () => {
+    const { data, error } = await supabase
+      .from("vw_analytics_periodo_dia")
+      .select("*")
+      .eq("id_companhia", user?.id_companhia);
+
+    if (error) throw error;
+
+    setPeriodoData((data || []).map(p => ({
+      periodo: p.periodo || "Outro",
+      qtd: p.quantidade || 0
+    })));
+  };
+
+  const fetchSemana = async () => {
+    const { data, error } = await supabase
+      .from("vw_analytics_dia_semana")
+      .select("*")
+      .eq("id_companhia", user?.id_companhia);
+
+    if (error) throw error;
+
+    const diaNomes: Record<number, string> = {
+      0: "Domingo", 1: "Segunda", 2: "Terça", 3: "Quarta", 4: "Quinta", 5: "Sexta", 6: "Sábado"
+    };
+
+    setSemanaData((data || []).map(d => ({
+      dia: diaNomes[d.dia_semana] || "Desconhecido",
+      qtd: d.quantidade || 0
+    })));
+  };
 
   const pieData = [
     { name: "Feminino", value: clients.feminino },
@@ -60,6 +210,7 @@ const Analytics = () => {
       <SelectContent>
         <SelectItem value="2026">2026</SelectItem>
         <SelectItem value="2025">2025</SelectItem>
+        <SelectItem value="2024">2024</SelectItem>
       </SelectContent>
     </Select>
   );
