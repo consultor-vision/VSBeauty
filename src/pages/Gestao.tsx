@@ -342,7 +342,7 @@ const Gestao = () => {
             )}
 
             {currentView === "estoque" && (
-              <Select><SelectTrigger className="w-[200px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione um Produto" /></SelectTrigger><SelectContent>{mockProdutos.map(p=>(<SelectItem key={p} value={p}>{p}</SelectItem>))}</SelectContent></Select>
+              <Select value={produtoFilter} onValueChange={setProdutoFilter}><SelectTrigger className="w-[200px] bg-input border-border text-foreground h-9"><SelectValue placeholder="Selecione um Produto" /></SelectTrigger><SelectContent>{produtos.map(p=>(<SelectItem key={p.id} value={p.produtos}>{p.produtos}</SelectItem>))}</SelectContent></Select>
             )}
           </div>
 
