@@ -297,7 +297,7 @@ const Gestao = () => {
 
   return (
     <Layout title={`Gestão - ${viewLabels[currentView]}`}>
-      <div className="flex flex-col gap-4 relative h-full pb-4 overflow-y-auto custom-scrollbar">
+      <div className="flex flex-col gap-4 relative h-full overflow-hidden">
         {/* Top bar */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2 flex-wrap">
@@ -901,16 +901,16 @@ const ProcedimentoView = ({ procedimentos, onEdit }: { procedimentos: Procedimen
 );
 
 const AnamneseView = ({ perguntas, onEdit }: { perguntas: any[]; onEdit: (q: any) => void }) => (
-  <div className="glass-panel p-4 gold-glow flex-1 min-h-0 h-[calc(100vh-210px)] overflow-y-auto custom-scrollbar">
-    <div className="flex items-center gap-2 mb-4">
+  <div className="glass-panel p-4 gold-glow flex-1 min-h-0 h-[calc(100vh-210px)] flex flex-col overflow-hidden">
+    <div className="flex items-center gap-2 mb-4 shrink-0">
       <Select>
         <SelectTrigger className="max-w-lg bg-input border-border text-foreground h-9"><SelectValue placeholder="Pergunta" /></SelectTrigger>
         <SelectContent>{perguntas.map((q, i) => (<SelectItem key={i} value={String(q.id)}>{q.pergunta}</SelectItem>))}</SelectContent>
       </Select>
       <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
     </div>
-    <h3 className="text-center text-foreground font-semibold mb-4">Questionário de Anamnese</h3>
-    <div className="space-y-1 pb-[10px]">
+    <h3 className="text-center text-foreground font-semibold mb-4 shrink-0">Questionário de Anamnese</h3>
+    <div className="space-y-1 pb-[10px] flex-1 overflow-y-auto custom-scrollbar">
       <div className="flex items-center justify-between px-4 py-2">
         <span className="text-gold text-xs font-medium">Pergunta</span>
         <span className="text-gold text-xs font-medium">Caso seja necessário complementar a pergunta</span>

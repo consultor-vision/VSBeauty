@@ -567,7 +567,7 @@ const CadastroContent = ({ user }: { user: any }) => {
 
   return (
     <Layout title="Consulta de Clientes">
-      <div className="flex flex-col gap-4 overflow-auto">
+      <div className="flex flex-col gap-4 h-full overflow-hidden">
         {/* Top Row - Avatar + Client Panel */}
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Avatar */}
@@ -650,11 +650,11 @@ const CadastroContent = ({ user }: { user: any }) => {
           </div>
 
           {/* Plans Panel */}
-          <div className="flex-1 glass-panel p-5 gold-glow">
+          <div className="flex-1 glass-panel p-5 gold-glow flex flex-col min-h-0">
             <h2 className="text-center text-gold font-semibold text-base mb-4">
               Painel de Visualização de Planos
             </h2>
-            <ScrollArea className="h-[308px]">
+            <ScrollArea className="flex-1">
               <Table>
                 <TableHeader>
                   <TableRow className="border-border hover:bg-transparent">
