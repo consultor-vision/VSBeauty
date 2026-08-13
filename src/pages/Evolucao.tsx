@@ -527,9 +527,7 @@ const Evolucao = () => {
             {selectedSessionIdx !== -1 ? (
 
               <>
-                <h3 className="text-center text-foreground font-semibold text-lg">
-                  remover esta informação
-                </h3>
+                {/* Título removido para aproveitar o espaço conforme solicitação */}
                 <div className="glass-panel gold-glow flex-1 min-h-0 flex items-center justify-center overflow-hidden">
                   {photoView === "antes" ? (
                     currentEvol?.antes ? (
