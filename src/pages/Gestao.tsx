@@ -380,7 +380,7 @@ const Gestao = () => {
         )}
 
         {/* VIEWS */}
-        <div className="flex-1 glass-panel border-gold/20 flex flex-col">
+        <div className="flex-1 glass-panel border-t-0 flex flex-col">
           <div className="flex-1">
             {currentView === "colaborador" && <ColaboradorView colaboradores={colaboradores} onEdit={handleEditColab} />}
             {currentView === "procedimento" && <ProcedimentoView procedimentos={procedimentos} onEdit={handleEditProc} />}
