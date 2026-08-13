@@ -573,7 +573,7 @@ const Evolucao = () => {
                 </div>
               </>
             ) : (
-              <div className="glass-panel gold-glow flex items-center justify-center flex-1 w-full">
+              <div className="glass-panel gold-glow flex items-center justify-center min-h-[400px] w-full">
                 <p className="text-muted-foreground text-sm text-center">Selecione uma sessão para visualizar a evolução</p>
               </div>
             )}
