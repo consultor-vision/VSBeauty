@@ -688,7 +688,7 @@ const Index = () => {
           </div>
 
           {/* Filters */}
-          <div className="glass-panel p-5 gold-glow space-y-4">
+          <div className="glass-panel p-3 gold-glow space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-semibold text-gold uppercase tracking-wide">Filtros</h3>
               {(filterClient !== "all" || filterProcedimento !== "all" || filterStatus !== "all") && (
