@@ -929,7 +929,7 @@ const AnamneseView = ({ perguntas, onEdit }: { perguntas: any[]; onEdit: (q: any
 );
 
 const EstoqueView = ({ estoque, onEdit }: { estoque: EstoqueItem[]; onEdit: (e: EstoqueItem) => void }) => (
-  <div className="glass-panel p-4 gold-glow flex-1 min-h-0 overflow-auto">
+  <div className="glass-panel p-4 gold-glow flex-1 min-h-0 overflow-auto custom-scrollbar">
     <Table>
       <TableHeader>
         <TableRow className="border-border hover:bg-transparent">
