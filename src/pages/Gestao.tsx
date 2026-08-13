@@ -901,7 +901,7 @@ const ProcedimentoView = ({ procedimentos, onEdit }: { procedimentos: Procedimen
 );
 
 const AnamneseView = ({ perguntas, onEdit }: { perguntas: any[]; onEdit: (q: any) => void }) => (
-  <div className="flex-1 min-h-0 h-[calc(100vh-210px)] flex flex-col overflow-hidden">
+  <div className="flex-1 min-h-0 h-[calc(100vh-230px)] flex flex-col overflow-hidden">
     <div className="flex items-center gap-2 mb-4 shrink-0 px-4 pt-4">
       <Select>
         <SelectTrigger className="max-w-lg bg-input border-border text-foreground h-9"><SelectValue placeholder="Pergunta" /></SelectTrigger>
