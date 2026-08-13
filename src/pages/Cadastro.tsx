@@ -119,6 +119,17 @@ interface ClientData {
 
 const Cadastro = () => {
   const { user } = useAuth();
+  return (
+    <Layout title="Cadastro">
+      <div className="flex flex-col gap-4 h-full overflow-hidden pb-4">
+        {/* Render actual content here - I will update the structure below */}
+        <CadastroContent user={user} />
+      </div>
+    </Layout>
+  );
+};
+
+const CadastroContent = ({ user }: { user: any }) => {
   const [showClientList, setShowClientList] = useState(false);
   const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
   const [searchFilter, setSearchFilter] = useState({ type: "nome", value: "" });
