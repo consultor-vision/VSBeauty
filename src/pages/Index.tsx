@@ -603,7 +603,7 @@ const Index = () => {
         {/* Left Column - Calendar + Actions */}
         <div className="lg:w-[420px] flex flex-col gap-3 shrink-0 overflow-y-auto pr-1 scrollbar-thin">
           {/* Mini Calendar */}
-          <div className="glass-panel p-3 gold-glow">
+          <div className="glass-panel p-2 gold-glow shrink-0">
             <div className="flex items-center justify-between mb-2">
               <button onClick={prevMonth} className="p-1 rounded-md hover:bg-muted transition-colors">
                 <ChevronLeft className="w-4 h-4 text-gold" />
