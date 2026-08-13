@@ -658,7 +658,7 @@ const Index = () => {
           </div>
 
           {/* Week Navigation */}
-          <div className="glass-panel px-2 gold-glow flex items-center justify-center gap-2 h-[68px] shrink-0">
+          <div className="glass-panel px-2 gold-glow flex items-center justify-center gap-2 h-14 shrink-0">
             <button
               onClick={goToToday}
               className="h-8 px-2 rounded-md bg-gold/15 border border-gold text-gold text-xs font-semibold hover:bg-gold/25 transition-all shrink-0 flex items-center"
