@@ -581,19 +581,17 @@ const CadastroContent = ({ user }: { user: any }) => {
               Painel de Visualização de Cliente
             </h2>
             <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-[80px_1fr_150px_150px] gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-[80px_1fr_120px_150px_150px_120px] gap-3">
                 <FormField label="ID" value={selectedClient?.id} />
                 <FormField label="Nome" value={selectedClient?.nome} />
                 <FormField label="Nascimento" value={selectedClient?.nascimento} />
                 <FormField label="CPF" value={selectedClient?.cpf} />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <FormField label="Telefone" value={selectedClient?.telefone} />
                 <FormField label="Instagram" value={selectedClient?.instagram} />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-[2fr_80px_1fr_1fr_1fr_80px] gap-3">
                 <FormField label="Logradouro" value={selectedClient?.logradouro} />
                 <FormField label="Número" value={selectedClient?.numero} />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <FormField label="CEP" value={selectedClient?.cep} />
                 <FormField label="Bairro" value={selectedClient?.bairro} />
                 <FormField label="Cidade" value={selectedClient?.cidade} />
