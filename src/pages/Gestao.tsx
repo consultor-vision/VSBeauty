@@ -872,7 +872,7 @@ const ColaboradorView = ({ colaboradores, onEdit }: { colaboradores: Colaborador
 );
 
 const ProcedimentoView = ({ procedimentos, onEdit }: { procedimentos: Procedimento[]; onEdit: (p: Procedimento) => void }) => (
-  <div className="glass-panel p-4 gold-glow [&_td]:py-[10px] [&_th]:h-[42px] text-[15.4px] flex-1 min-h-0 overflow-auto custom-scrollbar">
+  <div className="glass-panel p-4 gold-glow [&_td]:py-[10px] [&_th]:h-[42px] text-[15.4px] flex-1 min-h-0 h-[calc(100vh-250px)] overflow-y-auto custom-scrollbar">
     <Table>
       <TableHeader>
         <TableRow className="border-border hover:bg-transparent">
