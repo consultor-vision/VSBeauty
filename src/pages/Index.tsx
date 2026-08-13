@@ -840,9 +840,9 @@ const Index = () => {
         </div>
 
         {/* Right Column - Weekly Grid */}
-        <div className="flex-1 glass-panel gold-glow flex flex-col overflow-hidden min-h-0">
+        <div className="flex-1 glass-panel gold-glow flex flex-col overflow-hidden min-h-0 h-[calc(100vh-140px)]">
           {/* Time Grid */}
-          <div className="flex-1 overflow-auto">
+          <div className="flex-1 overflow-y-auto overflow-x-auto scrollbar-thin">
             <div className="min-w-[700px]">
               {/* Day Headers */}
               <div className="flex sticky top-0 z-10 bg-card border-b border-border h-[68px] items-stretch">
