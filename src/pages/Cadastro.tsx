@@ -580,27 +580,21 @@ const CadastroContent = ({ user }: { user: any }) => {
             <h2 className="text-center text-gold font-semibold text-base mb-5">
               Painel de Visualização de Cliente
             </h2>
-            <div className="space-y-3">
-              <div className="grid grid-cols-1 md:grid-cols-[100px_1fr] gap-3">
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-[80px_1fr_150px_150px] gap-3">
                 <FormField label="ID" value={selectedClient?.id} />
-                <FormField label="Nome Completo" value={selectedClient?.nome} />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <FormField label="Data de Nascimento" value={selectedClient?.nascimento} />
-                <FormField label="Gênero" value={selectedClient?.genero} />
+                <FormField label="Nome" value={selectedClient?.nome} />
+                <FormField label="Nascimento" value={selectedClient?.nascimento} />
                 <FormField label="CPF" value={selectedClient?.cpf} />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <FormField label="Telefone" value={selectedClient?.telefone} />
-                <FormField label="Email" value={selectedClient?.email} />
                 <FormField label="Instagram" value={selectedClient?.instagram} />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <FormField label="Logradouro" value={selectedClient?.logradouro} />
                 <FormField label="Número" value={selectedClient?.numero} />
-                <FormField label="CEP" value={selectedClient?.cep} />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <FormField label="CEP" value={selectedClient?.cep} />
                 <FormField label="Bairro" value={selectedClient?.bairro} />
                 <FormField label="Cidade" value={selectedClient?.cidade} />
                 <FormField label="UF" value={selectedClient?.uf} />
