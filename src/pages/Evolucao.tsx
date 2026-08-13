@@ -360,7 +360,7 @@ const Evolucao = () => {
           </div>
           <div className="flex items-center gap-2">
             <Select 
-              value={selectedProcedimento || undefined} 
+              value={selectedProcedimento || ""} 
               onValueChange={(val) => {
                 setSelectedProcedimento(val);
                 // Clear child selections when plan changes
