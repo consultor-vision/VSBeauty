@@ -650,7 +650,7 @@ const CadastroContent = ({ user }: { user: any }) => {
           </div>
 
           {/* Plans Panel */}
-          <div className="flex-1 glass-panel p-5 gold-glow">
+          <div className="flex-1 glass-panel p-5 gold-glow flex flex-col min-h-0">
             <h2 className="text-center text-gold font-semibold text-base mb-4">
               Painel de Visualização de Planos
             </h2>
