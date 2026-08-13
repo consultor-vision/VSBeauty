@@ -381,13 +381,14 @@ const Evolucao = () => {
             </Select>
             <button
               onClick={() => {
+                setSelectedClient(null);
+                setShowClientModal(true);
                 setSelectedProcedimento("");
                 setObservacao("");
                 setPhotoView("antes");
                 setSelectedSessionIdx(-1);
                 setProducts([]);
                 setSessions([]);
-                // Quando clicar no botão de limpar, precisa limpar todas as informações e deixar o dropdown com o texto Selecione o Plano
               }}
               className="p-2.5 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"
               title="Limpar Seleção"
