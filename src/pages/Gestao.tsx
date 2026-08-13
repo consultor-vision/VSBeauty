@@ -297,7 +297,7 @@ const Gestao = () => {
 
   return (
     <Layout title={`Gestão - ${viewLabels[currentView]}`}>
-      <div className="flex flex-col gap-4 relative h-full pb-4 overflow-hidden">
+      <div className="flex flex-col gap-4 relative h-full pb-4 overflow-y-auto custom-scrollbar">
         {/* Top bar */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2 flex-wrap">
@@ -380,8 +380,8 @@ const Gestao = () => {
         )}
 
         {/* VIEWS */}
-        <div className="flex-1 min-h-0 glass-panel border-gold/20 overflow-hidden flex flex-col">
-          <div className="flex-1 overflow-auto custom-scrollbar">
+        <div className="flex-1 glass-panel border-gold/20 flex flex-col">
+          <div className="flex-1">
             {currentView === "colaborador" && <ColaboradorView colaboradores={colaboradores} onEdit={handleEditColab} />}
             {currentView === "procedimento" && <ProcedimentoView procedimentos={procedimentos} onEdit={handleEditProc} />}
             {currentView === "anamnese" && <AnamneseView perguntas={anamnesePerguntas} onEdit={handleEditAnamnese} />}
