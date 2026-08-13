@@ -654,7 +654,7 @@ const CadastroContent = ({ user }: { user: any }) => {
             <h2 className="text-center text-gold font-semibold text-base mb-4">
               Painel de Visualização de Planos
             </h2>
-            <ScrollArea className="h-[308px]">
+            <ScrollArea className="flex-1">
               <Table>
                 <TableHeader>
                   <TableRow className="border-border hover:bg-transparent">
