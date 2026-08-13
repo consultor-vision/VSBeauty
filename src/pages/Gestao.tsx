@@ -990,7 +990,7 @@ const ContasPagarView = ({ contas, onDescricao, onEdit }: { contas: ContaPagar[]
 );
 
 const ContasReceberView = ({ contas, onDescricao, onEdit }: { contas: ContaReceber[]; onDescricao: (c: ContaReceber) => void; onEdit: (c: ContaReceber) => void }) => (
-  <div className="glass-panel p-4 gold-glow [&_td]:py-2 [&_th]:h-9 text-[13.3px] flex-1 min-h-0 overflow-auto custom-scrollbar">
+  <div className="glass-panel p-4 gold-glow [&_td]:py-2 [&_th]:h-9 text-[13.3px] flex-1 min-h-0 h-[calc(100vh-210px)] overflow-auto custom-scrollbar">
     <div className="flex gap-6 mb-4 text-xs">
       <span>Total Recebido: <span className="text-gold">R$ 247.314,55</span></span>
       <span>Total Pendente: <span className="text-foreground">R$ 15.000,00</span></span>
