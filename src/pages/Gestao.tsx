@@ -901,8 +901,8 @@ const ProcedimentoView = ({ procedimentos, onEdit }: { procedimentos: Procedimen
 );
 
 const AnamneseView = ({ perguntas, onEdit }: { perguntas: any[]; onEdit: (q: any) => void }) => (
-  <div className="glass-panel p-4 gold-glow flex-1 min-h-0 h-[calc(100vh-210px)] overflow-y-auto custom-scrollbar">
-    <div className="flex items-center gap-2 mb-4">
+  <div className="glass-panel p-4 gold-glow flex-1 min-h-0 h-[calc(100vh-210px)] flex flex-col overflow-hidden">
+    <div className="flex items-center gap-2 mb-4 shrink-0">
       <Select>
         <SelectTrigger className="max-w-lg bg-input border-border text-foreground h-9"><SelectValue placeholder="Pergunta" /></SelectTrigger>
         <SelectContent>{perguntas.map((q, i) => (<SelectItem key={i} value={String(q.id)}>{q.pergunta}</SelectItem>))}</SelectContent>
