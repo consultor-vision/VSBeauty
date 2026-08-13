@@ -370,9 +370,9 @@ const Gestao = () => {
                 <h3 className="text-sm font-semibold text-foreground">Menu da Gestão</h3>
                 <button onClick={() => setShowMenu(false)} className="p-1 rounded-full hover:bg-muted transition-colors"><X className="w-4 h-4 text-foreground" /></button>
               </div>
-              <div className="p-3 space-y-2">
+              <div className="p-3 space-y-2 max-h-[80vh] overflow-y-auto custom-scrollbar">
                 {(Object.keys(viewLabels) as GestaoView[]).map((key) => (
-                  <button key={key} onClick={() => handleMenuSelect(key)} className={`w-full py-2.5 rounded-lg border text-sm font-semibold transition-all ${currentView === key ? "bg-gold text-primary-foreground border-gold" : "bg-gold/15 border-gold text-gold hover:bg-gold/25"}`}>{viewLabels[key]}</button>
+                  <button key={key} onClick={() => handleMenuSelect(key)} className={`w-full py-2.5 rounded-lg border text-sm font-semibold transition-all ${currentView === key ? "bg-gold text-primary-foreground border-gold shadow-lg shadow-gold/20" : "bg-gold/5 border-gold/30 text-gold hover:bg-gold/20"}`}>{viewLabels[key]}</button>
                 ))}
               </div>
             </div>
