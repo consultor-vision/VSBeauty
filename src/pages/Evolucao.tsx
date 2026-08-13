@@ -338,7 +338,7 @@ const Evolucao = () => {
 
   return (
     <Layout title="Evolução do Cliente">
-      <div className="flex flex-col gap-3 h-full overflow-hidden pb-4">
+      <div className="flex flex-col gap-3 h-full pb-4 overflow-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-center">
           <div className="flex items-center gap-2 text-sm text-foreground flex-wrap">
             <span className="text-muted-foreground">Nome: </span>
