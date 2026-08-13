@@ -822,17 +822,16 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Action Buttons */}
           <button
             onClick={handleNewAppointment}
-            className="w-full py-3 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all flex items-center justify-center gap-2"
+            className="w-full py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all flex items-center justify-center gap-2 shrink-0"
           >
             <CalendarCheck className="w-4 h-4" />
             Agendamento
           </button>
           <button
             onClick={() => setShowBirthdayModal(true)}
-            className="mt-auto w-full py-3 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all flex items-center justify-center gap-2"
+            className="w-full py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all flex items-center justify-center gap-2 shrink-0"
           >
             <Cake className="w-4 h-4" />
             Aniversariantes
