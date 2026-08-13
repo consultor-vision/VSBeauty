@@ -1369,7 +1369,7 @@ const CadastroContent = ({ user }: { user: any }) => {
           </div>
         </DialogContent>
       </Dialog>
-    </Layout>
+    </div>
   );
 };
 
