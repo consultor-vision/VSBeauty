@@ -364,11 +364,11 @@ const Gestao = () => {
         {/* Side Menu */}
         {showMenu && (
           <>
-            <div className="fixed inset-0 z-[55]" onClick={() => setShowMenu(false)} />
-            <div className="absolute top-0 left-0 z-[60] w-64 glass-panel gold-glow animate-in slide-in-from-left-4 duration-200">
-              <div className="flex items-center justify-between p-4 border-b border-border">
+            <div className="fixed inset-0 z-[55] bg-black/50" onClick={() => setShowMenu(false)} />
+            <div className="absolute top-0 left-0 z-[60] w-64 glass-panel border border-gold/30 animate-in slide-in-from-left-4 duration-200">
+              <div className="flex items-center justify-between p-4 border-b border-gold/20">
                 <h3 className="text-sm font-semibold text-foreground">Menu da Gestão</h3>
-                <button onClick={() => setShowMenu(false)}><X className="w-4 h-4 text-foreground" /></button>
+                <button onClick={() => setShowMenu(false)} className="p-1 rounded-full hover:bg-muted transition-colors"><X className="w-4 h-4 text-foreground" /></button>
               </div>
               <div className="p-3 space-y-2">
                 {(Object.keys(viewLabels) as GestaoView[]).map((key) => (
