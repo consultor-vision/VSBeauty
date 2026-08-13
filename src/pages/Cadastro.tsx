@@ -122,7 +122,6 @@ const Cadastro = () => {
   return (
     <Layout title="Cadastro">
       <div className="flex flex-col gap-4 h-full overflow-hidden pb-4">
-        {/* Render actual content here - I will update the structure below */}
         <CadastroContent user={user} />
       </div>
     </Layout>
