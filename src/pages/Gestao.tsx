@@ -901,7 +901,7 @@ const ProcedimentoView = ({ procedimentos, onEdit }: { procedimentos: Procedimen
 );
 
 const AnamneseView = ({ perguntas, onEdit }: { perguntas: any[]; onEdit: (q: any) => void }) => (
-  <div className="glass-panel p-4 gold-glow">
+  <div className="glass-panel p-4 gold-glow flex-1 min-h-0 overflow-auto">
     <div className="flex items-center gap-2 mb-4">
       <Select>
         <SelectTrigger className="max-w-lg bg-input border-border text-foreground h-9"><SelectValue placeholder="Pergunta" /></SelectTrigger>
