@@ -396,7 +396,7 @@ const Evolucao = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-stretch flex-1 overflow-hidden border-t border-border mt-1">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-stretch border-t border-border mt-1">
           <div className="flex flex-col gap-3 min-h-0 overflow-hidden">
             <div className="glass-panel p-4 gold-glow h-1/3 overflow-auto">
               <h3 className="text-center text-gold font-semibold text-sm mb-0.5">Relatório de Planos</h3>
