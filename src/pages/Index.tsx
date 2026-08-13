@@ -599,11 +599,11 @@ const Index = () => {
 
   return (
     <Layout title="Agendamento">
-      <div className="flex flex-col lg:flex-row gap-3 h-[calc(100vh-140px)] pb-4 overflow-hidden">
+      <div className="flex flex-col lg:flex-row gap-3 h-[calc(100vh-140px)] pb-2 overflow-hidden">
         {/* Left Column - Calendar + Actions */}
-        <div className="lg:w-[420px] flex flex-col gap-3 shrink-0 overflow-y-auto pr-1 scrollbar-thin">
+        <div className="lg:w-[420px] flex flex-col gap-2 shrink-0 overflow-y-auto pr-1 scrollbar-thin">
           {/* Mini Calendar */}
-          <div className="glass-panel p-3 gold-glow">
+          <div className="glass-panel p-2 gold-glow shrink-0">
             <div className="flex items-center justify-between mb-2">
               <button onClick={prevMonth} className="p-1 rounded-md hover:bg-muted transition-colors">
                 <ChevronLeft className="w-4 h-4 text-gold" />
@@ -626,7 +626,7 @@ const Index = () => {
 
             <div className="grid grid-cols-7 gap-0.5">
               {Array.from({ length: firstDay }).map((_, i) => (
-                <div key={`empty-${i}`} className="h-12" />
+                <div key={`empty-${i}`} className="h-10" />
               ))}
               {Array.from({ length: daysInMonth }).map((_, i) => {
                 const day = i + 1;
@@ -638,8 +638,8 @@ const Index = () => {
                   <button
                     key={day}
                     onClick={() => setSelectedDay(day)}
-                    style={{ fontSize: '16px' }}
-                    className={`relative h-12 rounded font-medium transition-all border ${
+                    style={{ fontSize: '14px' }}
+                    className={`relative h-10 rounded font-medium transition-all border ${
                       selected
                         ? "bg-gold/20 border-gold text-gold"
                         : todayClass
@@ -658,7 +658,7 @@ const Index = () => {
           </div>
 
           {/* Week Navigation */}
-          <div className="glass-panel px-2 gold-glow flex items-center justify-center gap-2 h-[68px] shrink-0">
+          <div className="glass-panel px-2 gold-glow flex items-center justify-center gap-2 h-14 shrink-0">
             <button
               onClick={goToToday}
               className="h-8 px-2 rounded-md bg-gold/15 border border-gold text-gold text-xs font-semibold hover:bg-gold/25 transition-all shrink-0 flex items-center"
@@ -688,7 +688,7 @@ const Index = () => {
           </div>
 
           {/* Filters */}
-          <div className="glass-panel p-5 gold-glow space-y-4">
+          <div className="glass-panel p-3 gold-glow space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-semibold text-gold uppercase tracking-wide">Filtros</h3>
               {(filterClient !== "all" || filterProcedimento !== "all" || filterStatus !== "all") && (
@@ -822,17 +822,16 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Action Buttons */}
           <button
             onClick={handleNewAppointment}
-            className="w-full py-3 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all flex items-center justify-center gap-2"
+            className="w-full py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all flex items-center justify-center gap-2 shrink-0"
           >
             <CalendarCheck className="w-4 h-4" />
             Agendamento
           </button>
           <button
             onClick={() => setShowBirthdayModal(true)}
-            className="mt-auto w-full py-3 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all flex items-center justify-center gap-2"
+            className="w-full py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all flex items-center justify-center gap-2 shrink-0"
           >
             <Cake className="w-4 h-4" />
             Aniversariantes
