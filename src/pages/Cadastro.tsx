@@ -120,7 +120,7 @@ interface ClientData {
 const Cadastro = () => {
   const { user } = useAuth();
   return (
-    <Layout title="Cadastro">
+    <Layout title="">
       <div className="flex flex-col gap-4 h-full overflow-hidden pb-4">
         <CadastroContent user={user} />
       </div>

@@ -97,7 +97,7 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
     <div className="flex flex-col h-screen overflow-hidden bg-background">
       {/* Header */}
       <header className="px-6 py-1.5 border-b border-border shrink-0 flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-gold">{title}</h1>
+        {title && <h1 className="text-lg font-semibold text-gold">{title}</h1>}
         {headerRight && <div>{headerRight}</div>}
       </header>
 
