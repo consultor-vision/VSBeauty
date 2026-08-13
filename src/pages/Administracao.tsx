@@ -92,7 +92,7 @@ const Administracao = () => {
 
   return (
     <Layout title="Administração">
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-6 pb-4">
         <Tabs defaultValue="clientes" className="w-full" onValueChange={setActiveTab}>
           <div className="flex items-center justify-between border-b border-border pb-2 mb-6">
             <TabsList className="bg-transparent gap-8 h-auto p-0">

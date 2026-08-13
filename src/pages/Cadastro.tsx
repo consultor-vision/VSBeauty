@@ -119,6 +119,16 @@ interface ClientData {
 
 const Cadastro = () => {
   const { user } = useAuth();
+  return (
+    <Layout title="Cadastro">
+      <div className="flex flex-col gap-4 h-full overflow-hidden pb-4">
+        <CadastroContent user={user} />
+      </div>
+    </Layout>
+  );
+};
+
+const CadastroContent = ({ user }: { user: any }) => {
   const [showClientList, setShowClientList] = useState(false);
   const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
   const [searchFilter, setSearchFilter] = useState({ type: "nome", value: "" });
@@ -1358,8 +1368,8 @@ const Cadastro = () => {
           </div>
         </DialogContent>
       </Dialog>
-    </Layout>
-  );
+      </Layout>
+    );
 };
 
 // ── Reusable Components ──
