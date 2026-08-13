@@ -222,7 +222,7 @@ const Analytics = () => {
           <Loader2 className="w-8 h-8 animate-spin text-gold" />
         </div>
       ) : (
-        <div className="flex flex-col gap-2 h-full pb-4 overflow-auto">
+        <div className="flex flex-col gap-2 h-full pb-4 overflow-auto border-t border-border mt-1 pt-2">
           {/* Row 1 */}
           <div className="flex flex-wrap gap-2 min-h-0">
             <div className="glass-panel p-3 gold-glow flex flex-col w-[550px] h-[250px] justify-self-start self-start">
