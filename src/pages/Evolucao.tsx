@@ -338,8 +338,8 @@ const Evolucao = () => {
 
   return (
     <Layout title="Evolução do Cliente">
-      <div className="flex flex-col gap-3 h-full pb-12 overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-center">
+      <div className="flex flex-col gap-3 h-full pb-14 overflow-y-auto pr-1">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-start shrink-0">
           <div className="flex items-center gap-2 text-sm text-foreground flex-wrap">
             <span className="text-muted-foreground">Nome: </span>
             <span className="text-gold font-medium">{selectedClient.nome}</span>
