@@ -364,15 +364,15 @@ const Gestao = () => {
         {/* Side Menu */}
         {showMenu && (
           <>
-            <div className="fixed inset-0 z-[55]" onClick={() => setShowMenu(false)} />
-            <div className="absolute top-0 left-0 z-[60] w-64 glass-panel gold-glow animate-in slide-in-from-left-4 duration-200">
-              <div className="flex items-center justify-between p-4 border-b border-border">
+            <div className="fixed inset-0 z-[55] bg-black/50" onClick={() => setShowMenu(false)} />
+            <div className="absolute top-0 left-0 z-[60] w-64 glass-panel border border-gold/30 animate-in slide-in-from-left-4 duration-200">
+              <div className="flex items-center justify-between p-4 border-b border-gold/20">
                 <h3 className="text-sm font-semibold text-foreground">Menu da Gestão</h3>
-                <button onClick={() => setShowMenu(false)}><X className="w-4 h-4 text-foreground" /></button>
+                <button onClick={() => setShowMenu(false)} className="p-1 rounded-full hover:bg-muted transition-colors"><X className="w-4 h-4 text-foreground" /></button>
               </div>
-              <div className="p-3 space-y-2">
+              <div className="p-3 space-y-2 max-h-[80vh] overflow-y-auto custom-scrollbar">
                 {(Object.keys(viewLabels) as GestaoView[]).map((key) => (
-                  <button key={key} onClick={() => handleMenuSelect(key)} className={`w-full py-2.5 rounded-lg border text-sm font-semibold transition-all ${currentView === key ? "bg-gold text-primary-foreground border-gold" : "bg-gold/15 border-gold text-gold hover:bg-gold/25"}`}>{viewLabels[key]}</button>
+                  <button key={key} onClick={() => handleMenuSelect(key)} className={`w-full py-2.5 rounded-lg border text-sm font-semibold transition-all ${currentView === key ? "bg-gold text-primary-foreground border-gold shadow-lg shadow-gold/20" : "bg-gold/5 border-gold/30 text-gold hover:bg-gold/20"}`}>{viewLabels[key]}</button>
                 ))}
               </div>
             </div>
