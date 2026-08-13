@@ -1368,8 +1368,8 @@ const CadastroContent = ({ user }: { user: any }) => {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
-  );
+      </Layout>
+    );
 };
 
 // ── Reusable Components ──
