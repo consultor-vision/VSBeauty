@@ -297,7 +297,7 @@ const Gestao = () => {
 
   return (
     <Layout title={`Gestão - ${viewLabels[currentView]}`}>
-      <div className="flex flex-col gap-4 relative h-full pb-4 overflow-y-auto custom-scrollbar">
+      <div className="flex flex-col gap-4 relative h-full pb-4 overflow-hidden">
         {/* Top bar */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2 flex-wrap">
@@ -841,7 +841,7 @@ const Gestao = () => {
 // ── Sub-Views ──
 
 const ColaboradorView = ({ colaboradores, onEdit }: { colaboradores: Colaborador[]; onEdit: (c: Colaborador) => void }) => (
-  <div className="glass-panel p-4 gold-glow flex-1 min-h-0 overflow-auto">
+  <div className="glass-panel p-4 gold-glow flex-1 min-h-0 overflow-auto custom-scrollbar">
     <Table>
       <TableHeader>
         <TableRow className="border-border hover:bg-transparent">
@@ -872,7 +872,7 @@ const ColaboradorView = ({ colaboradores, onEdit }: { colaboradores: Colaborador
 );
 
 const ProcedimentoView = ({ procedimentos, onEdit }: { procedimentos: Procedimento[]; onEdit: (p: Procedimento) => void }) => (
-  <div className="glass-panel p-4 gold-glow [&_td]:py-[10px] [&_th]:h-[42px] text-[15.4px] flex-1 min-h-0 overflow-auto">
+  <div className="glass-panel p-4 gold-glow [&_td]:py-[10px] [&_th]:h-[42px] text-[15.4px] flex-1 min-h-0 overflow-auto custom-scrollbar">
     <Table>
       <TableHeader>
         <TableRow className="border-border hover:bg-transparent">
@@ -901,7 +901,7 @@ const ProcedimentoView = ({ procedimentos, onEdit }: { procedimentos: Procedimen
 );
 
 const AnamneseView = ({ perguntas, onEdit }: { perguntas: any[]; onEdit: (q: any) => void }) => (
-  <div className="glass-panel p-4 gold-glow flex-1 min-h-0 overflow-auto">
+  <div className="glass-panel p-4 gold-glow flex-1 min-h-0 overflow-auto custom-scrollbar">
     <div className="flex items-center gap-2 mb-4">
       <Select>
         <SelectTrigger className="max-w-lg bg-input border-border text-foreground h-9"><SelectValue placeholder="Pergunta" /></SelectTrigger>
@@ -929,7 +929,7 @@ const AnamneseView = ({ perguntas, onEdit }: { perguntas: any[]; onEdit: (q: any
 );
 
 const EstoqueView = ({ estoque, onEdit }: { estoque: EstoqueItem[]; onEdit: (e: EstoqueItem) => void }) => (
-  <div className="glass-panel p-4 gold-glow flex-1 min-h-0 overflow-auto">
+  <div className="glass-panel p-4 gold-glow flex-1 min-h-0 overflow-auto custom-scrollbar">
     <Table>
       <TableHeader>
         <TableRow className="border-border hover:bg-transparent">
@@ -954,7 +954,7 @@ const EstoqueView = ({ estoque, onEdit }: { estoque: EstoqueItem[]; onEdit: (e: 
 );
 
 const ContasPagarView = ({ contas, onDescricao, onEdit }: { contas: ContaPagar[]; onDescricao: (c: ContaPagar) => void; onEdit: (c: ContaPagar) => void }) => (
-  <div className="glass-panel p-4 gold-glow [&_td]:py-[14.2px] [&_th]:h-[52px] text-[20.4px] flex-1 min-h-0 overflow-auto">
+  <div className="glass-panel p-4 gold-glow [&_td]:py-[14.2px] [&_th]:h-[52px] text-[20.4px] flex-1 min-h-0 overflow-auto custom-scrollbar">
     <div className="flex gap-6 mb-4 text-xs">
       <span>Total Pago: <span className="text-gold">R$ 4.697,55</span></span>
       <span>Total a Pagar: <span className="text-foreground">R$ 0,00</span></span>
@@ -990,7 +990,7 @@ const ContasPagarView = ({ contas, onDescricao, onEdit }: { contas: ContaPagar[]
 );
 
 const ContasReceberView = ({ contas, onDescricao, onEdit }: { contas: ContaReceber[]; onDescricao: (c: ContaReceber) => void; onEdit: (c: ContaReceber) => void }) => (
-  <div className="glass-panel p-4 gold-glow [&_td]:py-2 [&_th]:h-9 text-[13.3px] flex-1 min-h-0 overflow-auto">
+  <div className="glass-panel p-4 gold-glow [&_td]:py-2 [&_th]:h-9 text-[13.3px] flex-1 min-h-0 overflow-auto custom-scrollbar">
     <div className="flex gap-6 mb-4 text-xs">
       <span>Total Recebido: <span className="text-gold">R$ 247.314,55</span></span>
       <span>Total Pendente: <span className="text-foreground">R$ 15.000,00</span></span>
