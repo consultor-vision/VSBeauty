@@ -841,7 +841,7 @@ const Gestao = () => {
 // ── Sub-Views ──
 
 const ColaboradorView = ({ colaboradores, onEdit }: { colaboradores: Colaborador[]; onEdit: (c: Colaborador) => void }) => (
-  <div className="glass-panel p-4 gold-glow flex-1 min-h-0 overflow-auto custom-scrollbar">
+  <div className="glass-panel p-4 gold-glow flex-1 min-h-0 h-[calc(100vh-210px)] overflow-auto custom-scrollbar">
     <Table>
       <TableHeader>
         <TableRow className="border-border hover:bg-transparent">
