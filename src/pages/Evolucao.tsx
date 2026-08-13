@@ -381,8 +381,6 @@ const Evolucao = () => {
             </Select>
             <button
               onClick={() => {
-                setSelectedClient(null);
-                setShowClientModal(true);
                 setSelectedProcedimento("");
                 setObservacao("");
                 setPhotoView("antes");
