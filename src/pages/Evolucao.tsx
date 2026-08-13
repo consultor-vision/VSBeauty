@@ -528,7 +528,7 @@ const Evolucao = () => {
 
               <>
                 {/* Título removido para aproveitar o espaço conforme solicitação */}
-                <div className="glass-panel gold-glow flex-1 min-h-0 flex items-center justify-center overflow-hidden">
+                <div className="glass-panel gold-glow min-h-[400px] flex items-center justify-center overflow-hidden">
                   {photoView === "antes" ? (
                     currentEvol?.antes ? (
                       <img src={currentEvol.antes} alt="Antes" className="w-full h-full object-contain" />
