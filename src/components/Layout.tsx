@@ -94,7 +94,7 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-background overflow-hidden">
       {/* Header */}
       <header className="px-6 py-1.5 border-b border-border shrink-0 flex items-center justify-between">
         <h1 className="text-lg font-semibold text-gold">{title}</h1>
