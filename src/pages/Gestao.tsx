@@ -881,7 +881,7 @@ const ProcedimentoView = ({ procedimentos, onEdit }: { procedimentos: Procedimen
           <TableHead className="text-gold text-xs">Duração</TableHead>
           <TableHead className="text-gold text-xs">Intervalo</TableHead>
           <TableHead className="text-gold text-xs">Esta sendo trabalhado?</TableHead>
-          <TableHead className="text-gold text-xs"></TableHead>
+          <TableHead className="text-gold text-xs">Editar</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
