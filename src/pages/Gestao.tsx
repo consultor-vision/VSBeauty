@@ -381,7 +381,7 @@ const Gestao = () => {
 
         {/* VIEWS */}
         <div className="flex-1 min-h-0 glass-panel border-gold/20 overflow-hidden flex flex-col">
-          <div className="flex-1 overflow-auto custom-scrollbar p-1">
+          <div className="flex-1 overflow-auto custom-scrollbar">
             {currentView === "colaborador" && <ColaboradorView colaboradores={colaboradores} onEdit={handleEditColab} />}
             {currentView === "procedimento" && <ProcedimentoView procedimentos={procedimentos} onEdit={handleEditProc} />}
             {currentView === "anamnese" && <AnamneseView perguntas={anamnesePerguntas} onEdit={handleEditAnamnese} />}
