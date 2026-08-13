@@ -626,7 +626,7 @@ const Index = () => {
 
             <div className="grid grid-cols-7 gap-0.5">
               {Array.from({ length: firstDay }).map((_, i) => (
-                <div key={`empty-${i}`} className="h-12" />
+                <div key={`empty-${i}`} className="h-10" />
               ))}
               {Array.from({ length: daysInMonth }).map((_, i) => {
                 const day = i + 1;
@@ -638,8 +638,8 @@ const Index = () => {
                   <button
                     key={day}
                     onClick={() => setSelectedDay(day)}
-                    style={{ fontSize: '16px' }}
-                    className={`relative h-12 rounded font-medium transition-all border ${
+                    style={{ fontSize: '14px' }}
+                    className={`relative h-10 rounded font-medium transition-all border ${
                       selected
                         ? "bg-gold/20 border-gold text-gold"
                         : todayClass
