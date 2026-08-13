@@ -599,7 +599,7 @@ const Index = () => {
 
   return (
     <Layout title="Agendamento">
-      <div className="flex flex-col lg:flex-row gap-3 h-[calc(100vh-140px)] pb-4 overflow-hidden">
+      <div className="flex flex-col lg:flex-row gap-3 h-[calc(100vh-140px)] pb-2 overflow-hidden">
         {/* Left Column - Calendar + Actions */}
         <div className="lg:w-[420px] flex flex-col gap-3 shrink-0 overflow-y-auto pr-1 scrollbar-thin">
           {/* Mini Calendar */}
