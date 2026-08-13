@@ -901,15 +901,15 @@ const ProcedimentoView = ({ procedimentos, onEdit }: { procedimentos: Procedimen
 );
 
 const AnamneseView = ({ perguntas, onEdit }: { perguntas: any[]; onEdit: (q: any) => void }) => (
-  <div className="glass-panel p-4 gold-glow flex-1 min-h-0 h-[calc(100vh-210px)] flex flex-col overflow-hidden">
-    <div className="flex items-center gap-2 mb-4 shrink-0">
+  <div className="flex-1 min-h-0 h-[calc(100vh-210px)] flex flex-col overflow-hidden">
+    <div className="flex items-center gap-2 mb-4 shrink-0 px-4 pt-4">
       <Select>
         <SelectTrigger className="max-w-lg bg-input border-border text-foreground h-9"><SelectValue placeholder="Pergunta" /></SelectTrigger>
         <SelectContent>{perguntas.map((q, i) => (<SelectItem key={i} value={String(q.id)}>{q.pergunta}</SelectItem>))}</SelectContent>
       </Select>
       <button className="p-2 rounded-lg bg-gold/15 border border-gold text-gold hover:bg-gold/25 transition-all"><Trash2 className="w-4 h-4" /></button>
     </div>
-    <div className="space-y-1 pb-[10px] flex-1 overflow-y-auto custom-scrollbar">
+    <div className="space-y-1 pb-[10px] flex-1 overflow-y-auto custom-scrollbar px-4">
       <div className="flex items-center justify-between px-4 py-2">
         <span className="text-gold text-xs font-medium">Pergunta</span>
         <span className="text-gold text-xs font-medium">Caso seja necessário complementar a pergunta</span>
