@@ -841,7 +841,7 @@ const Gestao = () => {
 // ── Sub-Views ──
 
 const ColaboradorView = ({ colaboradores, onEdit }: { colaboradores: Colaborador[]; onEdit: (c: Colaborador) => void }) => (
-  <div className="glass-panel p-4 gold-glow flex-1 min-h-0 h-[calc(100vh-210px)] overflow-auto custom-scrollbar">
+  <div className="flex-1 min-h-0 h-[calc(100vh-210px)] overflow-auto custom-scrollbar px-4 pt-4">
     <Table>
       <TableHeader>
         <TableRow className="border-border hover:bg-transparent">
@@ -872,7 +872,7 @@ const ColaboradorView = ({ colaboradores, onEdit }: { colaboradores: Colaborador
 );
 
 const ProcedimentoView = ({ procedimentos, onEdit }: { procedimentos: Procedimento[]; onEdit: (p: Procedimento) => void }) => (
-  <div className="glass-panel p-4 gold-glow [&_td]:py-[10px] [&_th]:h-[42px] text-[15.4px] flex-1 min-h-0 h-[calc(100vh-210px)] overflow-y-auto custom-scrollbar">
+  <div className="flex-1 min-h-0 h-[calc(100vh-210px)] overflow-y-auto custom-scrollbar px-4 pt-4 [&_td]:py-[10px] [&_th]:h-[42px] text-[15.4px]">
     <Table>
       <TableHeader>
         <TableRow className="border-border hover:bg-transparent">
@@ -953,7 +953,7 @@ const EstoqueView = ({ estoque, onEdit }: { estoque: EstoqueItem[]; onEdit: (e: 
 );
 
 const ContasPagarView = ({ contas, onDescricao, onEdit }: { contas: ContaPagar[]; onDescricao: (c: ContaPagar) => void; onEdit: (c: ContaPagar) => void }) => (
-  <div className="glass-panel p-4 gold-glow [&_td]:py-[14.2px] [&_th]:h-[52px] text-[20.4px] flex-1 min-h-0 h-[calc(100vh-210px)] overflow-auto custom-scrollbar">
+  <div className="flex-1 min-h-0 h-[calc(100vh-210px)] overflow-auto custom-scrollbar px-4 pt-4 [&_td]:py-[14.2px] [&_th]:h-[52px] text-[20.4px]">
     <div className="flex gap-6 mb-4 text-xs">
       <span>Total Pago: <span className="text-gold">R$ 4.697,55</span></span>
       <span>Total a Pagar: <span className="text-foreground">R$ 0,00</span></span>
@@ -989,7 +989,7 @@ const ContasPagarView = ({ contas, onDescricao, onEdit }: { contas: ContaPagar[]
 );
 
 const ContasReceberView = ({ contas, onDescricao, onEdit }: { contas: ContaReceber[]; onDescricao: (c: ContaReceber) => void; onEdit: (c: ContaReceber) => void }) => (
-  <div className="glass-panel p-4 gold-glow [&_td]:py-2 [&_th]:h-9 text-[13.3px] flex-1 min-h-0 h-[calc(100vh-210px)] overflow-auto custom-scrollbar">
+  <div className="flex-1 min-h-0 h-[calc(100vh-210px)] overflow-auto custom-scrollbar px-4 pt-4 [&_td]:py-2 [&_th]:h-9 text-[13.3px]">
     <div className="flex gap-6 mb-4 text-xs">
       <span>Total Recebido: <span className="text-gold">R$ 247.314,55</span></span>
       <span>Total Pendente: <span className="text-foreground">R$ 15.000,00</span></span>
