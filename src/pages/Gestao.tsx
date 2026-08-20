@@ -521,7 +521,11 @@ const Gestao = () => {
       {/* ── MODAIS ESTOQUE ── */}
       <Dialog open={showNovoEstoque} onOpenChange={setShowNovoEstoque}>
         <DialogContent className="max-w-2xl bg-card border-border p-0">
-          <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Novo Estoque</DialogTitle></DialogHeader>
+          <DialogHeader className="p-5 pb-0">
+            <div className="flex items-center justify-between w-full pr-8">
+              <DialogTitle className="text-foreground">Novo Estoque</DialogTitle>
+            </div>
+          </DialogHeader>
           <div className="p-5 space-y-4">
             <div><label className="text-xs text-gold mb-1 block">Produto</label>
               <div className="flex items-center gap-2">
@@ -581,7 +585,6 @@ const Gestao = () => {
                 Salvar
               </button>
             </div>
-
           </div>
         </DialogContent>
       </Dialog>
