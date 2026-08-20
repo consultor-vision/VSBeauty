@@ -580,28 +580,43 @@ const Gestao = () => {
             <div className="flex justify-center pt-2">
               <button 
                 onClick={async () => {
-                  if (!novoEstoqueForm.produto || !novoEstoqueForm.quantidade) {
-                    toast.error("Preencha todos os campos");
+                  if (!novoEstoqueForm.produto) {
+                    toast.error("Por favor, selecione um produto.");
+                    return;
+                  }
+
+                  const quantVal = parseFloat(novoEstoqueForm.quantidade);
+                  if (isNaN(quantVal) || quantVal <= 0) {
+                    toast.error("Por favor, informe uma quantidade válida maior que zero.");
+                    return;
+                  }
+
+                  if (!user?.id_companhia) {
+                    toast.error("Não foi possível identificar a companhia do usuário.");
                     return;
                   }
                   
                   const prod = produtos.find(p => p.produtos === novoEstoqueForm.produto);
-                  if (!prod) return;
+                  if (!prod) {
+                    toast.error("Produto não localizado no cadastro.");
+                    return;
+                  }
 
                   const { error } = await supabase
                     .from("estoque")
                     .insert([{
-                      id_companhia: user?.id_companhia,
+                      id_companhia: user.id_companhia,
                       id_produto: prod.id,
-                      quantidade: parseFloat(novoEstoqueForm.quantidade),
+                      tipo_embalagem: prod.tipo_embalagem,
+                      quantidade: quantVal,
                       tipo_operacao: 'entrada'
                     }]);
 
                   if (error) {
-                    toast.error("Erro ao salvar estoque");
+                    toast.error("Erro ao salvar a entrada de estoque.");
                     console.error(error);
                   } else {
-                    toast.success("Estoque atualizado com sucesso");
+                    toast.success("Entrada de estoque realizada com sucesso!");
                     setShowNovoEstoque(false);
                     setNovoEstoqueForm({ produto: "", sistemaMedidas: "", quantidade: "" });
                     fetchEstoque();
