@@ -681,7 +681,9 @@ const Gestao = () => {
                         id_companhia: user?.id_companhia,
                         id_produto: editingEstoque.id,
                         quantidade: parseFloat(quantidadeUtilizada),
+                        tipo_embalagem: editingEstoque.sistemaMedidas,
                         tipo_movimentacao: 'saida'
+
                       }]);
 
                     if (error) {
