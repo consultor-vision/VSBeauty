@@ -636,7 +636,7 @@ const Gestao = () => {
           <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Editar Estoque</DialogTitle></DialogHeader>
           {editingEstoque && (
             <div className="p-5 space-y-4">
-              <div><label className="text-xs text-gold mb-1 block">Produto</label><Input value={editingEstoque.produto} readOnly className="bg-input border-border text-foreground h-10 opacity-70" /></div>
+              <div><label className="text-xs text-gold mb-1 block">Produto</label><Input value={editingEstoque.produto} readOnly className="bg-input border-border text-foreground h-10 opacity-70 border-gold/50" /></div>
               <div className="grid grid-cols-3 gap-3">
                 <div><label className="text-xs text-gold mb-1 block">Sistema de Medidas</label><Input value={editingEstoque.sistemaMedidas} readOnly className="bg-input border-border text-foreground h-10 opacity-70" /></div>
                 <div><label className="text-xs text-gold mb-1 block">Quantidade em Estoque</label><Input value={String(editingEstoque.quantidade)} readOnly className="bg-input border-border text-foreground h-10 opacity-70" /></div>
