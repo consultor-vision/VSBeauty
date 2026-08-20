@@ -1,32 +1,49 @@
-# Plano de Implementação: Saída de Estoque
+# Plano de Implementação - Controle de Sessões em Novo Agendamento
 
-Implementar a lógica de saída de estoque no sistema de gestão, permitindo que os usuários registrem a utilização de produtos com persistência no Supabase.
+Este plano detalha a reestruturação do modal de Novo Agendamento para integrar o controle dinâmico de sessões baseado nos planos contratados pelos clientes no Supabase.
 
-## Ações Propostas
-
-### UI Architect 🎨
-- Adicionar funcionalidade ao modal **Editar Estoque** (`showEditarEstoque`) em `src/pages/Gestao.tsx` para permitir a entrada da "Quantidade Utilizada".
-- Garantir que o campo de produto e sistema de medidas permaneçam consistentes com o item selecionado.
-
-### Supabase Engineer 🗄️
-- Implementar a função de salvamento no modal de edição.
-- Ao clicar em "Salvar" no modal de edição, inserir um novo registro na tabela `estoque` com:
-  - `id_companhia` do usuário logado.
-  - `id_produto` correspondente ao item editado.
-  - `quantidade` informada no campo "Quantidade Utilizada".
-  - `tipo_movimentacao` definido como `'saida'`.
-- Atualizar a interface chamando `fetchEstoque` após o sucesso.
-
-### Code Auditor 🔍
-- Validar se a quantidade utilizada é um número positivo e se não excede (opcionalmente) o estoque atual, embora o sistema permita fluxos flexíveis.
-- Garantir o uso correto do `id_companhia` para isolamento de dados.
+## Objetivos
+- Consultar planos ativos do cliente ao abrir o modal de agendamento.
+- Calcular o saldo de sessões em tempo real (Contratadas - Consumidas).
+- Adicionar um dropdown de "Plano Disponível" com o saldo atualizado.
+- Garantir a integridade dos dados impedindo agendamentos em planos sem saldo.
 
 ## Detalhes Técnicos
-- Arquivo: `src/pages/Gestao.tsx`
-- Tabela: `estoque` (Supabase)
-- Colunas: `id_companhia`, `id_produto`, `quantidade`, `tipo_movimentacao` ('saida')
+
+### 1. Levantamento de Dados (Supabase)
+- **Tabela `planos`**:
+  - `id`: Identificador único do plano.
+  - `id_cliente`: FK para o cliente.
+  - `sessoes`: Quantidade total contratada.
+  - `nome_plano`: Descrição para exibição.
+  - `id_procedimento`: FK para o procedimento vinculado (se houver).
+- **Tabela `agendamento`**:
+  - `id_plano`: FK para o plano utilizado na sessão.
+  - `status_procedimento`: Utilizado para contar sessões 'Concluído'.
+  - `data_inicio`: Referência para a data do atendimento.
+
+### 2. Lógica de Negócio no Frontend (`Index.tsx`)
+- **Novo Estado**:
+  - `availablePlans`: Lista de planos com saldo > 0 para o cliente selecionado.
+  - `selectedPlanId`: Armazena o plano escolhido para o agendamento.
+- **Função de Cálculo (`fetchAvailablePlans`)**:
+  1. Busca todos os planos do cliente via `id_cliente` e `id_companhia`.
+  2. Para cada plano, conta quantos registros existem na tabela `agendamento` com `id_plano` e `status_procedimento = 'Concluído'`.
+  3. Calcula `saldo = sessoes_contratadas - sessões_concluídas`.
+  4. Filtra apenas planos onde `saldo > 0`.
+- **Validação no Salvamento**:
+  - Antes do `insert` no agendamento, realizar uma nova consulta rápida ao Supabase para garantir que o saldo ainda é positivo (evita race conditions).
+
+### 3. Interface do Usuário (UI)
+- Inserção do dropdown de planos entre a seleção do cliente e o procedimento.
+- Rótulo dinâmico: `{nome_plano} — {saldo} sessões disponíveis`.
+- Feedback visual caso o cliente não possua planos ativos, permitindo agendamento avulso conforme fluxo legado.
+
+## Arquivos Afetados
+- `src/pages/Index.tsx`: Implementação da lógica de busca, cálculo, validação e UI no modal.
+- `mem://features/appointment-plan-logic`: Registro da regra de negócio na memória do projeto.
 
 ## Próximos Passos
-1. Atualizar o estado do formulário de edição para capturar a quantidade utilizada.
-2. Implementar o handler de clique para o botão "Salvar" no modal de edição de estoque.
-3. Notificar o usuário via Toast sobre o sucesso da operação.
+1. Implementar a função `fetchAvailablePlans` dentro do `handleSelectClient`.
+2. Adicionar o componente de `Select` para os planos no modal de agendamento.
+3. Atualizar a função `handleSaveAppointment` para incluir o `id_plano` e realizar a validação final.
