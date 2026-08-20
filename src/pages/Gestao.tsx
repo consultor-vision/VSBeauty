@@ -103,6 +103,7 @@ const Gestao = () => {
   const [editingProdutoNome, setEditingProdutoNome] = useState("");
   const [showEditarEstoque, setShowEditarEstoque] = useState(false);
   const [editingEstoque, setEditingEstoque] = useState<EstoqueItem | null>(null);
+  const [quantidadeUtilizada, setQuantidadeUtilizada] = useState("");
 
   const [showNovaContaPagar, setShowNovaContaPagar] = useState(false);
   const [novaContaForm, setNovaContaForm] = useState({ dataEmissao: "", dataVencimento: "", categoria: "", item: "", valor: "", parcela: "", tipoPagamento: "", status: "Pendente", observacao: "" });
@@ -297,7 +298,11 @@ const Gestao = () => {
   const handleEditColab = (c: Colaborador) => { setEditingColab(c); setAdminToggle(c.acessoAdministrativo === "Liberado"); setShowEditarColab(true); };
   const handleEditProc = (p: Procedimento) => { setEditingProc(p); setShowEditarProc(true); };
   const handleEditAnamnese = (q: any) => { setEditingAnamnese({ ...q }); setShowEditarAnamnese(true); };
-  const handleEditEstoque = (e: EstoqueItem) => { setEditingEstoque(e); setShowEditarEstoque(true); };
+  const handleEditEstoque = (e: EstoqueItem) => { 
+    setEditingEstoque(e); 
+    setQuantidadeUtilizada("");
+    setShowEditarEstoque(true); 
+  };
   const handleMenuSelect = (view: GestaoView) => { setCurrentView(view); setShowMenu(false); };
 
   const showNovoCadastroBtn = currentView === "colaborador" || currentView === "procedimento" || currentView === "estoque" || currentView === "contas_pagar";
@@ -594,15 +599,66 @@ const Gestao = () => {
           <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Editar Estoque</DialogTitle></DialogHeader>
           {editingEstoque && (
             <div className="p-5 space-y-4">
-              <div><label className="text-xs text-gold mb-1 block">Produto</label><Input defaultValue={editingEstoque.produto} className="bg-input border-border text-foreground h-10" /></div>
+              <div><label className="text-xs text-gold mb-1 block">Produto</label><Input value={editingEstoque.produto} readOnly className="bg-input border-border text-foreground h-10 opacity-70" /></div>
               <div className="grid grid-cols-3 gap-3">
-                <div><label className="text-xs text-gold mb-1 block">Sistema de Medidas</label><Input defaultValue={editingEstoque.sistemaMedidas} className="bg-input border-border text-foreground h-10" /></div>
-                <div><label className="text-xs text-gold mb-1 block">Quantidade em Estoque</label><Input defaultValue={String(editingEstoque.quantidade)} className="bg-input border-border text-foreground h-10" /></div>
-                <div><label className="text-xs text-gold mb-1 block">Quantidade Utilizada</label><Input placeholder="Quantidade Utilizada" className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Sistema de Medidas</label><Input value={editingEstoque.sistemaMedidas} readOnly className="bg-input border-border text-foreground h-10 opacity-70" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Quantidade em Estoque</label><Input value={String(editingEstoque.quantidade)} readOnly className="bg-input border-border text-foreground h-10 opacity-70" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Quantidade Utilizada</label><Input placeholder="Quantidade Utilizada" value={quantidadeUtilizada} onChange={(e) => setQuantidadeUtilizada(e.target.value)} className="bg-input border-border text-foreground h-10" /></div>
               </div>
               <div className="flex justify-between pt-2">
-                <button className="px-8 py-2.5 rounded-lg bg-destructive text-destructive-foreground font-semibold text-sm hover:bg-destructive/90 transition-all">Excluir</button>
-                <button onClick={() => setShowEditarEstoque(false)} className="px-12 py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all">Salvar</button>
+                <button 
+                  onClick={async () => {
+                    const { error } = await supabase
+                      .from("estoque")
+                      .insert([{
+                        id_companhia: user?.id_companhia,
+                        id_produto: editingEstoque.id,
+                        quantidade: editingEstoque.quantidade, // Just to record something if needed, but normally we'd delete the whole history or flag it
+                        tipo_operacao: 'exclusao' 
+                      }]);
+                    
+                    if (error) {
+                      toast.error("Erro ao excluir produto do estoque");
+                    } else {
+                      toast.success("Produto removido do estoque");
+                      setShowEditarEstoque(false);
+                      fetchEstoque();
+                    }
+                  }}
+                  className="px-8 py-2.5 rounded-lg bg-destructive text-destructive-foreground font-semibold text-sm hover:bg-destructive/90 transition-all"
+                >
+                  Excluir
+                </button>
+                <button 
+                  onClick={async () => {
+                    if (!quantidadeUtilizada || isNaN(parseFloat(quantidadeUtilizada))) {
+                      toast.error("Informe uma quantidade válida");
+                      return;
+                    }
+
+                    const { error } = await supabase
+                      .from("estoque")
+                      .insert([{
+                        id_companhia: user?.id_companhia,
+                        id_produto: editingEstoque.id,
+                        quantidade: parseFloat(quantidadeUtilizada),
+                        tipo_operacao: 'saida'
+                      }]);
+
+                    if (error) {
+                      toast.error("Erro ao registrar saída de estoque");
+                      console.error(error);
+                    } else {
+                      toast.success("Saída registrada com sucesso");
+                      setShowEditarEstoque(false);
+                      setQuantidadeUtilizada("");
+                      fetchEstoque();
+                    }
+                  }}
+                  className="px-12 py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all"
+                >
+                  Salvar
+                </button>
               </div>
             </div>
           )}
