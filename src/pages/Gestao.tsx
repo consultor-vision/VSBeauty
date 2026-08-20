@@ -545,41 +545,78 @@ const Gestao = () => {
                     }));
                   }}
                 >
-                  <SelectTrigger className="flex-1 bg-input border-border text-foreground h-10"><SelectValue placeholder="Produto" /></SelectTrigger>
-                  <SelectContent>{produtos.map(p=>(<SelectItem key={p.id} value={p.produtos}>{p.produtos}</SelectItem>))}</SelectContent>
+                  <SelectTrigger className="flex-1 bg-input border-border text-foreground h-10">
+                    <SelectValue placeholder="Produto" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {produtos.map(p => (
+                      <SelectItem key={p.id} value={p.produtos}>{p.produtos}</SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
                 <button onClick={() => { setNovoProdutoForm({ nome: "", sistemaMedidas: "" }); setShowNovosProdutos(true); }} className="p-2 rounded-full bg-gold/80 text-primary-foreground hover:bg-gold transition-colors"><PlusCircle className="w-5 h-5" /></button>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div><label className="text-xs text-gold mb-1 block">Sistema de Medidas</label><Input placeholder="Sistema de Medidas" value={novoEstoqueForm.sistemaMedidas} readOnly className="bg-input border-border text-foreground h-10 opacity-70 cursor-not-allowed" /></div>
-              <div><label className="text-xs text-gold mb-1 block">Quantidade</label><Input placeholder="Quantidade" value={novoEstoqueForm.quantidade} onChange={(e) => setNovoEstoqueForm(p => ({ ...p, quantidade: e.target.value }))} className="bg-input border-border text-foreground h-10" /></div>
+              <div>
+                <label className="text-xs text-gold mb-1 block">Sistema de Medidas</label>
+                <Input 
+                  placeholder="Sistema de Medidas" 
+                  value={novoEstoqueForm.sistemaMedidas} 
+                  readOnly 
+                  className="bg-input border-border text-foreground h-10 opacity-70 cursor-not-allowed" 
+                />
+              </div>
+              <div>
+                <label className="text-xs text-gold mb-1 block">Quantidade</label>
+                <Input 
+                  placeholder="Quantidade" 
+                  value={novoEstoqueForm.quantidade} 
+                  onChange={(e) => setNovoEstoqueForm(p => ({ ...p, quantidade: e.target.value }))} 
+                  className="bg-input border-border text-foreground h-10" 
+                />
+              </div>
             </div>
             <div className="flex justify-center pt-2">
               <button 
                 onClick={async () => {
-                  if (!novoEstoqueForm.produto || !novoEstoqueForm.quantidade) {
-                    toast.error("Preencha todos os campos");
+                  if (!novoEstoqueForm.produto) {
+                    toast.error("Por favor, selecione um produto.");
+                    return;
+                  }
+
+                  const quantVal = parseFloat(novoEstoqueForm.quantidade);
+                  if (isNaN(quantVal) || quantVal <= 0) {
+                    toast.error("Por favor, informe uma quantidade válida maior que zero.");
+                    return;
+                  }
+
+                  if (!user?.id_companhia) {
+                    toast.error("Não foi possível identificar a companhia do usuário.");
                     return;
                   }
                   
                   const prod = produtos.find(p => p.produtos === novoEstoqueForm.produto);
-                  if (!prod) return;
+                  if (!prod) {
+                    toast.error("Produto não localizado no cadastro.");
+                    return;
+                  }
 
                   const { error } = await supabase
                     .from("estoque")
                     .insert([{
-                      id_companhia: user?.id_companhia,
+                      id_companhia: user.id_companhia,
                       id_produto: prod.id,
-                      quantidade: parseFloat(novoEstoqueForm.quantidade),
+                      tipo_embalagem: prod.tipo_embalagem,
+                      quantidade: quantVal,
                       tipo_operacao: 'entrada'
                     }]);
 
                   if (error) {
-                    toast.error("Erro ao salvar estoque");
+                    toast.error("Erro ao salvar a entrada de estoque.");
                     console.error(error);
                   } else {
-                    toast.success("Estoque atualizado com sucesso");
+                    toast.success("Entrada de estoque realizada com sucesso!");
                     setShowNovoEstoque(false);
                     setNovoEstoqueForm({ produto: "", sistemaMedidas: "", quantidade: "" });
                     fetchEstoque();
