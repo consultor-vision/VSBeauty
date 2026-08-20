@@ -1343,7 +1343,7 @@ const Index = () => {
                 <span className="text-gold">{selectedClient.cpf}</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="md:col-span-2">
+                <div className="md:col-span-1">
                   <label className="text-xs text-muted-foreground mb-1 block">Plano Disponível</label>
                   <Select 
                     value={selectedPlanId} 
@@ -1357,7 +1357,7 @@ const Index = () => {
                       }
                     }}
                   >
-                    <SelectTrigger className="bg-input border-border focus:ring-gold">
+                    <SelectTrigger className="bg-input border-border focus:ring-gold border-gold">
                       <SelectValue placeholder={loadingAvailablePlans ? "Carregando planos..." : (availablePlans.length > 0 ? "Selecione um plano" : "Nenhum plano com sessões disponíveis")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -1375,7 +1375,7 @@ const Index = () => {
                   )}
                 </div>
 
-                <div>
+                <div className="md:col-span-1">
                   <label className="text-xs text-muted-foreground mb-1 block">Escolha o Profissional</label>
                   <Select value={newProfissional} onValueChange={setNewProfissional}>
                     <SelectTrigger className="bg-input border-border focus:ring-gold">
