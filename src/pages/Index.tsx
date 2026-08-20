@@ -1349,14 +1349,11 @@ const Index = () => {
                     value={selectedPlanId} 
                     onValueChange={(val) => {
                       setSelectedPlanId(val);
-                      // If plan is selected, try to auto-select the procedure linked to it
                       const plan = availablePlans.find(p => String(p.id) === val);
-                      if (plan && plan.id_procedimento) {
-                        const procName = procedimentosList.find(pName => {
-                          // Note: We might need a procedure ID to name mapping here if procedimentosList only has names
-                          // But for now, let's keep it simple as the user might want to select procedure manually too
-                          return false; 
-                        });
+                      if (plan) {
+                        setNewProcedimento(plan.nome_plano || "Procedimento");
+                      } else {
+                        setNewProcedimento("Atendimento Avulso");
                       }
                     }}
                   >
