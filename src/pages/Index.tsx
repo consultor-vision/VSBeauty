@@ -179,6 +179,7 @@ const Index = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [professionals, setProfessionals] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -207,6 +208,20 @@ const Index = () => {
           foto: c.imagem || undefined
         }));
         setClients(formattedClients.sort((a, b) => a.nome.localeCompare(b.nome)));
+
+        // Fetch Professionals from usuarios table
+        const { data: userData, error: userError } = await supabase
+          .from('usuarios')
+          .select('nome')
+          .eq('id_companhia', user.id_companhia)
+          .order('nome', { ascending: true });
+
+        if (!userError && userData) {
+          const names = userData
+            .map(u => u.nome)
+            .filter((name): name is string => !!name);
+          setProfessionals(names);
+        }
 
         // Fetch Appointments (using agenda_visual view as it has joined data)
         const { data: agendaData, error: agendaError } = await supabase
@@ -402,12 +417,15 @@ const Index = () => {
   }, [appointmentsForSelectedDay]);
 
   const profissionaisList = useMemo(() => {
+    if (professionals.length > 0) return professionals;
+    
+    // Fallback to extraction from appointments if table is empty (unlikely)
     const set = new Set<string>();
     appointments.forEach(a => {
-      if (a.profissional) set.add(a.profissional);
+      if (a.profissional && a.profissional !== 'Profissional') set.add(a.profissional);
     });
-    return Array.from(set);
-  }, [appointments]);
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [professionals, appointments]);
 
   // Days with appointments
   const daysWithAppointments = useMemo(() => {
