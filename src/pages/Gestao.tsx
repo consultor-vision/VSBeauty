@@ -650,8 +650,10 @@ const Gestao = () => {
                       .insert([{
                         id_companhia: user?.id_companhia,
                         id_produto: editingEstoque.id,
-                        quantidade: editingEstoque.quantidade, // Just to record something if needed, but normally we'd delete the whole history or flag it
+                        quantidade: editingEstoque.quantidade,
+                        tipo_embalagem: editingEstoque.sistemaMedidas,
                         tipo_movimentacao: 'exclusao' 
+
                       }]);
                     
                     if (error) {
