@@ -709,7 +709,12 @@ const Gestao = () => {
             <Input placeholder="Produto" value={novoProdutoForm.nome} onChange={(e) => setNovoProdutoForm(p => ({ ...p, nome: e.target.value }))} className="bg-input border-border text-foreground h-10" />
             <Select value={novoProdutoForm.sistemaMedidas} onValueChange={(v) => setNovoProdutoForm(p => ({ ...p, sistemaMedidas: v }))}>
               <SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue placeholder="Sistema de Medidas" /></SelectTrigger>
-              <SelectContent><SelectItem value="unidade">Unidade (Un)</SelectItem><SelectItem value="miligrama">Miligrama (mg)</SelectItem><SelectItem value="litro">Litro (L)</SelectItem></SelectContent>
+              <SelectContent>
+                <SelectItem value="Unidade (Un)">Unidade (Un)</SelectItem>
+                <SelectItem value="Miligrama (mg)">Miligrama (mg)</SelectItem>
+                <SelectItem value="Mililitro (ml)">Mililitro (ml)</SelectItem>
+                <SelectItem value="Litro (L)">Litro (L)</SelectItem>
+              </SelectContent>
             </Select>
             <div className="flex justify-center">
               <button 
