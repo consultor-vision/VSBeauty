@@ -201,15 +201,17 @@ const Gestao = () => {
 
   const fetchEstoque = async () => {
     const { data, error } = await supabase
-      .from("estoque")
-      .select("*, produtos(produtos, tipo_embalagem)")
+      .from("vw_estoque_atual")
+      .select("*")
       .eq("id_companhia", user?.id_companhia);
+    
     if (error) throw error;
-    setEstoque(data.map(e => ({
-      id: e.id,
-      produto: (e.produtos as any)?.produtos || "Desconhecido",
-      sistemaMedidas: (e.produtos as any)?.tipo_embalagem || "-",
-      quantidade: e.quantidade || 0
+    
+    setEstoque((data || []).map(e => ({
+      id: e.id_produto || 0,
+      produto: e.nome_produto || "Desconhecido",
+      sistemaMedidas: e.tipo_embalagem || "-",
+      quantidade: e.quantidade_atual || 0
     })));
   };
 
