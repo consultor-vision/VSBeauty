@@ -636,7 +636,7 @@ const Gestao = () => {
           <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Editar Estoque</DialogTitle></DialogHeader>
           {editingEstoque && (
             <div className="p-5 space-y-4">
-              <div><label className="text-xs text-gold mb-1 block">Produto</label><Input value={editingEstoque.produto} readOnly className="bg-input border-border text-foreground h-10 opacity-70" /></div>
+              <div><label className="text-xs text-gold mb-1 block">Produto</label><Input value={editingEstoque.produto} readOnly className="bg-input border-border text-foreground h-10 opacity-70 border-gold/50" /></div>
               <div className="grid grid-cols-3 gap-3">
                 <div><label className="text-xs text-gold mb-1 block">Sistema de Medidas</label><Input value={editingEstoque.sistemaMedidas} readOnly className="bg-input border-border text-foreground h-10 opacity-70" /></div>
                 <div><label className="text-xs text-gold mb-1 block">Quantidade em Estoque</label><Input value={String(editingEstoque.quantidade)} readOnly className="bg-input border-border text-foreground h-10 opacity-70" /></div>
@@ -650,8 +650,10 @@ const Gestao = () => {
                       .insert([{
                         id_companhia: user?.id_companhia,
                         id_produto: editingEstoque.id,
-                        quantidade: editingEstoque.quantidade, // Just to record something if needed, but normally we'd delete the whole history or flag it
+                        quantidade: editingEstoque.quantidade,
+                        tipo_embalagem: editingEstoque.sistemaMedidas,
                         tipo_movimentacao: 'exclusao' 
+
                       }]);
                     
                     if (error) {
@@ -679,7 +681,9 @@ const Gestao = () => {
                         id_companhia: user?.id_companhia,
                         id_produto: editingEstoque.id,
                         quantidade: parseFloat(quantidadeUtilizada),
+                        tipo_embalagem: editingEstoque.sistemaMedidas,
                         tipo_movimentacao: 'saida'
+
                       }]);
 
                     if (error) {
