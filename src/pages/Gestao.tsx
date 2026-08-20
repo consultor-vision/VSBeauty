@@ -222,8 +222,13 @@ const Gestao = () => {
       .eq("id_companhia", user?.id_companhia)
       .order("produtos", { ascending: true });
     if (error) throw error;
-    setProdutos(data || []);
+    setProdutos(data.map(p => ({
+      id: p.id,
+      produtos: p.produtos || "",
+      tipo_embalagem: p.tipo_embalagem || ""
+    })));
   };
+
 
   const fetchContasPagar = async () => {
     const { data, error } = await supabase
@@ -520,7 +525,17 @@ const Gestao = () => {
           <div className="p-5 space-y-4">
             <div><label className="text-xs text-gold mb-1 block">Produto</label>
               <div className="flex items-center gap-2">
-                <Select value={novoEstoqueForm.produto} onValueChange={(v) => setNovoEstoqueForm(p => ({ ...p, produto: v }))}>
+                <Select 
+                  value={novoEstoqueForm.produto} 
+                  onValueChange={(v) => {
+                    const prod = produtos.find(p => p.produtos === v);
+                    setNovoEstoqueForm(p => ({ 
+                      ...p, 
+                      produto: v,
+                      sistemaMedidas: prod?.tipo_embalagem || ""
+                    }));
+                  }}
+                >
                   <SelectTrigger className="flex-1 bg-input border-border text-foreground h-10"><SelectValue placeholder="Produto" /></SelectTrigger>
                   <SelectContent>{produtos.map(p=>(<SelectItem key={p.id} value={p.produtos}>{p.produtos}</SelectItem>))}</SelectContent>
                 </Select>
@@ -528,12 +543,45 @@ const Gestao = () => {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div><label className="text-xs text-gold mb-1 block">Sistema de Medidas</label><Input placeholder="Sistema de Medidas" value={novoEstoqueForm.sistemaMedidas} onChange={(e) => setNovoEstoqueForm(p => ({ ...p, sistemaMedidas: e.target.value }))} className="bg-input border-border text-foreground h-10" /></div>
+              <div><label className="text-xs text-gold mb-1 block">Sistema de Medidas</label><Input placeholder="Sistema de Medidas" value={novoEstoqueForm.sistemaMedidas} readOnly className="bg-input border-border text-foreground h-10 opacity-70 cursor-not-allowed" /></div>
               <div><label className="text-xs text-gold mb-1 block">Quantidade</label><Input placeholder="Quantidade" value={novoEstoqueForm.quantidade} onChange={(e) => setNovoEstoqueForm(p => ({ ...p, quantidade: e.target.value }))} className="bg-input border-border text-foreground h-10" /></div>
             </div>
             <div className="flex justify-center pt-2">
-              <button onClick={() => setShowNovoEstoque(false)} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button>
+              <button 
+                onClick={async () => {
+                  if (!novoEstoqueForm.produto || !novoEstoqueForm.quantidade) {
+                    toast.error("Preencha todos os campos");
+                    return;
+                  }
+                  
+                  const prod = produtos.find(p => p.produtos === novoEstoqueForm.produto);
+                  if (!prod) return;
+
+                  const { error } = await supabase
+                    .from("estoque")
+                    .insert([{
+                      id_companhia: user?.id_companhia,
+                      id_produto: prod.id,
+                      quantidade: parseFloat(novoEstoqueForm.quantidade),
+                      tipo_operacao: 'entrada'
+                    }]);
+
+                  if (error) {
+                    toast.error("Erro ao salvar estoque");
+                    console.error(error);
+                  } else {
+                    toast.success("Estoque atualizado com sucesso");
+                    setShowNovoEstoque(false);
+                    setNovoEstoqueForm({ produto: "", sistemaMedidas: "", quantidade: "" });
+                    fetchEstoque();
+                  }
+                }} 
+                className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all"
+              >
+                Salvar
+              </button>
             </div>
+
           </div>
         </DialogContent>
       </Dialog>
@@ -567,7 +615,37 @@ const Gestao = () => {
               <SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue placeholder="Sistema de Medidas" /></SelectTrigger>
               <SelectContent><SelectItem value="unidade">Unidade (Un)</SelectItem><SelectItem value="miligrama">Miligrama (mg)</SelectItem><SelectItem value="litro">Litro (L)</SelectItem></SelectContent>
             </Select>
-            <div className="flex justify-center"><button className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button></div>
+            <div className="flex justify-center">
+              <button 
+                onClick={async () => {
+                  if (!novoProdutoForm.nome || !novoProdutoForm.sistemaMedidas) {
+                    toast.error("Preencha todos os campos");
+                    return;
+                  }
+                  
+                  const { error } = await supabase
+                    .from("produtos")
+                    .insert([{
+                      id_companhia: user?.id_companhia,
+                      produtos: novoProdutoForm.nome,
+                      tipo_embalagem: novoProdutoForm.sistemaMedidas
+                    }]);
+
+                  if (error) {
+                    toast.error("Erro ao cadastrar produto");
+                    console.error(error);
+                  } else {
+                    toast.success("Produto cadastrado com sucesso");
+                    setNovoProdutoForm({ nome: "", sistemaMedidas: "" });
+                    fetchProdutos();
+                  }
+                }}
+                className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all"
+              >
+                Salvar
+              </button>
+            </div>
+
             <div className="border-t border-border pt-4">
               <h4 className="text-center text-sm font-semibold text-foreground mb-3">Listagem de Produtos</h4>
               <div className="space-y-2 max-h-48 overflow-y-auto">
