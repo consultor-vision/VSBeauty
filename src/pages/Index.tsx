@@ -1374,18 +1374,6 @@ const Index = () => {
                     </p>
                   )}
                 </div>
-                <div>
-                  <Select value={newProcedimento} onValueChange={setNewProcedimento}>
-                    <SelectTrigger className="bg-input border-border focus:ring-gold">
-                      <SelectValue placeholder="Procedimento" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {procedimentosList.map((p) => (
-                        <SelectItem key={p} value={p}>{p}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
 
                 <div>
                   <label className="text-xs text-muted-foreground mb-1 block">Escolha o Profissional</label>
