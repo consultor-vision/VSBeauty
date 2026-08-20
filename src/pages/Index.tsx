@@ -351,6 +351,9 @@ const Index = () => {
 
   // New appointment form
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [availablePlans, setAvailablePlans] = useState<any[]>([]);
+  const [loadingAvailablePlans, setLoadingAvailablePlans] = useState(false);
+  const [selectedPlanId, setSelectedPlanId] = useState<string>("");
   const [newProcedimento, setNewProcedimento] = useState("");
   const [newProfissional, setNewProfissional] = useState("");
   const [newDate, setNewDate] = useState("");
@@ -358,6 +361,7 @@ const Index = () => {
   const [newEndTime, setNewEndTime] = useState("");
   const [timePickerHour, setTimePickerHour] = useState("0");
   const [timePickerMinute, setTimePickerMinute] = useState("0");
+
 
   // Client search
   const [clientSearch, setClientSearch] = useState("");
@@ -491,16 +495,64 @@ const Index = () => {
   };
 
   // Select client and open appointment form
-  const handleSelectClient = (client: Client) => {
+  const handleSelectClient = async (client: Client) => {
     setSelectedClient(client);
     setShowClientListModal(false);
+    setSelectedPlanId("");
     setNewProcedimento("");
     setNewProfissional("");
     setNewDate("");
     setNewStartTime("");
     setNewEndTime("");
     setShowAppointmentModal(true);
+
+    // Fetch available plans for the selected client
+    if (user?.id_companhia) {
+      setLoadingAvailablePlans(true);
+      try {
+        const { data: plansData, error: plansError } = await supabase
+          .from('planos')
+          .select('*')
+          .eq('id_cliente', Number(client.id))
+          .eq('id_companhia', user.id_companhia);
+
+        if (plansError) throw plansError;
+
+        const ids = (plansData || []).map((p: any) => p.id);
+        let realizadasMap: Record<number, number> = {};
+        
+        if (ids.length > 0) {
+          const { data: agData, error: agError } = await supabase
+            .from('agendamento')
+            .select('id_plano, status_procedimento')
+            .in('id_plano', ids);
+          
+          if (agError) throw agError;
+
+          (agData || []).forEach((a: any) => {
+            if ((a.status_procedimento || '').toLowerCase() === 'concluído') {
+              realizadasMap[a.id_plano] = (realizadasMap[a.id_plano] || 0) + 1;
+            }
+          });
+        }
+
+        const filteredPlans = (plansData || []).map(p => {
+          const total = Number(p.sessoes) || 0;
+          const consumed = realizadasMap[p.id] || 0;
+          const available = total - consumed;
+          return { ...p, availableSessions: available };
+        }).filter(p => p.availableSessions > 0);
+
+        setAvailablePlans(filteredPlans);
+      } catch (err) {
+        console.error("Error fetching available plans:", err);
+        toast.error("Erro ao carregar planos do cliente");
+      } finally {
+        setLoadingAvailablePlans(false);
+      }
+    }
   };
+
 
   // Time picker
   const openTimePicker = (type: "start" | "end") => {
@@ -538,13 +590,47 @@ const Index = () => {
       return;
     }
 
+    // Double check plan balance if a plan is selected
+    if (selectedPlanId) {
+      try {
+        const { data: planData, error: planError } = await supabase
+          .from('planos')
+          .select('sessoes')
+          .eq('id', Number(selectedPlanId))
+          .single();
+        
+        if (planError) throw planError;
+
+        const { count, error: countError } = await supabase
+          .from('agendamento')
+          .select('*', { count: 'exact', head: true })
+          .eq('id_plano', Number(selectedPlanId))
+          .eq('status_procedimento', 'Concluído');
+
+        if (countError) throw countError;
+
+        const available = (planData.sessoes || 0) - (count || 0);
+        if (available <= 0) {
+          toast.error("Este plano não possui mais sessões disponíveis.");
+          // Refresh list
+          setAvailablePlans(prev => prev.filter(p => String(p.id) !== selectedPlanId));
+          setSelectedPlanId("");
+          return;
+        }
+      } catch (err) {
+        console.error("Validation error:", err);
+      }
+    }
+
     try {
       const { data, error } = await supabase
         .from('agendamento')
         .insert([{
           id_cliente: Number(selectedClient.id),
           id_companhia: user?.id_companhia,
+          id_plano: selectedPlanId ? Number(selectedPlanId) : null,
           data_agendar: newDate,
+          data_inicio: newDate, // Ensuring data_inicio is also set
           hora_inicio: newStartTime,
           hora_fim: newEndTime,
           status_procedimento: "pendente",
@@ -564,19 +650,21 @@ const Index = () => {
         endTime: newEndTime,
         profissional: newProfissional,
         procedimento: newProcedimento,
-        plano: "-",
+        plano: selectedPlanId ? (availablePlans.find(p => String(p.id) === selectedPlanId)?.nome_plano || "-") : "-",
         statusProcedimento: "pendente",
         statusFinanceiro: "pendente",
         valor: 0,
       };
       setAppointments((prev) => [...prev, newApp]);
       setShowAppointmentModal(false);
+      setSelectedPlanId("");
       toast.success("Agendamento criado com sucesso!");
     } catch (error: any) {
       console.error('Error saving appointment:', error);
       toast.error("Erro ao salvar agendamento no Supabase");
     }
   };
+
 
   // Get appointments for a specific date
   const getAppointmentsForDate = (dateStr: string) => {
@@ -1255,6 +1343,40 @@ const Index = () => {
                 <span className="text-gold">{selectedClient.cpf}</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
+                  <label className="text-xs text-muted-foreground mb-1 block">Plano Disponível</label>
+                  <Select 
+                    value={selectedPlanId} 
+                    onValueChange={(val) => {
+                      setSelectedPlanId(val);
+                      // If plan is selected, try to auto-select the procedure linked to it
+                      const plan = availablePlans.find(p => String(p.id) === val);
+                      if (plan && plan.id_procedimento) {
+                        const procName = procedimentosList.find(pName => {
+                          // Note: We might need a procedure ID to name mapping here if procedimentosList only has names
+                          // But for now, let's keep it simple as the user might want to select procedure manually too
+                          return false; 
+                        });
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="bg-input border-border focus:ring-gold">
+                      <SelectValue placeholder={loadingAvailablePlans ? "Carregando planos..." : (availablePlans.length > 0 ? "Selecione um plano" : "Nenhum plano com sessões disponíveis")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availablePlans.map((p) => (
+                        <SelectItem key={p.id} value={String(p.id)}>
+                          {p.nome_plano} — {p.availableSessions} {p.availableSessions === 1 ? 'sessão disponível' : 'sessões disponíveis'}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {availablePlans.length === 0 && !loadingAvailablePlans && (
+                    <p className="text-[10px] text-muted-foreground mt-1 italic">
+                      Cliente não possui sessões em planos ativos. Agendamento será realizado como atendimento avulso.
+                    </p>
+                  )}
+                </div>
                 <div>
                   <label className="text-xs text-muted-foreground mb-1 block">Escolha o Procedimento do Cliente</label>
                   <Select value={newProcedimento} onValueChange={setNewProcedimento}>
@@ -1268,6 +1390,7 @@ const Index = () => {
                     </SelectContent>
                   </Select>
                 </div>
+
                 <div>
                   <label className="text-xs text-muted-foreground mb-1 block">Escolha o Profissional</label>
                   <Select value={newProfissional} onValueChange={setNewProfissional}>
