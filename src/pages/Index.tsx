@@ -499,7 +499,7 @@ const Index = () => {
     setSelectedClient(client);
     setShowClientListModal(false);
     setSelectedPlanId("");
-    setNewProcedimento("");
+    setNewProcedimento("Atendimento Avulso");
     setNewProfissional("");
     setNewDate("");
     setNewStartTime("");
@@ -1349,14 +1349,11 @@ const Index = () => {
                     value={selectedPlanId} 
                     onValueChange={(val) => {
                       setSelectedPlanId(val);
-                      // If plan is selected, try to auto-select the procedure linked to it
                       const plan = availablePlans.find(p => String(p.id) === val);
-                      if (plan && plan.id_procedimento) {
-                        const procName = procedimentosList.find(pName => {
-                          // Note: We might need a procedure ID to name mapping here if procedimentosList only has names
-                          // But for now, let's keep it simple as the user might want to select procedure manually too
-                          return false; 
-                        });
+                      if (plan) {
+                        setNewProcedimento(plan.nome_plano || "Procedimento");
+                      } else {
+                        setNewProcedimento("Atendimento Avulso");
                       }
                     }}
                   >
@@ -1376,18 +1373,6 @@ const Index = () => {
                       Cliente não possui sessões em planos ativos. Agendamento será realizado como atendimento avulso.
                     </p>
                   )}
-                </div>
-                <div>
-                  <Select value={newProcedimento} onValueChange={setNewProcedimento}>
-                    <SelectTrigger className="bg-input border-border focus:ring-gold">
-                      <SelectValue placeholder="Procedimento" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {procedimentosList.map((p) => (
-                        <SelectItem key={p} value={p}>{p}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
                 </div>
 
                 <div>
