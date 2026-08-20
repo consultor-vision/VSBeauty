@@ -615,7 +615,37 @@ const Gestao = () => {
               <SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue placeholder="Sistema de Medidas" /></SelectTrigger>
               <SelectContent><SelectItem value="unidade">Unidade (Un)</SelectItem><SelectItem value="miligrama">Miligrama (mg)</SelectItem><SelectItem value="litro">Litro (L)</SelectItem></SelectContent>
             </Select>
-            <div className="flex justify-center"><button className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button></div>
+            <div className="flex justify-center">
+              <button 
+                onClick={async () => {
+                  if (!novoProdutoForm.nome || !novoProdutoForm.sistemaMedidas) {
+                    toast.error("Preencha todos os campos");
+                    return;
+                  }
+                  
+                  const { error } = await supabase
+                    .from("produtos")
+                    .insert([{
+                      id_companhia: user?.id_companhia,
+                      produtos: novoProdutoForm.nome,
+                      tipo_embalagem: novoProdutoForm.sistemaMedidas
+                    }]);
+
+                  if (error) {
+                    toast.error("Erro ao cadastrar produto");
+                    console.error(error);
+                  } else {
+                    toast.success("Produto cadastrado com sucesso");
+                    setNovoProdutoForm({ nome: "", sistemaMedidas: "" });
+                    fetchProdutos();
+                  }
+                }}
+                className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all"
+              >
+                Salvar
+              </button>
+            </div>
+
             <div className="border-t border-border pt-4">
               <h4 className="text-center text-sm font-semibold text-foreground mb-3">Listagem de Produtos</h4>
               <div className="space-y-2 max-h-48 overflow-y-auto">
