@@ -222,8 +222,13 @@ const Gestao = () => {
       .eq("id_companhia", user?.id_companhia)
       .order("produtos", { ascending: true });
     if (error) throw error;
-    setProdutos(data || []);
+    setProdutos(data.map(p => ({
+      id: p.id,
+      produtos: p.produtos || "",
+      tipo_embalagem: p.tipo_embalagem || ""
+    })));
   };
+
 
   const fetchContasPagar = async () => {
     const { data, error } = await supabase
