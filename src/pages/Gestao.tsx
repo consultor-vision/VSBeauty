@@ -609,7 +609,7 @@ const Gestao = () => {
                       id_produto: prod.id,
                       tipo_embalagem: prod.tipo_embalagem,
                       quantidade: quantVal,
-                      tipo_operacao: 'entrada'
+                      tipo_movimentacao: 'entrada'
                     }]);
 
                   if (error) {
@@ -651,7 +651,7 @@ const Gestao = () => {
                         id_companhia: user?.id_companhia,
                         id_produto: editingEstoque.id,
                         quantidade: editingEstoque.quantidade, // Just to record something if needed, but normally we'd delete the whole history or flag it
-                        tipo_operacao: 'exclusao' 
+                        tipo_movimentacao: 'exclusao' 
                       }]);
                     
                     if (error) {
@@ -679,7 +679,7 @@ const Gestao = () => {
                         id_companhia: user?.id_companhia,
                         id_produto: editingEstoque.id,
                         quantidade: parseFloat(quantidadeUtilizada),
-                        tipo_operacao: 'saida'
+                        tipo_movimentacao: 'saida'
                       }]);
 
                     if (error) {
