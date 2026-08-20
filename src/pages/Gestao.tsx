@@ -609,7 +609,7 @@ const Gestao = () => {
                       id_produto: prod.id,
                       tipo_embalagem: prod.tipo_embalagem,
                       quantidade: quantVal,
-                      tipo_operacao: 'entrada'
+                      tipo_movimentacao: 'entrada'
                     }]);
 
                   if (error) {
@@ -651,7 +651,7 @@ const Gestao = () => {
                         id_companhia: user?.id_companhia,
                         id_produto: editingEstoque.id,
                         quantidade: editingEstoque.quantidade, // Just to record something if needed, but normally we'd delete the whole history or flag it
-                        tipo_operacao: 'exclusao' 
+                        tipo_movimentacao: 'exclusao' 
                       }]);
                     
                     if (error) {
@@ -679,7 +679,7 @@ const Gestao = () => {
                         id_companhia: user?.id_companhia,
                         id_produto: editingEstoque.id,
                         quantidade: parseFloat(quantidadeUtilizada),
-                        tipo_operacao: 'saida'
+                        tipo_movimentacao: 'saida'
                       }]);
 
                     if (error) {
@@ -709,7 +709,12 @@ const Gestao = () => {
             <Input placeholder="Produto" value={novoProdutoForm.nome} onChange={(e) => setNovoProdutoForm(p => ({ ...p, nome: e.target.value }))} className="bg-input border-border text-foreground h-10" />
             <Select value={novoProdutoForm.sistemaMedidas} onValueChange={(v) => setNovoProdutoForm(p => ({ ...p, sistemaMedidas: v }))}>
               <SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue placeholder="Sistema de Medidas" /></SelectTrigger>
-              <SelectContent><SelectItem value="unidade">Unidade (Un)</SelectItem><SelectItem value="miligrama">Miligrama (mg)</SelectItem><SelectItem value="litro">Litro (L)</SelectItem></SelectContent>
+              <SelectContent>
+                <SelectItem value="Unidade (Un)">Unidade (Un)</SelectItem>
+                <SelectItem value="Miligrama (mg)">Miligrama (mg)</SelectItem>
+                <SelectItem value="Mililitro (ml)">Mililitro (ml)</SelectItem>
+                <SelectItem value="Litro (L)">Litro (L)</SelectItem>
+              </SelectContent>
             </Select>
             <div className="flex justify-center">
               <button 
