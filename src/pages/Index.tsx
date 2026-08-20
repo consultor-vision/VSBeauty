@@ -499,7 +499,7 @@ const Index = () => {
     setSelectedClient(client);
     setShowClientListModal(false);
     setSelectedPlanId("");
-    setNewProcedimento("");
+    setNewProcedimento("Atendimento Avulso");
     setNewProfissional("");
     setNewDate("");
     setNewStartTime("");
