@@ -1378,7 +1378,6 @@ const Index = () => {
                   )}
                 </div>
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">Escolha o Procedimento do Cliente</label>
                   <Select value={newProcedimento} onValueChange={setNewProcedimento}>
                     <SelectTrigger className="bg-input border-border focus:ring-gold">
                       <SelectValue placeholder="Procedimento" />
