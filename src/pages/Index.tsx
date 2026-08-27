@@ -620,11 +620,13 @@ const Index = () => {
           
           if (agError) throw agError;
 
+          // Toda sessão já agendada (independente do status, exceto canceladas) consome saldo
           (agData || []).forEach((a: any) => {
-            if ((a.status_procedimento || '').toLowerCase() === 'concluído') {
-              realizadasMap[a.id_plano] = (realizadasMap[a.id_plano] || 0) + 1;
-            }
+            const st = (a.status_procedimento || '').toLowerCase();
+            if (st.startsWith('cancel')) return;
+            realizadasMap[a.id_plano] = (realizadasMap[a.id_plano] || 0) + 1;
           });
+
         }
 
         const filteredPlans = (plansData || []).map(p => {
