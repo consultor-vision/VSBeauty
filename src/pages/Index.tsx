@@ -381,6 +381,63 @@ const Index = () => {
   const [timePickerHour, setTimePickerHour] = useState("0");
   const [timePickerMinute, setTimePickerMinute] = useState("0");
 
+  /**
+   * Soma minutos a um horário "HH:MM", tratando virada de hora e de dia.
+   */
+  const addMinutesToTime = (time: string, minutes: number): string => {
+    const [h, m] = time.split(":").map((v) => parseInt(v, 10));
+    if (Number.isNaN(h) || Number.isNaN(m)) return "";
+    const total = ((h * 60 + m + minutes) % 1440 + 1440) % 1440;
+    return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+  };
+
+  /**
+   * Busca o procedimento vinculado ao plano e sua duração real (tabela procedimentos).
+   */
+  const loadProcedureForPlan = async (planId: string) => {
+    setPlanProcedure(null);
+    if (!planId) return;
+    const plan = availablePlans.find((p) => String(p.id) === planId);
+    const procId = plan?.id_procedimento;
+    if (!procId) {
+      toast.error("Não foi possível identificar o procedimento vinculado ao plano selecionado.");
+      return;
+    }
+    setLoadingProcedure(true);
+    try {
+      const { data, error } = await supabase
+        .from("procedimentos")
+        .select("id, nome, duracao")
+        .eq("id", Number(procId))
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) {
+        toast.error("Procedimento vinculado ao plano não encontrado.");
+        return;
+      }
+      const duracao = data.duracao !== null && data.duracao !== undefined ? Number(data.duracao) : null;
+      if (!duracao || duracao <= 0) {
+        toast.error("Não foi possível identificar a duração do procedimento vinculado ao plano selecionado.");
+      }
+      setPlanProcedure({ id: data.id, nome: data.nome || "Procedimento", duracao: duracao && duracao > 0 ? duracao : null });
+      if (data.nome) setNewProcedimento(data.nome);
+    } catch (err) {
+      console.error("Erro ao buscar procedimento do plano:", err);
+      toast.error("Erro ao consultar a duração do procedimento.");
+    } finally {
+      setLoadingProcedure(false);
+    }
+  };
+
+  // Recalcula o horário de fechamento sempre que plano (duração) ou hora inicial mudarem
+  useEffect(() => {
+    if (newStartTime && planProcedure?.duracao) {
+      setNewEndTime(addMinutesToTime(newStartTime, planProcedure.duracao));
+    } else if (planProcedure && !planProcedure.duracao) {
+      setNewEndTime("");
+    }
+  }, [newStartTime, planProcedure]);
+
 
   // Client search
   const [clientSearch, setClientSearch] = useState("");
