@@ -773,7 +773,7 @@ const Index = () => {
         profissional: newProfissional,
         procedimento: planProcedure?.nome || newProcedimento,
         plano: plan.nome_plano || "-",
-        statusProcedimento: "Pendente",
+        statusProcedimento: "pendente",
         statusFinanceiro: "pendente",
         valor: 0,
       };
