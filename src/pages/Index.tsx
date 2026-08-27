@@ -380,6 +380,9 @@ const Index = () => {
   const [newProcedimento, setNewProcedimento] = useState("");
 
   const [newProfissional, setNewProfissional] = useState("");
+  /** ID real (usuarios.id) do profissional selecionado */
+  const [newProfissionalId, setNewProfissionalId] = useState<number | null>(null);
+
   const [newDate, setNewDate] = useState("");
   const [newStartTime, setNewStartTime] = useState("");
   const [newEndTime, setNewEndTime] = useState("");
