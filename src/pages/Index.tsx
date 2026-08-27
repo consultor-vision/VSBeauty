@@ -661,10 +661,26 @@ const Index = () => {
   };
 
   const handleSaveAppointment = async () => {
-    if (!selectedClient || !newProcedimento || !newProfissional || !newDate || !newStartTime || !newEndTime) {
+    if (!selectedClient || !newProcedimento || !newProfissional || !newDate || !newStartTime) {
       toast.error("Preencha todos os campos");
       return;
     }
+
+    if (selectedPlanId && !planProcedure?.duracao) {
+      toast.error("Não foi possível identificar a duração do procedimento vinculado ao plano selecionado.");
+      return;
+    }
+
+    const computedEndTime = planProcedure?.duracao
+      ? addMinutesToTime(newStartTime, planProcedure.duracao)
+      : newEndTime;
+
+    if (!computedEndTime) {
+      toast.error("Horário de fechamento não pôde ser calculado.");
+      return;
+    }
+    if (computedEndTime !== newEndTime) setNewEndTime(computedEndTime);
+
     
     if (!isTimeAvailable(newDate, newStartTime)) {
       toast.error("Este horário já está ocupado!");
