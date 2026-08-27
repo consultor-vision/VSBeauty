@@ -209,19 +209,21 @@ const Index = () => {
         }));
         setClients(formattedClients.sort((a, b) => a.nome.localeCompare(b.nome)));
 
-        // Fetch Professionals from usuarios table
+        // Fetch Professionals from usuarios table (com IDs reais)
         const { data: userData, error: userError } = await supabase
           .from('usuarios')
-          .select('nome')
+          .select('id, nome, uid')
           .eq('id_companhia', user.id_companhia)
           .order('nome', { ascending: true });
 
         if (!userError && userData) {
-          const names = userData
-            .map(u => u.nome)
-            .filter((name): name is string => !!name);
-          setProfessionals(names);
+          const options = userData
+            .filter((u): u is typeof u & { nome: string } => !!u.nome)
+            .map(u => ({ id: Number(u.id), nome: u.nome, uid: u.uid as string | null }));
+          setProfessionalOptions(options);
+          setProfessionals(options.map(o => o.nome));
         }
+
 
         // Fetch Appointments (using agenda_visual view as it has joined data)
         const { data: agendaData, error: agendaError } = await supabase
