@@ -669,83 +669,100 @@ const Index = () => {
   };
 
   const handleSaveAppointment = async () => {
-    if (!selectedClient || !newProcedimento || !newProfissional || !newDate || !newStartTime) {
-      toast.error("Preencha todos os campos");
-      return;
-    }
-
-    if (selectedPlanId && !planProcedure?.duracao) {
-      toast.error("Não foi possível identificar a duração do procedimento vinculado ao plano selecionado.");
-      return;
-    }
-
-    const computedEndTime = planProcedure?.duracao
-      ? addMinutesToTime(newStartTime, planProcedure.duracao)
-      : newEndTime;
-
-    if (!computedEndTime) {
-      toast.error("Horário de fechamento não pôde ser calculado.");
-      return;
-    }
-    if (computedEndTime !== newEndTime) setNewEndTime(computedEndTime);
-
-    
-    if (!isTimeAvailable(newDate, newStartTime)) {
-      toast.error("Este horário já está ocupado!");
-      return;
-    }
-
-    // Double check plan balance if a plan is selected
-    if (selectedPlanId) {
-      try {
-        const { data: planData, error: planError } = await supabase
-          .from('planos')
-          .select('sessoes')
-          .eq('id', Number(selectedPlanId))
-          .single();
-        
-        if (planError) throw planError;
-
-        const { count, error: countError } = await supabase
-          .from('agendamento')
-          .select('*', { count: 'exact', head: true })
-          .eq('id_plano', Number(selectedPlanId))
-          .eq('status_procedimento', 'Concluído');
-
-        if (countError) throw countError;
-
-        const available = (planData.sessoes || 0) - (count || 0);
-        if (available <= 0) {
-          toast.error("Este plano não possui mais sessões disponíveis.");
-          // Refresh list
-          setAvailablePlans(prev => prev.filter(p => String(p.id) !== selectedPlanId));
-          setSelectedPlanId("");
-          return;
-        }
-      } catch (err) {
-        console.error("Validation error:", err);
-      }
-    }
+    // ---------- 1. Validação dos campos do formulário ----------
+    if (!selectedClient) { toast.error("Selecione o cliente."); return; }
+    if (!selectedPlanId) { toast.error("Selecione o plano disponível do cliente."); return; }
+    if (!newProfissionalId) { toast.error("Selecione o profissional."); return; }
+    if (!newDate) { toast.error("Informe a data do agendamento."); return; }
+    if (!newStartTime) { toast.error("Informe o horário de início."); return; }
+    if (!user?.uid) { toast.error("Usuário autenticado não identificado."); return; }
+    if (!isTimeAvailable(newDate, newStartTime)) { toast.error("Este horário já está ocupado!"); return; }
 
     try {
+      // ---------- 2. Carrega o plano real (fonte da verdade dos IDs) ----------
+      const { data: plan, error: planError } = await supabase
+        .from('planos')
+        .select('id, id_cliente, id_companhia, id_procedimento, sessoes, nome_plano')
+        .eq('id', Number(selectedPlanId))
+        .maybeSingle();
+
+      if (planError) throw planError;
+      if (!plan) { toast.error("Plano selecionado não foi encontrado no banco de dados."); return; }
+      if (Number(plan.id_cliente) !== Number(selectedClient.id)) {
+        toast.error("O plano selecionado não pertence ao cliente escolhido.");
+        return;
+      }
+      if (!plan.id_companhia) { toast.error("Companhia não identificada no plano selecionado."); return; }
+      if (!plan.id_procedimento) { toast.error("Procedimento não vinculado ao plano selecionado."); return; }
+
+      // ---------- 3. Duração real do procedimento ----------
+      let duracao = planProcedure?.id === Number(plan.id_procedimento) ? planProcedure?.duracao ?? null : null;
+      if (!duracao) {
+        const { data: proc, error: procError } = await supabase
+          .from('procedimentos')
+          .select('id, nome, duracao')
+          .eq('id', Number(plan.id_procedimento))
+          .maybeSingle();
+        if (procError) throw procError;
+        if (!proc?.duracao || Number(proc.duracao) <= 0) {
+          toast.error("Não foi possível identificar a duração do procedimento vinculado ao plano selecionado.");
+          return;
+        }
+        duracao = Number(proc.duracao);
+        setPlanProcedure({ id: Number(proc.id), nome: proc.nome || "Procedimento", duracao });
+      }
+
+      const computedEndTime = addMinutesToTime(newStartTime, duracao);
+      if (!computedEndTime) { toast.error("Horário de fechamento não pôde ser calculado."); return; }
+      if (computedEndTime !== newEndTime) setNewEndTime(computedEndTime);
+
+      // ---------- 4. Sessões: quantas já existem e qual é a próxima ----------
+      const { data: existentes, error: sessError } = await supabase
+        .from('agendamento')
+        .select('id, sessao')
+        .eq('id_plano', Number(plan.id))
+        .eq('id_cliente', Number(plan.id_cliente));
+      if (sessError) throw sessError;
+
+      const totalSessoes = Number(plan.sessoes) || 0;
+      const usadas = existentes?.length ?? 0;
+      if (totalSessoes > 0 && usadas >= totalSessoes) {
+        toast.error("Este plano não possui mais sessões disponíveis.");
+        setAvailablePlans(prev => prev.filter(p => String(p.id) !== selectedPlanId));
+        setSelectedPlanId("");
+        return;
+      }
+      const maiorSessao = (existentes || []).reduce(
+        (max, a) => Math.max(max, Number(a.sessao) || 0), 0
+      );
+      const proximaSessao = Math.max(maiorSessao + 1, usadas + 1);
+
+      // ---------- 5. Payload explícito, tipado conforme o schema ----------
+      const payload = {
+        id_usuario: user.uid as string,                 // uuid
+        id_profissional: Number(newProfissionalId),     // int8
+        id_companhia: Number(plan.id_companhia),        // int8
+        id_cliente: Number(plan.id_cliente),            // int8
+        id_plano: Number(plan.id),                      // int8
+        data_inicio: newDate,                           // date (yyyy-MM-dd)
+        hora_inicio: `${newStartTime}:00`,              // time
+        hora_fim: `${computedEndTime}:00`,              // time
+        status_procedimento: "Pendente",                // text
+        sessao: proximaSessao,                          // int8
+        alterado_por: Number(user.id),                  // int8 (usuarios.id)
+        data_alteracao: newDate,                        // date
+        confirmacao: false,                             // bool
+      };
+
       const { data, error } = await supabase
         .from('agendamento')
-        .insert([{
-          id_cliente: Number(selectedClient.id),
-          id_companhia: user?.id_companhia,
-          id_plano: selectedPlanId ? Number(selectedPlanId) : null,
-          data_agendar: newDate,
-          data_inicio: newDate, // Ensuring data_inicio is also set
-          hora_inicio: newStartTime,
-          hora_fim: computedEndTime,
-          status_procedimento: "pendente",
-          confirmacao: null
-        }])
+        .insert([payload])
         .select()
         .single();
 
       if (error) throw error;
 
+      // ---------- 6. Atualiza a agenda e o saldo de sessões ----------
       const newApp: Appointment = {
         id: String(data.id),
         clientId: selectedClient.id,
@@ -754,21 +771,33 @@ const Index = () => {
         startTime: newStartTime,
         endTime: computedEndTime,
         profissional: newProfissional,
-        procedimento: newProcedimento,
-        plano: selectedPlanId ? (availablePlans.find(p => String(p.id) === selectedPlanId)?.nome_plano || "-") : "-",
-        statusProcedimento: "pendente",
+        procedimento: planProcedure?.nome || newProcedimento,
+        plano: plan.nome_plano || "-",
+        statusProcedimento: "Pendente",
         statusFinanceiro: "pendente",
         valor: 0,
       };
       setAppointments((prev) => [...prev, newApp]);
+      setAvailablePlans(prev =>
+        prev
+          .map(p => String(p.id) === selectedPlanId
+            ? { ...p, availableSessions: (p.availableSessions ?? 0) - 1 }
+            : p)
+          .filter(p => (p.availableSessions ?? 0) > 0)
+      );
       setShowAppointmentModal(false);
       setSelectedPlanId("");
+      setPlanProcedure(null);
+      setNewProfissionalId(null);
+      setNewProfissional("");
       toast.success("Agendamento criado com sucesso!");
     } catch (error: any) {
       console.error('Error saving appointment:', error);
-      toast.error("Erro ao salvar agendamento no Supabase");
+      const detail = [error?.message, error?.details, error?.hint].filter(Boolean).join(" — ");
+      toast.error(detail || "Erro desconhecido ao salvar agendamento no Supabase");
     }
   };
+
 
 
   // Get appointments for a specific date
