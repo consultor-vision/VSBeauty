@@ -578,7 +578,9 @@ const Index = () => {
     setSelectedClient(client);
     setShowClientListModal(false);
     setSelectedPlanId("");
+    setPlanProcedure(null);
     setNewProcedimento("Atendimento Avulso");
+
     setNewProfissional("");
     setNewDate("");
     setNewStartTime("");
