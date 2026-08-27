@@ -729,7 +729,7 @@ const Index = () => {
           data_agendar: newDate,
           data_inicio: newDate, // Ensuring data_inicio is also set
           hora_inicio: newStartTime,
-          hora_fim: newEndTime,
+          hora_fim: computedEndTime,
           status_procedimento: "pendente",
           confirmacao: null
         }])
@@ -744,7 +744,7 @@ const Index = () => {
         clientName: selectedClient.nome,
         date: newDate,
         startTime: newStartTime,
-        endTime: newEndTime,
+        endTime: computedEndTime,
         profissional: newProfissional,
         procedimento: newProcedimento,
         plano: selectedPlanId ? (availablePlans.find(p => String(p.id) === selectedPlanId)?.nome_plano || "-") : "-",
