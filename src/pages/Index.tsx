@@ -1484,16 +1484,24 @@ const Index = () => {
 
                 <div className="md:col-span-1">
                   <label className="text-xs text-muted-foreground mb-1 block">Escolha o Profissional</label>
-                  <Select value={newProfissional} onValueChange={setNewProfissional}>
+                  <Select
+                    value={newProfissionalId ? String(newProfissionalId) : ""}
+                    onValueChange={(val) => {
+                      const prof = professionalOptions.find(p => String(p.id) === val);
+                      setNewProfissionalId(prof ? prof.id : null);
+                      setNewProfissional(prof?.nome || "");
+                    }}
+                  >
                     <SelectTrigger className="bg-input border-border focus:ring-gold">
                       <SelectValue placeholder="Profissionais" />
                     </SelectTrigger>
                     <SelectContent>
-                      {profissionaisList.map((p) => (
-                        <SelectItem key={p} value={p}>{p}</SelectItem>
+                      {professionalOptions.map((p) => (
+                        <SelectItem key={p.id} value={String(p.id)}>{p.nome}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
+
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
