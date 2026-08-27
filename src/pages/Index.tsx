@@ -369,7 +369,11 @@ const Index = () => {
   const [availablePlans, setAvailablePlans] = useState<any[]>([]);
   const [loadingAvailablePlans, setLoadingAvailablePlans] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState<string>("");
+  /** Procedimento vinculado ao plano selecionado (id, nome e duração em minutos) */
+  const [planProcedure, setPlanProcedure] = useState<{ id: number; nome: string; duracao: number | null } | null>(null);
+  const [loadingProcedure, setLoadingProcedure] = useState(false);
   const [newProcedimento, setNewProcedimento] = useState("");
+
   const [newProfissional, setNewProfissional] = useState("");
   const [newDate, setNewDate] = useState("");
   const [newStartTime, setNewStartTime] = useState("");
