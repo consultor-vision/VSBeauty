@@ -1436,7 +1436,9 @@ const Index = () => {
                       } else {
                         setNewProcedimento("Atendimento Avulso");
                       }
+                      void loadProcedureForPlan(val);
                     }}
+
                   >
                     <SelectTrigger className="bg-input border-border focus:ring-gold border-gold">
                       <SelectValue placeholder={loadingAvailablePlans ? "Carregando planos..." : (availablePlans.length > 0 ? "Selecione um plano" : "Nenhum plano com sessões disponíveis")} />
