@@ -590,6 +590,8 @@ const Index = () => {
     setNewProcedimento("Atendimento Avulso");
 
     setNewProfissional("");
+    setNewProfissionalId(null);
+
     setNewDate("");
     setNewStartTime("");
     setNewEndTime("");
