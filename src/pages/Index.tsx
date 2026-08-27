@@ -1495,11 +1495,17 @@ const Index = () => {
                 <div>
                   <label className="text-xs text-muted-foreground mb-1 block">Horário de Fechamento</label>
                   <button
-                    onClick={() => openTimePicker("end")}
-                    className="w-full h-10 px-3 rounded-md bg-input border border-border text-foreground text-sm flex items-center justify-between hover:border-gold/50 transition-colors"
+                    onClick={() => { if (!planProcedure?.duracao) openTimePicker("end"); }}
+                    disabled={!!planProcedure?.duracao}
+                    title={planProcedure?.duracao ? `Calculado automaticamente (${planProcedure.duracao} min)` : undefined}
+                    className={cn(
+                      "w-full h-10 px-3 rounded-md bg-input border border-border text-foreground text-sm flex items-center justify-between transition-colors",
+                      planProcedure?.duracao ? "opacity-80 cursor-not-allowed" : "hover:border-gold/50"
+                    )}
                   >
-                    <span>{newEndTime || "Defina o Horário"}</span>
+                    <span>{loadingProcedure ? "Calculando..." : (newEndTime || "Defina o Horário")}</span>
                     <Clock className="w-4 h-4 text-muted-foreground" />
+
                   </button>
                 </div>
               </div>
