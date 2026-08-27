@@ -180,6 +180,9 @@ const Index = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [professionals, setProfessionals] = useState<string[]>([]);
+  /** Profissionais da companhia com IDs reais (tabela usuarios) */
+  const [professionalOptions, setProfessionalOptions] = useState<{ id: number; nome: string; uid: string | null }[]>([]);
+
 
   useEffect(() => {
     const fetchData = async () => {
