@@ -1,6 +1,8 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import Layout from "@/components/Layout";
 import { NewAppointmentModal } from "@/components/appointment/NewAppointmentModal";
+import { ClientFormModal, isoToBrDate, type ClientFormValues } from "@/components/client/ClientFormModal";
+
 import { User, Users, Plus, Eraser, Pencil, FileText, CalendarPlus, Clock, Edit, X, Upload } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -134,7 +136,6 @@ const CadastroContent = ({ user }: { user: any }) => {
   const [clientPlans, setClientPlans] = useState<PlanData[]>([]);
   const [loadingPlans, setLoadingPlans] = useState(false);
   const [anamneseQuestionsDb, setAnamneseQuestionsDb] = useState<{ id: number; pergunta: string; caso_sim: string }[]>([]);
-  const [cepLoading, setCepLoading] = useState(false);
 
   // Modal states
   const [showEditCadastro, setShowEditCadastro] = useState(false);
@@ -157,18 +158,13 @@ const CadastroContent = ({ user }: { user: any }) => {
   const [savingPlan, setSavingPlan] = useState(false);
   const [savingAnamnese, setSavingAnamnese] = useState(false);
 
-  // Novo Cadastro form
-  const [novoCadastro, setNovoCadastro] = useState({
-    nome: "", telefone: "", email: "", instagram: "", nascimento: "", genero: "", cpf: "", cep: "", logradouro: "", numero: "", bairro: "", cidade: "", uf: "",
-  });
-
   // Novo Agendamento form
   const [novoAgendamento, setNovoAgendamento] = useState({
     procedimento: "", profissional: "", data: "", horarioInicio: "", horarioFechamento: "",
   });
 
   // Edit cadastro form
-  const [editForm, setEditForm] = useState<ClientData | null>(null);
+  const [editForm, setEditForm] = useState<ClientFormValues | null>(null);
 
   // Novo Plano form
   const [novoPlano, setNovoPlano] = useState({
@@ -320,104 +316,54 @@ const CadastroContent = ({ user }: { user: any }) => {
   };
 
 
-  // ViaCEP integration
-  const buscarCEP = async (cep: string, target: "novo" | "edit") => {
-    const cepLimpo = (cep || "").replace(/\D/g, "");
-    if (!cepLimpo) {
-      toast.error("Informe um CEP válido.");
-      return;
-    }
-    setCepLoading(true);
+  /** Busca os clientes da companhia e devolve a lista já formatada. */
+  const fetchClients = useCallback(async (): Promise<ClientData[]> => {
+    if (!user?.id_companhia) return [];
+
+    setLoading(true);
     try {
-      const res = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
-      const data = await res.json();
-      if (data.erro) {
-        toast.error("CEP não encontrado.");
-        return;
-      }
-      if (target === "novo") {
-        setNovoCadastro((p) => ({
-          ...p,
-          logradouro: data.logradouro || "",
-          bairro: data.bairro || "",
-          cidade: data.localidade || "",
-          uf: data.uf || "",
-        }));
-      } else {
-        setEditForm((prev) =>
-          prev
-            ? {
-                ...prev,
-                logradouro: data.logradouro || "",
-                bairro: data.bairro || "",
-                cidade: data.localidade || "",
-                uf: data.uf || "",
-              }
-            : prev
-        );
-      }
-      toast.success("Endereço preenchido.");
-    } catch (e) {
-      console.error(e);
-      toast.error("Erro ao buscar CEP.");
+      const { data, error } = await supabase
+        .from('clientes')
+        .select('*')
+        .eq('id_companhia', user.id_companhia)
+        .order('nome', { ascending: true });
+
+      if (error) throw error;
+
+      const formattedClients: ClientData[] = (data || []).map((c: any) => ({
+        id: String(c.id),
+        nome: c.nome || '',
+        foto: c.imagem || '',
+        cpf: c.cpf || '',
+        telefone: c.telefone || '',
+        email: c.email || '',
+        cidade: c.cidade || '',
+        uf: c.estado || '',
+        nascimento: isoToBrDate(c.data_nascimento),
+        genero: c.genero || '',
+        instagram: c.instagram || '',
+        logradouro: c.logradouro || '',
+        numero: c.numero || '',
+        cep: c.cep || '',
+        complemento: c.complemento || '',
+        bairro: c.bairro || '',
+      }));
+
+      setClients(formattedClients);
+      return formattedClients;
+    } catch (error: any) {
+      console.error('Error fetching clients:', error);
+      toast.error("Erro ao carregar clientes");
+      return [];
     } finally {
-      setCepLoading(false);
+      setLoading(false);
     }
-  };
+  }, [user?.id_companhia]);
 
   useEffect(() => {
-    const fetchClients = async () => {
-      if (!user?.id_companhia) return;
-      
-      setLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('clientes')
-          .select('*')
-          .eq('id_companhia', user.id_companhia)
-          .order('nome', { ascending: true });
+    void fetchClients();
+  }, [fetchClients]);
 
-        if (error) throw error;
-
-        const formattedClients: ClientData[] = (data || []).map(c => {
-          let formattedNascimento = c.data_nascimento || '';
-          if (formattedNascimento) {
-            const date = parseISO(formattedNascimento);
-            if (isValid(date)) {
-              formattedNascimento = format(date, "dd/MM/yyyy");
-            }
-          }
-
-          return {
-            id: String(c.id),
-            nome: c.nome || '',
-            foto: c.imagem || '',
-            cpf: c.cpf || '',
-            telefone: c.telefone || '',
-            email: c.email || '',
-            cidade: c.cidade || '',
-            uf: c.estado || '',
-            nascimento: formattedNascimento,
-            genero: c.genero || '',
-            instagram: c.instagram || '',
-            logradouro: (c as any).endereco || (c as any).logradouro || '',
-            numero: c.numero || '',
-            cep: c.cep || '',
-            complemento: c.complemento || '',
-            bairro: c.bairro || ''
-          };
-        });
-        setClients(formattedClients);
-      } catch (error: any) {
-        console.error('Error fetching clients:', error);
-        toast.error("Erro ao carregar clientes");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchClients();
-  }, [user?.id_companhia]);
 
   useEffect(() => {
     const fetchProcedimentos = async () => {
@@ -559,11 +505,28 @@ const CadastroContent = ({ user }: { user: any }) => {
   };
 
   const handleOpenEditCadastro = () => {
-    if (selectedClient) {
-      setEditForm({ ...selectedClient });
-      setShowEditCadastro(true);
-    }
+    if (!selectedClient) return;
+    setEditForm({
+      id: Number(selectedClient.id),
+      nome: selectedClient.nome,
+      telefone: selectedClient.telefone,
+      email: selectedClient.email,
+      instagram: selectedClient.instagram,
+      nascimento: selectedClient.nascimento,
+      genero: selectedClient.genero,
+      cpf: selectedClient.cpf,
+      cep: selectedClient.cep,
+      logradouro: selectedClient.logradouro,
+      numero: selectedClient.numero,
+      complemento: selectedClient.complemento,
+      bairro: selectedClient.bairro,
+      cidade: selectedClient.cidade,
+      uf: selectedClient.uf,
+      imagem: selectedClient.foto,
+    });
+    setShowEditCadastro(true);
   };
+
 
   const handleOpenEditPlano = async (plan: PlanData) => {
     setEditingPlan(plan);
@@ -777,10 +740,8 @@ const CadastroContent = ({ user }: { user: any }) => {
             {!selectedClient && (
               <>
                 <ActionButton icon={Users} label="Clientes" onClick={() => setShowClientList(true)} />
-                <ActionButton icon={Plus} label="Novo Cadastro" onClick={() => {
-                  setNovoCadastro({ nome: "", telefone: "", email: "", instagram: "", nascimento: "", genero: "", cpf: "", cep: "", logradouro: "", numero: "", bairro: "", cidade: "", uf: "" });
-                  setShowNovoCadastro(true);
-                }} />
+                <ActionButton icon={Plus} label="Novo Cadastro" onClick={() => setShowNovoCadastro(true)} />
+
               </>
             )}
             <ActionButton icon={Eraser} label="Limpar" onClick={handleClear} />
@@ -908,112 +869,19 @@ const CadastroContent = ({ user }: { user: any }) => {
         </DialogContent>
       </Dialog>
 
-      {/* ========== EDITAR CADASTRO MODAL ========== */}
-      <Dialog open={showEditCadastro} onOpenChange={setShowEditCadastro}>
-        <DialogContent className="max-w-2xl bg-card border-border p-0">
-          <DialogHeader className="p-5 pb-0">
-            <DialogTitle className="text-foreground">Editar Cadastro</DialogTitle>
-          </DialogHeader>
-          {editForm && (
-            <div className="p-5 space-y-4">
-              <div className="flex items-start gap-4">
-                <button className="w-14 h-14 rounded-full bg-gold/20 border border-gold flex items-center justify-center shrink-0 hover:bg-gold/30 transition-colors">
-                  <Upload className="w-6 h-6 text-gold" />
-                </button>
-                <div className="flex-1">
-                  <label className="text-xs text-gold mb-1 block">Nome Completo</label>
-                  <Input value={editForm.nome} onChange={(e) => setEditForm({ ...editForm, nome: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-              </div>
+      {/* ========== EDITAR CADASTRO (mesmo formulário do Novo Cadastro) ========== */}
+      <ClientFormModal
+        open={showEditCadastro}
+        onOpenChange={setShowEditCadastro}
+        initialValues={editForm}
+        idCompanhia={user?.id_companhia}
+        onSaved={async (savedId) => {
+          const updated = await fetchClients();
+          const found = updated.find((c) => Number(c.id) === Number(savedId));
+          if (found) setSelectedClient(found);
+        }}
+      />
 
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="text-xs text-gold mb-1 block">Telefone</label>
-                  <Input value={editForm.telefone} onChange={(e) => setEditForm({ ...editForm, telefone: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-                <div>
-                  <label className="text-xs text-gold mb-1 block">Email</label>
-                  <Input value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-                <div>
-                  <label className="text-xs text-gold mb-1 block">Instagram</label>
-                  <Input value={editForm.instagram} onChange={(e) => setEditForm({ ...editForm, instagram: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="text-xs text-gold mb-1 block">Data de Nascimento</label>
-                  <Input value={editForm.nascimento} onChange={(e) => setEditForm({ ...editForm, nascimento: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-                <div>
-                  <label className="text-xs text-gold mb-1 block">Gênero</label>
-                  <Select value={editForm.genero.toLowerCase() || undefined} onValueChange={(v) => setEditForm({ ...editForm, genero: v })}>
-                    <SelectTrigger className="bg-input border-border text-foreground h-9">
-                      <SelectValue placeholder="Gênero" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="feminino">Feminino</SelectItem>
-                      <SelectItem value="masculino">Masculino</SelectItem>
-                      <SelectItem value="outro">Outro</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label className="text-xs text-gold mb-1 block">CPF</label>
-                  <Input value={editForm.cpf} onChange={(e) => setEditForm({ ...editForm, cpf: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-[1fr_auto_2fr] gap-3 items-end">
-                <div>
-                  <label className="text-xs text-gold mb-1 block">CEP</label>
-                  <Input value={editForm.cep} onChange={(e) => setEditForm({ ...editForm, cep: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-                <button type="button" onClick={() => editForm && buscarCEP(editForm.cep, "edit")} disabled={cepLoading} className="h-9 w-9 rounded-md bg-gold/20 border border-gold flex items-center justify-center text-gold hover:bg-gold/30 transition-colors disabled:opacity-50">→</button>
-                <div>
-                  <label className="text-xs text-gold mb-1 block">Logradouro</label>
-                  <Input value={editForm.logradouro} onChange={(e) => setEditForm({ ...editForm, logradouro: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-3">
-                <div>
-                  <label className="text-xs text-gold mb-1 block">Número</label>
-                  <Input value={editForm.numero} onChange={(e) => setEditForm({ ...editForm, numero: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="text-xs text-gold mb-1 block">Bairro</label>
-                  <Input value={editForm.bairro} onChange={(e) => setEditForm({ ...editForm, bairro: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-                <div>
-                  <label className="text-xs text-gold mb-1 block">Cidade</label>
-                  <Input value={editForm.cidade} onChange={(e) => setEditForm({ ...editForm, cidade: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-                <div>
-                  <label className="text-xs text-gold mb-1 block">UF</label>
-                  <Input value={editForm.uf} onChange={(e) => setEditForm({ ...editForm, uf: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-              </div>
-
-              <div className="flex justify-center pt-2">
-                <button
-                  onClick={() => {
-                    if (editForm) setSelectedClient(editForm);
-                    setShowEditCadastro(false);
-                  }}
-                  className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all"
-                >
-                  Salvar
-                </button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
 
       {/* ========== NOVA FICHA DE ANAMNESE MODAL ========== */}
       <Dialog open={showAnamnese} onOpenChange={setShowAnamnese}>
@@ -1385,65 +1253,17 @@ const CadastroContent = ({ user }: { user: any }) => {
         </DialogContent>
       </Dialog>
 
-      {/* ========== NOVO CADASTRO MODAL ========== */}
-      <Dialog open={showNovoCadastro} onOpenChange={setShowNovoCadastro}>
-        <DialogContent className="max-w-2xl bg-card border-border p-0">
-          <DialogHeader className="p-5 pb-0">
-            <DialogTitle className="text-foreground">Novo Cadastro</DialogTitle>
-          </DialogHeader>
-          <div className="p-5 space-y-4">
-            <div className="flex items-start gap-4">
-              <button className="w-14 h-14 rounded-full bg-gold/20 border border-gold flex items-center justify-center shrink-0 hover:bg-gold/30 transition-colors">
-                <Upload className="w-6 h-6 text-gold" />
-              </button>
-              <div className="flex-1">
-                <Input placeholder="Nome Completo" value={novoCadastro.nome} onChange={(e) => setNovoCadastro((p) => ({ ...p, nome: e.target.value }))} className="bg-input border-border text-foreground h-9" />
-              </div>
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-              <Input placeholder="Telefone" value={novoCadastro.telefone} onChange={(e) => setNovoCadastro((p) => ({ ...p, telefone: e.target.value }))} className="bg-input border-border text-foreground h-9" />
-              <Input placeholder="Email" value={novoCadastro.email} onChange={(e) => setNovoCadastro((p) => ({ ...p, email: e.target.value }))} className="bg-input border-border text-foreground h-9" />
-              <Input placeholder="Instagram" value={novoCadastro.instagram} onChange={(e) => setNovoCadastro((p) => ({ ...p, instagram: e.target.value }))} className="bg-input border-border text-foreground h-9" />
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-              <Input placeholder="Insira a Data de Nascimento" value={novoCadastro.nascimento} onChange={(e) => setNovoCadastro((p) => ({ ...p, nascimento: e.target.value }))} className="bg-input border-border text-foreground h-9" />
-              <Select value={novoCadastro.genero || undefined} onValueChange={(v) => setNovoCadastro((p) => ({ ...p, genero: v }))}>
-                <SelectTrigger className="bg-input border-border text-foreground h-9">
-                  <SelectValue placeholder="Gênero" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="feminino">Feminino</SelectItem>
-                  <SelectItem value="masculino">Masculino</SelectItem>
-                  <SelectItem value="outro">Outro</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input placeholder="CPF" value={novoCadastro.cpf} onChange={(e) => setNovoCadastro((p) => ({ ...p, cpf: e.target.value }))} className="bg-input border-border text-foreground h-9" />
-            </div>
-            <div className="grid grid-cols-[1fr_auto_2fr] gap-3 items-end">
-              <div>
-                <Input placeholder="CEP" value={novoCadastro.cep} onChange={(e) => setNovoCadastro((p) => ({ ...p, cep: e.target.value }))} className="bg-input border-border text-foreground h-9" />
-              </div>
-              <button type="button" onClick={() => buscarCEP(novoCadastro.cep, "novo")} disabled={cepLoading} className="h-9 w-9 rounded-md bg-accent border border-gold/40 flex items-center justify-center text-gold hover:bg-accent/80 transition-colors disabled:opacity-50">→</button>
-              <div>
-                <Input placeholder="Logradouro" value={novoCadastro.logradouro} onChange={(e) => setNovoCadastro((p) => ({ ...p, logradouro: e.target.value }))} className="bg-input border-border text-foreground h-9" />
-              </div>
-            </div>
-            <div className="grid grid-cols-1 gap-3">
-              <Input placeholder="Número" value={novoCadastro.numero} onChange={(e) => setNovoCadastro((p) => ({ ...p, numero: e.target.value }))} className="bg-input border-border text-foreground h-9" />
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-              <Input placeholder="Bairro" value={novoCadastro.bairro} onChange={(e) => setNovoCadastro((p) => ({ ...p, bairro: e.target.value }))} className="bg-input border-border text-foreground h-9" />
-              <Input placeholder="Cidade" value={novoCadastro.cidade} onChange={(e) => setNovoCadastro((p) => ({ ...p, cidade: e.target.value }))} className="bg-input border-border text-foreground h-9" />
-              <Input placeholder="UF" value={novoCadastro.uf} onChange={(e) => setNovoCadastro((p) => ({ ...p, uf: e.target.value }))} className="bg-input border-border text-foreground h-9" />
-            </div>
-            <div className="flex justify-center pt-2">
-              <button onClick={() => setShowNovoCadastro(false)} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">
-                Salvar
-              </button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* ========== NOVO CADASTRO / EDIÇÃO DE CLIENTE (formulário compartilhado) ========== */}
+      <ClientFormModal
+        open={showNovoCadastro}
+        onOpenChange={setShowNovoCadastro}
+        initialValues={null}
+        idCompanhia={user?.id_companhia}
+        onSaved={async () => {
+          await fetchClients();
+        }}
+      />
+
 
       {/* ========== NOVO AGENDAMENTO MODAL ========== */}
       {/* ========== NOVO AGENDAMENTO MODAL (compartilhado com a Agenda) ========== */}
