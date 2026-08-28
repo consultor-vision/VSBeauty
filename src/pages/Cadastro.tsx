@@ -1179,14 +1179,17 @@ const CadastroContent = ({ user }: { user: any }) => {
               </div>
               <div>
                 <label className="text-xs text-gold mb-1 block">Status Financeiro</label>
-                <Select>
+                <Select
+                  value={novoPlano.statusFinanceiro || undefined}
+                  onValueChange={(v) => setNovoPlano((p) => ({ ...p, statusFinanceiro: v }))}
+                >
                   <SelectTrigger className="bg-input border-border text-foreground h-9">
                     <SelectValue placeholder="Pendente" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pendente">Pendente</SelectItem>
-                    <SelectItem value="pago">Pago</SelectItem>
-                    <SelectItem value="parcial">Parcial</SelectItem>
+                    <SelectItem value="Pendente">Pendente</SelectItem>
+                    <SelectItem value="Pago">Pago</SelectItem>
+                    <SelectItem value="Parcial">Parcial</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -1194,8 +1197,9 @@ const CadastroContent = ({ user }: { user: any }) => {
 
             <div className="flex justify-center pt-2">
               <button
-                onClick={() => setShowNovoProcedimento(false)}
-                className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all"
+                onClick={handleSaveNovoPlano}
+                disabled={savingNovoPlano}
+                className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 Salvar
               </button>
