@@ -320,104 +320,54 @@ const CadastroContent = ({ user }: { user: any }) => {
   };
 
 
-  // ViaCEP integration
-  const buscarCEP = async (cep: string, target: "novo" | "edit") => {
-    const cepLimpo = (cep || "").replace(/\D/g, "");
-    if (!cepLimpo) {
-      toast.error("Informe um CEP válido.");
-      return;
-    }
-    setCepLoading(true);
+  /** Busca os clientes da companhia e devolve a lista já formatada. */
+  const fetchClients = useCallback(async (): Promise<ClientData[]> => {
+    if (!user?.id_companhia) return [];
+
+    setLoading(true);
     try {
-      const res = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
-      const data = await res.json();
-      if (data.erro) {
-        toast.error("CEP não encontrado.");
-        return;
-      }
-      if (target === "novo") {
-        setNovoCadastro((p) => ({
-          ...p,
-          logradouro: data.logradouro || "",
-          bairro: data.bairro || "",
-          cidade: data.localidade || "",
-          uf: data.uf || "",
-        }));
-      } else {
-        setEditForm((prev) =>
-          prev
-            ? {
-                ...prev,
-                logradouro: data.logradouro || "",
-                bairro: data.bairro || "",
-                cidade: data.localidade || "",
-                uf: data.uf || "",
-              }
-            : prev
-        );
-      }
-      toast.success("Endereço preenchido.");
-    } catch (e) {
-      console.error(e);
-      toast.error("Erro ao buscar CEP.");
+      const { data, error } = await supabase
+        .from('clientes')
+        .select('*')
+        .eq('id_companhia', user.id_companhia)
+        .order('nome', { ascending: true });
+
+      if (error) throw error;
+
+      const formattedClients: ClientData[] = (data || []).map((c: any) => ({
+        id: String(c.id),
+        nome: c.nome || '',
+        foto: c.imagem || '',
+        cpf: c.cpf || '',
+        telefone: c.telefone || '',
+        email: c.email || '',
+        cidade: c.cidade || '',
+        uf: c.estado || '',
+        nascimento: isoToBrDate(c.data_nascimento),
+        genero: c.genero || '',
+        instagram: c.instagram || '',
+        logradouro: c.logradouro || '',
+        numero: c.numero || '',
+        cep: c.cep || '',
+        complemento: c.complemento || '',
+        bairro: c.bairro || '',
+      }));
+
+      setClients(formattedClients);
+      return formattedClients;
+    } catch (error: any) {
+      console.error('Error fetching clients:', error);
+      toast.error("Erro ao carregar clientes");
+      return [];
     } finally {
-      setCepLoading(false);
+      setLoading(false);
     }
-  };
+  }, [user?.id_companhia]);
 
   useEffect(() => {
-    const fetchClients = async () => {
-      if (!user?.id_companhia) return;
-      
-      setLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('clientes')
-          .select('*')
-          .eq('id_companhia', user.id_companhia)
-          .order('nome', { ascending: true });
+    void fetchClients();
+  }, [fetchClients]);
 
-        if (error) throw error;
-
-        const formattedClients: ClientData[] = (data || []).map(c => {
-          let formattedNascimento = c.data_nascimento || '';
-          if (formattedNascimento) {
-            const date = parseISO(formattedNascimento);
-            if (isValid(date)) {
-              formattedNascimento = format(date, "dd/MM/yyyy");
-            }
-          }
-
-          return {
-            id: String(c.id),
-            nome: c.nome || '',
-            foto: c.imagem || '',
-            cpf: c.cpf || '',
-            telefone: c.telefone || '',
-            email: c.email || '',
-            cidade: c.cidade || '',
-            uf: c.estado || '',
-            nascimento: formattedNascimento,
-            genero: c.genero || '',
-            instagram: c.instagram || '',
-            logradouro: (c as any).endereco || (c as any).logradouro || '',
-            numero: c.numero || '',
-            cep: c.cep || '',
-            complemento: c.complemento || '',
-            bairro: c.bairro || ''
-          };
-        });
-        setClients(formattedClients);
-      } catch (error: any) {
-        console.error('Error fetching clients:', error);
-        toast.error("Erro ao carregar clientes");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchClients();
-  }, [user?.id_companhia]);
 
   useEffect(() => {
     const fetchProcedimentos = async () => {
