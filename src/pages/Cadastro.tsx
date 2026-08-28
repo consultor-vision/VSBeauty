@@ -136,7 +136,6 @@ const CadastroContent = ({ user }: { user: any }) => {
   const [clientPlans, setClientPlans] = useState<PlanData[]>([]);
   const [loadingPlans, setLoadingPlans] = useState(false);
   const [anamneseQuestionsDb, setAnamneseQuestionsDb] = useState<{ id: number; pergunta: string; caso_sim: string }[]>([]);
-  const [cepLoading, setCepLoading] = useState(false);
 
   // Modal states
   const [showEditCadastro, setShowEditCadastro] = useState(false);
@@ -159,18 +158,13 @@ const CadastroContent = ({ user }: { user: any }) => {
   const [savingPlan, setSavingPlan] = useState(false);
   const [savingAnamnese, setSavingAnamnese] = useState(false);
 
-  // Novo Cadastro form
-  const [novoCadastro, setNovoCadastro] = useState({
-    nome: "", telefone: "", email: "", instagram: "", nascimento: "", genero: "", cpf: "", cep: "", logradouro: "", numero: "", bairro: "", cidade: "", uf: "",
-  });
-
   // Novo Agendamento form
   const [novoAgendamento, setNovoAgendamento] = useState({
     procedimento: "", profissional: "", data: "", horarioInicio: "", horarioFechamento: "",
   });
 
   // Edit cadastro form
-  const [editForm, setEditForm] = useState<ClientData | null>(null);
+  const [editForm, setEditForm] = useState<ClientFormValues | null>(null);
 
   // Novo Plano form
   const [novoPlano, setNovoPlano] = useState({
