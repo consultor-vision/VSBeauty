@@ -101,6 +101,7 @@ const Gestao = () => {
   const [novoProdutoForm, setNovoProdutoForm] = useState({ nome: "", sistemaMedidas: "" });
   const [showEditarProduto, setShowEditarProduto] = useState(false);
   const [editingProdutoNome, setEditingProdutoNome] = useState("");
+  const [editingProduto, setEditingProduto] = useState<{ id: number; produtos: string } | null>(null);
   const [showEditarEstoque, setShowEditarEstoque] = useState(false);
   const [editingEstoque, setEditingEstoque] = useState<EstoqueItem | null>(null);
   const [quantidadeUtilizada, setQuantidadeUtilizada] = useState("");
@@ -234,7 +235,7 @@ const Gestao = () => {
   const fetchContasPagar = async () => {
     const { data, error } = await supabase
       .from("conta_pagar")
-      .select("*, categoria(nome), item_financeiro(nome)")
+      .select("*, categoria(Nome), item_financeiro(item)")
       .eq("id_companhia", user?.id_companhia)
       .order("data_operacao", { ascending: false });
     if (error) throw error;
@@ -242,8 +243,8 @@ const Gestao = () => {
       id: c.id,
       status: c.Status || "Pendente",
       dataVencimento: c.data_operacao ? format(new Date(c.data_operacao), "dd/MM/yyyy") : "-",
-      categoria: (c.categoria as any)?.nome || "-",
-      item: (c.item_financeiro as any)?.nome || "-",
+      categoria: (c.categoria as any)?.Nome || "-",
+      item: (c.item_financeiro as any)?.item || "-",
       valor: (c.valor || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
       dataEmissao: c.Data_Emissao ? format(new Date(c.Data_Emissao), "dd/MM/yyyy") : "-",
       tipoPagamento: c.Tipo_Pagamento || "-",
@@ -255,7 +256,7 @@ const Gestao = () => {
   const fetchContasReceber = async () => {
     const { data, error } = await supabase
       .from("conta_receber")
-      .select("*, clientes(nome), planos(nome_plano)")
+      .select("*, clientes(nome), procedimentos(nome)")
       .eq("id_companhia", user?.id_companhia)
       .order("created_at", { ascending: false });
     if (error) throw error;
@@ -263,7 +264,7 @@ const Gestao = () => {
       id: c.id,
       status: c.status_financeiro || "Pendente",
       dataVencimento: c.Data_Vencimento ? format(new Date(c.Data_Vencimento), "dd/MM/yyyy") : "-",
-      procedimento: (c.planos as any)?.nome_plano || "-",
+      procedimento: c.nome_plano || (c.procedimentos as any)?.nome || "-",
       cliente: (c.clientes as any)?.nome || "-",
       valor: (c.valor_procediemtno || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
       dataEmissao: c.created_at ? format(new Date(c.created_at), "dd/MM/yyyy") : "-",
@@ -293,6 +294,236 @@ const Gestao = () => {
       .order("item", { ascending: true });
     if (error) throw error;
     setItensFinanceiros((data || []).map(i => ({ id: i.id, nome: (i as any).item || "" })));
+  };
+
+  // ── Helpers ──
+  const parseCurrency = (v: string): number => {
+    if (!v) return 0;
+    const clean = String(v).replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", ".");
+    const n = parseFloat(clean);
+    return isNaN(n) ? 0 : n;
+  };
+  const parseDateBR = (v: string): string | null => {
+    if (!v) return null;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+    const m = v.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    return m ? `${m[3]}-${m[2]}-${m[1]}` : null;
+  };
+
+  // ── Persistência: Colaborador ──
+  const handleSaveNovoColab = async () => {
+    if (!novoColabForm.nome.trim()) { toast.error("Informe o nome do colaborador."); return; }
+    if (!user?.id_companhia) { toast.error("Companhia não identificada."); return; }
+    const { error } = await supabase.from("usuarios").insert([{
+      id_companhia: user.id_companhia,
+      nome: novoColabForm.nome.trim(),
+      email: novoColabForm.email.trim() || null,
+      cpf: novoColabForm.cpf || null,
+      phone: novoColabForm.telefone || null,
+      data_nascimento: parseDateBR(novoColabForm.nascimento),
+      adm: novoColabForm.admin,
+      acesso: true,
+      vsb_adm: false,
+    }]);
+    if (error) { console.error(error); toast.error("Erro ao cadastrar colaborador."); return; }
+    toast.success("Colaborador cadastrado com sucesso.");
+    setNovoColabForm({ nome: "", nascimento: "", cpf: "", telefone: "", email: "", admin: false });
+    setShowNovoColab(false);
+    fetchColaboradores();
+  };
+
+  const handleSaveEditColab = async (bloquear = false) => {
+    if (!editingColab || !user?.id_companhia) return;
+    const { error } = await supabase.from("usuarios").update({
+      nome: editingColab.nome,
+      email: editingColab.email || null,
+      cpf: editingColab.cpf || null,
+      phone: editingColab.telefone || null,
+      data_nascimento: parseDateBR(editingColab.nascimento || ""),
+      adm: adminToggle,
+      ...(bloquear ? { acesso: false } : {}),
+    }).eq("id", editingColab.id).eq("id_companhia", user.id_companhia);
+    if (error) { console.error(error); toast.error("Erro ao salvar colaborador."); return; }
+    toast.success(bloquear ? "Colaborador bloqueado." : "Colaborador atualizado.");
+    setShowEditarColab(false);
+    fetchColaboradores();
+  };
+
+  // ── Persistência: Procedimento ──
+  const handleSaveNovoProc = async () => {
+    if (!novoProcForm.nome.trim()) { toast.error("Informe o nome do procedimento."); return; }
+    if (!user?.id_companhia) return;
+    const { error } = await supabase.from("procedimentos").insert([{
+      id_companhia: user.id_companhia,
+      nome: novoProcForm.nome.trim(),
+      duracao: parseInt(novoProcForm.duracao) || 0,
+      intervalo: parseInt(novoProcForm.intervalo) || 0,
+      valor: parseCurrency(novoProcForm.valor),
+      Trabalhado: novoProcForm.trabalhando,
+    }]);
+    if (error) { console.error(error); toast.error("Erro ao cadastrar procedimento."); return; }
+    toast.success("Procedimento cadastrado com sucesso.");
+    setNovoProcForm({ nome: "", duracao: "", intervalo: "", valor: "", trabalhando: true });
+    setShowNovoProc(false);
+    fetchProcedimentos();
+  };
+
+  const handleSaveEditProc = async () => {
+    if (!editingProc || !user?.id_companhia) return;
+    const { error } = await supabase.from("procedimentos").update({
+      nome: editingProc.nome,
+      duracao: parseInt(editingProc.duracao) || 0,
+      intervalo: parseInt(editingProc.intervalo) || 0,
+      valor: parseCurrency(editingProc.valor),
+      Trabalhado: editingProc.trabalhando,
+    }).eq("id", editingProc.id).eq("id_companhia", user.id_companhia);
+    if (error) { console.error(error); toast.error("Erro ao salvar procedimento."); return; }
+    toast.success("Procedimento atualizado.");
+    setShowEditarProc(false);
+    fetchProcedimentos();
+  };
+
+  // ── Persistência: Anamnese ──
+  const handleSaveAnamnese = async () => {
+    if (!editingAnamnese || !user?.id_companhia) return;
+    const { error } = await supabase.from("anamnese").update({
+      pergunta: editingAnamnese.pergunta,
+      caso_sim: editingAnamnese.caso_sim || ".",
+    }).eq("id", editingAnamnese.id).eq("id_companhia", user.id_companhia);
+    if (error) { console.error(error); toast.error("Erro ao salvar pergunta."); return; }
+    toast.success("Pergunta atualizada.");
+    setShowEditarAnamnese(false);
+    fetchAnamnese();
+  };
+
+  const handleDeleteAnamnese = async () => {
+    if (!editingAnamnese || !user?.id_companhia) return;
+    const { error } = await supabase.from("anamnese").delete()
+      .eq("id", editingAnamnese.id).eq("id_companhia", user.id_companhia);
+    if (error) { console.error(error); toast.error("Erro ao excluir pergunta."); return; }
+    toast.success("Pergunta excluída.");
+    setShowEditarAnamnese(false);
+    fetchAnamnese();
+  };
+
+  // ── Persistência: Produto ──
+  const handleSaveProduto = async () => {
+    if (!editingProduto || !user?.id_companhia) return;
+    const { error } = await supabase.from("produtos").update({ produtos: editingProdutoNome })
+      .eq("id", editingProduto.id).eq("id_companhia", user.id_companhia);
+    if (error) { console.error(error); toast.error("Erro ao salvar produto."); return; }
+    toast.success("Produto atualizado.");
+    setShowEditarProduto(false);
+    fetchProdutos();
+  };
+
+  const handleDeleteProduto = async () => {
+    if (!editingProduto || !user?.id_companhia) return;
+    const { error } = await supabase.from("produtos").delete()
+      .eq("id", editingProduto.id).eq("id_companhia", user.id_companhia);
+    if (error) { console.error(error); toast.error("Erro ao excluir produto."); return; }
+    toast.success("Produto excluído.");
+    setShowEditarProduto(false);
+    fetchProdutos();
+  };
+
+  // ── Persistência: Categoria / Item financeiro ──
+  const handleSaveCategoria = async () => {
+    if (!novaCategoriaForm.trim() || !user?.id_companhia) { toast.error("Informe a categoria."); return; }
+    const { error } = await supabase.from("categoria").insert([{ id_companhia: user.id_companhia, Nome: novaCategoriaForm.trim() }]);
+    if (error) { console.error(error); toast.error("Erro ao cadastrar categoria."); return; }
+    toast.success("Categoria cadastrada.");
+    setNovaCategoriaForm("");
+    fetchCategorias();
+  };
+
+  const handleSaveItemFinanceiro = async () => {
+    if (!novoItemForm.trim() || !user?.id_companhia) { toast.error("Informe o item."); return; }
+    const { error } = await supabase.from("item_financeiro").insert([{ id_companhia: user.id_companhia, item: novoItemForm.trim() }]);
+    if (error) { console.error(error); toast.error("Erro ao cadastrar item."); return; }
+    toast.success("Item cadastrado.");
+    setNovoItemForm("");
+    fetchItensFinanceiros();
+  };
+
+  // ── Persistência: Contas ──
+  const handleSaveNovaContaPagar = async () => {
+    if (!user?.id_companhia) return;
+    const categoriaId = categorias.find(c => c.nome === novaContaForm.categoria)?.id ?? null;
+    const itemId = itensFinanceiros.find(i => i.nome === novaContaForm.item)?.id ?? null;
+    const valor = parseCurrency(novaContaForm.valor);
+    if (!categoriaId || !itemId) { toast.error("Selecione categoria e item."); return; }
+    if (valor <= 0) { toast.error("Informe um valor válido."); return; }
+    if (!novaContaForm.dataVencimento) { toast.error("Informe a data de vencimento."); return; }
+    const { error } = await supabase.from("financeiro").insert([{
+      id_companhia: user.id_companhia,
+      id_categoria: categoriaId,
+      id_item: itemId,
+      valor,
+      data_operacao: novaContaForm.dataVencimento,
+      Data_Emissao: novaContaForm.dataEmissao || novaContaForm.dataVencimento,
+      Tipo_Pagamento: novaContaForm.tipoPagamento || "Pix",
+      Parcela: parseInt(novaContaForm.parcela) || 1,
+      Status: novaContaForm.status || "Pendente",
+      Observacao: novaContaForm.observacao || null,
+    }]);
+    if (error) { console.error(error); toast.error("Erro ao cadastrar conta a pagar."); return; }
+    toast.success("Conta a pagar cadastrada.");
+    setNovaContaForm({ dataEmissao: "", dataVencimento: "", categoria: "", item: "", valor: "", parcela: "", tipoPagamento: "", status: "Pendente", observacao: "" });
+    setShowNovaContaPagar(false);
+    fetchContasPagar();
+  };
+
+  const handleSaveContaPagar = async () => {
+    if (!editingContaPagar || !user?.id_companhia) return;
+    const { error } = await supabase.from("conta_pagar").update({
+      Status: editingContaPagar.status,
+      valor: parseCurrency(editingContaPagar.valor),
+      Tipo_Pagamento: editingContaPagar.tipoPagamento,
+      Observacao: editingContaPagar.descricao || null,
+      data_operacao: parseDateBR(editingContaPagar.dataVencimento),
+    }).eq("id", editingContaPagar.id).eq("id_companhia", user.id_companhia);
+    if (error) { console.error(error); toast.error("Erro ao salvar conta a pagar."); return; }
+    toast.success("Conta a pagar atualizada.");
+    setShowEditarContaPagar(false);
+    fetchContasPagar();
+  };
+
+  const handleDeleteContaPagar = async () => {
+    if (!editingContaPagar || !user?.id_companhia) return;
+    const { error } = await supabase.from("conta_pagar").delete()
+      .eq("id", editingContaPagar.id).eq("id_companhia", user.id_companhia);
+    if (error) { console.error(error); toast.error("Erro ao excluir conta."); return; }
+    toast.success("Conta excluída.");
+    setShowEditarContaPagar(false);
+    fetchContasPagar();
+  };
+
+  const handleSaveContaReceber = async () => {
+    if (!editingContaReceber || !user?.id_companhia) return;
+    const { error } = await supabase.from("conta_receber").update({
+      status_financeiro: editingContaReceber.statusFinanceiro,
+      valor_procediemtno: parseCurrency(editingContaReceber.valor),
+      forma_pagamento: editingContaReceber.tipoPagamento,
+      Observacao: editingContaReceber.descricao || null,
+      Data_Vencimento: parseDateBR(editingContaReceber.dataVencimento),
+      data_alteracao: new Date().toISOString(),
+      alterado_por: user?.nome || null,
+    }).eq("id", editingContaReceber.id).eq("id_companhia", user.id_companhia);
+    if (error) { console.error(error); toast.error("Erro ao salvar conta a receber."); return; }
+    toast.success("Conta a receber atualizada.");
+    setShowEditarContaReceber(false);
+    fetchContasReceber();
+  };
+
+  const handleDeleteContaReceber = async () => {
+    if (!editingContaReceber || !user?.id_companhia) return;
+    const { error } = await supabase.from("conta_receber").delete()
+      .eq("id", editingContaReceber.id).eq("id_companhia", user.id_companhia);
+    if (error) { console.error(error); toast.error("Erro ao excluir conta."); return; }
+    toast.success("Conta excluída.");
+    setShowEditarContaReceber(false);
+    fetchContasReceber();
   };
 
   const handleEditColab = (c: Colaborador) => { setEditingColab(c); setAdminToggle(c.acessoAdministrativo === "Liberado"); setShowEditarColab(true); };
@@ -424,7 +655,7 @@ const Gestao = () => {
               </div>
             </div>
             <div className="flex justify-center pt-2">
-              <button onClick={() => setShowNovoColab(false)} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button>
+              <button onClick={handleSaveNovoColab} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button>
             </div>
           </div>
         </DialogContent>
@@ -435,22 +666,22 @@ const Gestao = () => {
           <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Editar Cadastro do Colaborador</DialogTitle></DialogHeader>
           {editingColab && (
             <div className="p-5 space-y-4">
-              <div><label className="text-xs text-gold mb-1 block">Nome Completo</label><Input defaultValue={editingColab.nome} className="bg-input border-border text-foreground h-10" /></div>
+              <div><label className="text-xs text-gold mb-1 block">Nome Completo</label><Input value={editingColab.nome} onChange={(e) => setEditingColab(p => p ? { ...p, nome: e.target.value } : p)} className="bg-input border-border text-foreground h-10" /></div>
               <div className="grid grid-cols-3 gap-3">
-                <div><label className="text-xs text-gold mb-1 block">Data de Nascimento</label><Input defaultValue={editingColab.nascimento || ""} className="bg-input border-border text-foreground h-10" /></div>
-                <div><label className="text-xs text-gold mb-1 block">CPF</label><Input defaultValue={editingColab.cpf} className="bg-input border-border text-foreground h-10" /></div>
-                <div><label className="text-xs text-gold mb-1 block">Telefone</label><Input defaultValue={editingColab.telefone} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Data de Nascimento</label><Input type="date" value={editingColab.nascimento || ""} onChange={(e) => setEditingColab(p => p ? { ...p, nascimento: e.target.value } : p)} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">CPF</label><Input value={editingColab.cpf} onChange={(e) => setEditingColab(p => p ? { ...p, cpf: e.target.value } : p)} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Telefone</label><Input value={editingColab.telefone} onChange={(e) => setEditingColab(p => p ? { ...p, telefone: e.target.value } : p)} className="bg-input border-border text-foreground h-10" /></div>
               </div>
               <div className="grid grid-cols-2 gap-3 items-center">
-                <div><label className="text-xs text-gold mb-1 block">Email</label><Input defaultValue={editingColab.email} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Email</label><Input value={editingColab.email} onChange={(e) => setEditingColab(p => p ? { ...p, email: e.target.value } : p)} className="bg-input border-border text-foreground h-10" /></div>
                 <div className="flex items-center justify-center gap-3">
                   <span className="text-sm text-muted-foreground">Acesso Administrativo</span>
                   <span className="text-sm">Não</span><Switch checked={adminToggle} onCheckedChange={setAdminToggle} /><span className="text-sm">Sim</span>
                 </div>
               </div>
               <div className="flex justify-between pt-2">
-                <button className="px-8 py-2.5 rounded-lg bg-destructive text-destructive-foreground font-semibold text-sm hover:bg-destructive/90 transition-all">Bloquear</button>
-                <button onClick={() => setShowEditarColab(false)} className="px-12 py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all">Salvar</button>
+                <button onClick={() => handleSaveEditColab(true)} className="px-8 py-2.5 rounded-lg bg-destructive text-destructive-foreground font-semibold text-sm hover:bg-destructive/90 transition-all">Bloquear</button>
+                <button onClick={() => handleSaveEditColab(false)} className="px-12 py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all">Salvar</button>
               </div>
             </div>
           )}
@@ -475,7 +706,7 @@ const Gestao = () => {
               </div>
             </div>
             <div className="flex justify-center pt-2">
-              <button onClick={() => setShowNovoProc(false)} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button>
+              <button onClick={handleSaveNovoProc} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button>
             </div>
           </div>
         </DialogContent>
@@ -486,20 +717,20 @@ const Gestao = () => {
           <DialogHeader className="p-5 pb-0"><DialogTitle className="text-foreground">Editar Procedimento</DialogTitle></DialogHeader>
           {editingProc && (
             <div className="p-5 space-y-4">
-              <div><label className="text-xs text-gold mb-1 block">Procedimento</label><Input defaultValue={editingProc.nome} className="bg-input border-border text-foreground h-10" /></div>
+              <div><label className="text-xs text-gold mb-1 block">Procedimento</label><Input value={editingProc.nome} onChange={(e) => setEditingProc(p => p ? { ...p, nome: e.target.value } : p)} className="bg-input border-border text-foreground h-10" /></div>
               <div className="grid grid-cols-2 gap-3">
-                <div><label className="text-xs text-gold mb-1 block">Duração da Sessão</label><Input defaultValue={editingProc.duracao.replace(" Min", "")} className="bg-input border-border text-foreground h-10" /></div>
-                <div><label className="text-xs text-gold mb-1 block">Intervalo Recomendado entre Sessões</label><Input defaultValue={editingProc.intervalo.replace(" dias", "")} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Duração da Sessão</label><Input value={editingProc.duracao.replace(" Min", "")} onChange={(e) => setEditingProc(p => p ? { ...p, duracao: e.target.value } : p)} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Intervalo Recomendado entre Sessões</label><Input value={editingProc.intervalo.replace(" dias", "")} onChange={(e) => setEditingProc(p => p ? { ...p, intervalo: e.target.value } : p)} className="bg-input border-border text-foreground h-10" /></div>
               </div>
               <div className="grid grid-cols-2 gap-3 items-center">
-                <div><label className="text-xs text-gold mb-1 block">Valor do Procedimento</label><Input defaultValue={editingProc.valor} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Valor do Procedimento</label><Input value={editingProc.valor} onChange={(e) => setEditingProc(p => p ? { ...p, valor: e.target.value } : p)} className="bg-input border-border text-foreground h-10" /></div>
                 <div className="flex items-center justify-center gap-3">
                   <span className="text-sm text-muted-foreground">Você está trabalhando neste procedimento?</span>
-                  <span className="text-sm">Não</span><Switch defaultChecked={editingProc.trabalhando} /><span className="text-sm">Sim</span>
+                  <span className="text-sm">Não</span><Switch checked={editingProc.trabalhando} onCheckedChange={(v) => setEditingProc(p => p ? { ...p, trabalhando: v } : p)} /><span className="text-sm">Sim</span>
                 </div>
               </div>
               <div className="flex justify-center pt-2">
-                <button onClick={() => setShowEditarProc(false)} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button>
+                <button onClick={handleSaveEditProc} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button>
               </div>
             </div>
           )}
@@ -515,8 +746,8 @@ const Gestao = () => {
               <div><label className="text-xs text-gold mb-1 block">Pergunta da Anamnese</label><Input value={editingAnamnese.pergunta} onChange={(e) => setEditingAnamnese(p => p ? { ...p, pergunta: e.target.value } : p)} className="bg-input border-border text-foreground h-10" /></div>
               <Input placeholder="No caso da resposta for sim (opcional)" value={editingAnamnese.caso_sim} onChange={(e) => setEditingAnamnese(p => p ? { ...p, caso_sim: e.target.value } : p)} className="bg-input border-border text-foreground h-10" />
               <div className="flex justify-between pt-2">
-                <button className="px-8 py-2.5 rounded-lg bg-destructive text-destructive-foreground font-semibold text-sm hover:bg-destructive/90 transition-all">Excluir</button>
-                <button onClick={() => setShowEditarAnamnese(false)} className="px-12 py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all">Salvar</button>
+                <button onClick={handleDeleteAnamnese} className="px-8 py-2.5 rounded-lg bg-destructive text-destructive-foreground font-semibold text-sm hover:bg-destructive/90 transition-all">Excluir</button>
+                <button onClick={handleSaveAnamnese} className="px-12 py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all">Salvar</button>
               </div>
             </div>
           )}
@@ -652,7 +883,7 @@ const Gestao = () => {
                         id_produto: editingEstoque.id,
                         quantidade: editingEstoque.quantidade,
                         tipo_embalagem: editingEstoque.sistemaMedidas,
-                        tipo_movimentacao: 'exclusao' 
+                        tipo_movimentacao: 'saida'
 
                       }]);
                     
@@ -757,7 +988,7 @@ const Gestao = () => {
                 {produtos.map(prod => (
                   <div key={prod.id} className="flex items-center justify-between px-3 py-2 border-b border-border/50">
                     <span className="text-sm text-foreground">{prod.produtos}</span>
-                    <button onClick={() => { setEditingProdutoNome(prod.produtos); setShowEditarProduto(true); }} className="px-4 py-1.5 rounded-md bg-accent text-accent-foreground text-xs font-semibold hover:bg-accent/80 transition-colors">Editar</button>
+                    <button onClick={() => { setEditingProduto({ id: prod.id, produtos: prod.produtos }); setEditingProdutoNome(prod.produtos); setShowEditarProduto(true); }} className="px-4 py-1.5 rounded-md bg-accent text-accent-foreground text-xs font-semibold hover:bg-accent/80 transition-colors">Editar</button>
                   </div>
                 ))}
               </div>
@@ -772,9 +1003,9 @@ const Gestao = () => {
           <div className="p-5 space-y-4">
             <div className="flex items-center gap-2">
               <Input value={editingProdutoNome} onChange={(e) => setEditingProdutoNome(e.target.value)} className="bg-input border-border text-foreground h-10" />
-              <button className="p-2 rounded bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors"><Trash2 className="w-4 h-4" /></button>
+              <button onClick={handleDeleteProduto} className="p-2 rounded bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors"><Trash2 className="w-4 h-4" /></button>
             </div>
-            <div className="flex justify-center"><button onClick={() => setShowEditarProduto(false)} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button></div>
+            <div className="flex justify-center"><button onClick={handleSaveProduto} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button></div>
           </div>
         </DialogContent>
       </Dialog>
@@ -826,7 +1057,7 @@ const Gestao = () => {
             </div>
             <div><Textarea placeholder="Observação" value={novaContaForm.observacao} onChange={(e) => setNovaContaForm(p => ({ ...p, observacao: e.target.value }))} className="bg-input border-border text-foreground min-h-[100px]" /></div>
             <div className="flex justify-center pt-2">
-              <button onClick={() => setShowNovaContaPagar(false)} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button>
+              <button onClick={handleSaveNovaContaPagar} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button>
             </div>
           </div>
         </DialogContent>
@@ -839,9 +1070,9 @@ const Gestao = () => {
           <div className="p-5 space-y-4">
             <div className="flex items-center gap-2">
               <Input placeholder="Categoria" value={novaCategoriaForm} onChange={(e) => setNovaCategoriaForm(e.target.value)} className="bg-input border-border text-foreground h-10" />
-              <button className="p-2 rounded bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors"><Trash2 className="w-4 h-4" /></button>
+              <button onClick={() => setNovaCategoriaForm("")} className="p-2 rounded bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors"><Trash2 className="w-4 h-4" /></button>
             </div>
-            <div className="flex justify-center"><button className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button></div>
+            <div className="flex justify-center"><button onClick={handleSaveCategoria} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button></div>
             <div className="border-t border-border pt-4">
               <h4 className="text-center text-sm font-semibold text-foreground mb-3">Listagem de Categorias</h4>
               <div className="space-y-2 max-h-48 overflow-y-auto">
@@ -864,11 +1095,11 @@ const Gestao = () => {
           <div className="p-5 space-y-4">
             <div className="flex items-center gap-2">
               <Input placeholder="Item" value={novoItemForm} onChange={(e) => setNovoItemForm(e.target.value)} className="bg-input border-border text-foreground h-10" />
-              <button className="p-2 rounded bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors"><Trash2 className="w-4 h-4" /></button>
+              <button onClick={() => setNovoItemForm("")} className="p-2 rounded bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors"><Trash2 className="w-4 h-4" /></button>
             </div>
-            <div className="flex justify-center"><button className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button></div>
+            <div className="flex justify-center"><button onClick={handleSaveItemFinanceiro} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">Salvar</button></div>
             <div className="border-t border-border pt-4">
-              <h4 className="text-center text-sm font-semibold text-foreground mb-3">Listagem de Categorias</h4>
+              <h4 className="text-center text-sm font-semibold text-foreground mb-3">Listagem de Itens</h4>
               <div className="space-y-2 max-h-48 overflow-y-auto">
                 {itensFinanceiros.map(item => (
                   <div key={item.id} className="flex items-center justify-between px-3 py-2 border-b border-border/50">
@@ -918,7 +1149,7 @@ const Gestao = () => {
             <div className="p-5 space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div><label className="text-xs text-gold mb-1 block">Data de Emissão</label><Input defaultValue={editingContaPagar.dataEmissao} className="bg-input border-border text-foreground h-10" /></div>
-                <div><label className="text-xs text-gold mb-1 block">Data de Vencimento</label><Input defaultValue={editingContaPagar.dataVencimento} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Data de Vencimento</label><Input value={editingContaPagar.dataVencimento} onChange={(e) => setEditingContaPagar(p => p ? { ...p, dataVencimento: e.target.value } : p)} className="bg-input border-border text-foreground h-10" /></div>
               </div>
               <div><label className="text-xs text-gold mb-1 block">Categoria</label>
                 <div className="flex items-center gap-2">
@@ -933,19 +1164,19 @@ const Gestao = () => {
                 </div>
               </div>
               <div className="grid grid-cols-4 gap-3">
-                <div><label className="text-xs text-gold mb-1 block">Valor</label><Input defaultValue={editingContaPagar.valor} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Valor</label><Input value={editingContaPagar.valor} onChange={(e) => setEditingContaPagar(p => p ? { ...p, valor: e.target.value } : p)} className="bg-input border-border text-foreground h-10" /></div>
                 <div><label className="text-xs text-gold mb-1 block">Parcela</label><Input defaultValue={editingContaPagar.parcela} className="bg-input border-border text-foreground h-10" /></div>
                 <div><label className="text-xs text-gold mb-1 block">Tipo de Pagamento</label>
-                  <Select defaultValue={editingContaPagar.tipoPagamento}><SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Pix">Pix</SelectItem><SelectItem value="Boleto">Boleto</SelectItem><SelectItem value="Cartão">Cartão</SelectItem><SelectItem value="Cartão de Crédito">Cartão de Crédito</SelectItem><SelectItem value="Dinheiro">Dinheiro</SelectItem></SelectContent></Select>
+                  <Select value={editingContaPagar.tipoPagamento} onValueChange={(v) => setEditingContaPagar(p => p ? { ...p, tipoPagamento: v } : p)}><SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Pix">Pix</SelectItem><SelectItem value="Boleto">Boleto</SelectItem><SelectItem value="Cartão">Cartão</SelectItem><SelectItem value="Cartão de Crédito">Cartão de Crédito</SelectItem><SelectItem value="Dinheiro">Dinheiro</SelectItem></SelectContent></Select>
                 </div>
                 <div><label className="text-xs text-gold mb-1 block">Status</label>
-                  <Select defaultValue={editingContaPagar.status}><SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Pendente">Pendente</SelectItem><SelectItem value="Pago">Pago</SelectItem><SelectItem value="Atrasado">Atrasado</SelectItem></SelectContent></Select>
+                  <Select value={editingContaPagar.status} onValueChange={(v) => setEditingContaPagar(p => p ? { ...p, status: v } : p)}><SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Pendente">Pendente</SelectItem><SelectItem value="Pago">Pago</SelectItem><SelectItem value="Atrasado">Atrasado</SelectItem></SelectContent></Select>
                 </div>
               </div>
-              <Textarea defaultValue={editingContaPagar.descricao} placeholder="Observação" className="bg-input border-border text-foreground min-h-[100px]" />
+              <Textarea value={editingContaPagar.descricao} onChange={(e) => setEditingContaPagar(p => p ? { ...p, descricao: e.target.value } : p)} placeholder="Observação" className="bg-input border-border text-foreground min-h-[100px]" />
               <div className="flex justify-between pt-2">
-                <button className="px-8 py-2.5 rounded-lg bg-destructive text-destructive-foreground font-semibold text-sm hover:bg-destructive/90 transition-all">Excluir</button>
-                <button onClick={() => setShowEditarContaPagar(false)} className="px-12 py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all">Salvar</button>
+                <button onClick={handleDeleteContaPagar} className="px-8 py-2.5 rounded-lg bg-destructive text-destructive-foreground font-semibold text-sm hover:bg-destructive/90 transition-all">Excluir</button>
+                <button onClick={handleSaveContaPagar} className="px-12 py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all">Salvar</button>
               </div>
             </div>
           )}
@@ -988,7 +1219,7 @@ const Gestao = () => {
             <div className="p-5 space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div><label className="text-xs text-gold mb-1 block">Data de Emissão</label><Input defaultValue={editingContaReceber.dataEmissao} className="bg-input border-border text-foreground h-10" /></div>
-                <div><label className="text-xs text-gold mb-1 block">Data de Vencimento</label><Input defaultValue={editingContaReceber.dataVencimento} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Data de Vencimento</label><Input value={editingContaReceber.dataVencimento} onChange={(e) => setEditingContaReceber(p => p ? { ...p, dataVencimento: e.target.value } : p)} className="bg-input border-border text-foreground h-10" /></div>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div><label className="text-xs text-gold mb-1 block">Categoria</label><Input defaultValue={editingContaReceber.procedimento} className="bg-input border-border text-foreground h-10" /></div>
@@ -996,9 +1227,9 @@ const Gestao = () => {
                 <div><label className="text-xs text-gold mb-1 block">Quantidade de Sessões</label><Input defaultValue={editingContaReceber.qtdSessoes} className="bg-input border-border text-foreground h-10" /></div>
               </div>
               <div className="grid grid-cols-3 gap-3">
-                <div><label className="text-xs text-gold mb-1 block">Valor de Procedimento</label><Input defaultValue={editingContaReceber.valor} className="bg-input border-border text-foreground h-10" /></div>
+                <div><label className="text-xs text-gold mb-1 block">Valor de Procedimento</label><Input value={editingContaReceber.valor} onChange={(e) => setEditingContaReceber(p => p ? { ...p, valor: e.target.value } : p)} className="bg-input border-border text-foreground h-10" /></div>
                 <div><label className="text-xs text-gold mb-1 block">Forma de Pagamento</label>
-                  <Select defaultValue={editingContaReceber.tipoPagamento}><SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Pix">Pix</SelectItem><SelectItem value="Boleto">Boleto</SelectItem><SelectItem value="Cartão">Cartão</SelectItem><SelectItem value="Cartão de Crédito Recorrente">Cartão de Crédito Recorrente</SelectItem><SelectItem value="Dinheiro">Dinheiro</SelectItem></SelectContent></Select>
+                  <Select value={editingContaReceber.tipoPagamento} onValueChange={(v) => setEditingContaReceber(p => p ? { ...p, tipoPagamento: v } : p)}><SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Pix">Pix</SelectItem><SelectItem value="Boleto">Boleto</SelectItem><SelectItem value="Cartão">Cartão</SelectItem><SelectItem value="Cartão de Crédito Recorrente">Cartão de Crédito Recorrente</SelectItem><SelectItem value="Dinheiro">Dinheiro</SelectItem></SelectContent></Select>
                 </div>
                 <div><label className="text-xs text-gold mb-1 block">Parcelas</label><Input defaultValue={editingContaReceber.parcela} className="bg-input border-border text-foreground h-10" /></div>
               </div>
@@ -1007,13 +1238,13 @@ const Gestao = () => {
                   <Select defaultValue={editingContaReceber.status}><SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Pendente">Pendente</SelectItem><SelectItem value="Pago">Pago</SelectItem><SelectItem value="Atrasado">Atrasado</SelectItem></SelectContent></Select>
                 </div>
                 <div><label className="text-xs text-gold mb-1 block">Status Financeiro</label>
-                  <Select defaultValue={editingContaReceber.statusFinanceiro}><SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Pendente">Pendente</SelectItem><SelectItem value="Pago">Pago</SelectItem><SelectItem value="Atrasado">Atrasado</SelectItem></SelectContent></Select>
+                  <Select value={editingContaReceber.statusFinanceiro} onValueChange={(v) => setEditingContaReceber(p => p ? { ...p, statusFinanceiro: v } : p)}><SelectTrigger className="bg-input border-border text-foreground h-10"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Pendente">Pendente</SelectItem><SelectItem value="Pago">Pago</SelectItem><SelectItem value="Atrasado">Atrasado</SelectItem></SelectContent></Select>
                 </div>
               </div>
-              <Textarea defaultValue={editingContaReceber.descricao} placeholder="Observação" className="bg-input border-border text-foreground min-h-[100px]" />
+              <Textarea value={editingContaReceber.descricao} onChange={(e) => setEditingContaReceber(p => p ? { ...p, descricao: e.target.value } : p)} placeholder="Observação" className="bg-input border-border text-foreground min-h-[100px]" />
               <div className="flex justify-between pt-2">
-                <button className="px-8 py-2.5 rounded-lg bg-destructive text-destructive-foreground font-semibold text-sm hover:bg-destructive/90 transition-all">Excluir</button>
-                <button onClick={() => setShowEditarContaReceber(false)} className="px-12 py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all">Salvar</button>
+                <button onClick={handleDeleteContaReceber} className="px-8 py-2.5 rounded-lg bg-destructive text-destructive-foreground font-semibold text-sm hover:bg-destructive/90 transition-all">Excluir</button>
+                <button onClick={handleSaveContaReceber} className="px-12 py-2.5 rounded-lg bg-gold/15 border border-gold text-gold font-semibold text-sm hover:bg-gold/25 transition-all">Salvar</button>
               </div>
             </div>
           )}
