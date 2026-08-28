@@ -351,7 +351,7 @@ export const NewAppointmentModal = ({
               <span className="text-muted-foreground">Nome: </span>
               <span className="text-gold font-medium">{client.nome}</span>
               <span className="text-muted-foreground"> | Data de Nascimento: </span>
-              <span className="text-gold">{client.dataNascimento || "-"}</span>
+              <span className="text-gold">{formatBirthDateBR(client.dataNascimento)}</span>
               <span className="text-muted-foreground"> | CPF: </span>
               <span className="text-gold">{client.cpf || "-"}</span>
             </div>
