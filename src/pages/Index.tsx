@@ -89,6 +89,30 @@ interface Appointment {
 
 // Mock data removed
 
+/**
+ * Mapeamento de status entre banco (agendamento.status_procedimento) e UI.
+ * O banco usa valores capitalizados ("Pendente", "Agendado", "Concluído", "Cancelado")
+ * e as views de Analytics dependem deles. A distinção pendente/confirmado na UI
+ * é feita pela coluna booleana `confirmacao`.
+ */
+type UiStatus = "pendente" | "confirmado" | "cancelado" | "concluido";
+
+const uiStatusFromDb = (status: string | null, confirmacao: boolean | null): UiStatus => {
+  const s = (status || "").trim().toLowerCase();
+  if (s.startsWith("conclu")) return "concluido";
+  if (s.startsWith("cancel")) return "cancelado";
+  if (confirmacao === true || s === "confirmado") return "confirmado";
+  return "pendente";
+};
+
+const dbStatusFromUi = (status: UiStatus): string => {
+  switch (status) {
+    case "concluido": return "Concluído";
+    case "cancelado": return "Cancelado";
+    default: return "Agendado";
+  }
+};
+
 const formatDate = (date: Date): string => {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -240,21 +264,18 @@ const Index = () => {
         // Fetch raw agendamento to get status_procedimento which might be missing in the view
         const { data: rawAgendamentos, error: rawError } = await supabase
           .from('agendamento')
-          .select('id, status_procedimento')
+          .select('id, status_procedimento, confirmacao')
           .eq('id_companhia', user.id_companhia);
 
-        const statusMap = (rawAgendamentos || []).reduce((acc: any, curr: any) => {
-          acc[curr.id] = curr.status_procedimento;
+        if (rawError) console.error('Erro ao carregar status dos agendamentos:', rawError);
+
+        const statusMap = (rawAgendamentos || []).reduce((acc: Record<string, UiStatus>, curr: any) => {
+          acc[curr.id] = uiStatusFromDb(curr.status_procedimento, curr.confirmacao);
           return acc;
         }, {});
 
         const formattedAppointments: Appointment[] = (agendaData || []).map(a => {
-          const status = statusMap[a.id_agendamento] || 'pendente';
-          // Ensure status is one of the allowed types
-          const validStatus: Appointment["statusProcedimento"] = 
-            ["pendente", "confirmado", "cancelado", "concluido"].includes(status) 
-            ? status as any 
-            : "pendente";
+          const validStatus: Appointment["statusProcedimento"] = statusMap[a.id_agendamento] || 'pendente';
 
           return {
             id: String(a.id_agendamento),
@@ -333,7 +354,7 @@ const Index = () => {
   const executeStatusUpdate = async (appId: string, status: Appointment["statusProcedimento"]) => {
     try {
       // 1. Map UI status to confirmation/status fields
-      const updateData: any = { status_procedimento: status };
+      const updateData: any = { status_procedimento: dbStatusFromUi(status) };
       
       if (status === "confirmado") {
         updateData.confirmacao = true;
