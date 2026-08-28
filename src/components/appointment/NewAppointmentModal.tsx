@@ -291,7 +291,7 @@ export const NewAppointmentModal = ({
         data_inicio: date,
         hora_inicio: `${startTime}:00`,
         hora_fim: `${computedEndTime}:00`,
-        status_procedimento: "Pendente",
+        status_procedimento: "Agendado",
         sessao: proximaSessao,
         alterado_por: Number(user.id),
         data_alteracao: date,

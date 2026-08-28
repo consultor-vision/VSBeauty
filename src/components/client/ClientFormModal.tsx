@@ -258,6 +258,7 @@ export const ClientFormModal = ({
           .from("clientes")
           .update(payload)
           .eq("id", Number(form.id))
+          .eq("id_companhia", Number(idCompanhia))
           .select("id")
           .maybeSingle();
         if (error) throw error;
