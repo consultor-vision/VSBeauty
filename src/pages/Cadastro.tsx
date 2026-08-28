@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import Layout from "@/components/Layout";
+import { NewAppointmentModal } from "@/components/appointment/NewAppointmentModal";
 import { User, Users, Plus, Eraser, Pencil, FileText, CalendarPlus, Clock, Edit, X, Upload } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {

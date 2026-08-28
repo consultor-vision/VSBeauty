@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import Layout from "@/components/Layout";
+import { NewAppointmentModal } from "@/components/appointment/NewAppointmentModal";
 import {
   ChevronLeft,
   ChevronRight,
