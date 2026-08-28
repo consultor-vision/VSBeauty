@@ -1445,69 +1445,25 @@ const CadastroContent = ({ user }: { user: any }) => {
       </Dialog>
 
       {/* ========== NOVO AGENDAMENTO MODAL ========== */}
-      <Dialog open={showNovoAgendamento} onOpenChange={setShowNovoAgendamento}>
-        <DialogContent className="max-w-2xl bg-card border-border p-0">
-          <DialogHeader className="p-5 pb-0">
-            <DialogTitle className="text-foreground">Novo Agendamento</DialogTitle>
-          </DialogHeader>
-          <div className="p-5 space-y-4">
-            {selectedClient && (
-              <p className="text-sm text-center text-foreground">
-                Nome: <span className="text-gold">{selectedClient.nome}</span>
-                {" | "}Data de Nascimento: <span className="text-gold">{selectedClient.nascimento}</span>
-                {" | "}CPF: <span className="text-gold">{selectedClient.cpf}</span>
-              </p>
-            )}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs text-gold mb-1 block">Escolha o Procedimento do Cliente</label>
-                <Select value={novoAgendamento.procedimento || undefined} onValueChange={(v) => setNovoAgendamento((p) => ({ ...p, procedimento: v }))}>
-                  <SelectTrigger className="bg-input border-border text-foreground h-9">
-                    <SelectValue placeholder="Procedimento" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {procedimentosList.map((p) => (
-                      <SelectItem key={p} value={p.toLowerCase()}>{p}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <label className="text-xs text-gold mb-1 block">Escolha o Profissional</label>
-                <Select value={novoAgendamento.profissional || undefined} onValueChange={(v) => setNovoAgendamento((p) => ({ ...p, profissional: v }))}>
-                  <SelectTrigger className="bg-input border-border text-foreground h-9">
-                    <SelectValue placeholder="Profissionais" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="filipe">Filipe Pereira da Silva</SelectItem>
-                    <SelectItem value="alan">Alan Mazzonelis</SelectItem>
-                    <SelectItem value="eduardo">Eduardo Yto</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <label className="text-xs text-gold mb-1 block">Data para o agendamento</label>
-                <Input type="date" value={novoAgendamento.data} onChange={(e) => setNovoAgendamento((p) => ({ ...p, data: e.target.value }))} className="bg-input border-border text-foreground h-9" />
-              </div>
-              <div>
-                <label className="text-xs text-gold mb-1 block">Horário de Início</label>
-                <Input type="time" placeholder="Defina o Horário" value={novoAgendamento.horarioInicio} onChange={(e) => setNovoAgendamento((p) => ({ ...p, horarioInicio: e.target.value }))} className="bg-input border-border text-foreground h-9" />
-              </div>
-              <div>
-                <label className="text-xs text-gold mb-1 block">Horário de Fechamento</label>
-                <Input type="time" placeholder="Defina o Horário" value={novoAgendamento.horarioFechamento} onChange={(e) => setNovoAgendamento((p) => ({ ...p, horarioFechamento: e.target.value }))} className="bg-input border-border text-foreground h-9" />
-              </div>
-            </div>
-            <div className="flex justify-center pt-2">
-              <button onClick={() => setShowNovoAgendamento(false)} className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all">
-                Salvar
-              </button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* ========== NOVO AGENDAMENTO MODAL (compartilhado com a Agenda) ========== */}
+      <NewAppointmentModal
+        open={showNovoAgendamento}
+        onOpenChange={setShowNovoAgendamento}
+        client={
+          selectedClient
+            ? {
+                id: selectedClient.id,
+                nome: selectedClient.nome,
+                cpf: selectedClient.cpf,
+                dataNascimento: selectedClient.nascimento,
+              }
+            : null
+        }
+        onSaved={() => {
+          if (selectedClient) void fetchClientPlans(Number(selectedClient.id));
+        }}
+      />
+
       </Layout>
     );
 };
