@@ -559,11 +559,28 @@ const CadastroContent = ({ user }: { user: any }) => {
   };
 
   const handleOpenEditCadastro = () => {
-    if (selectedClient) {
-      setEditForm({ ...selectedClient });
-      setShowEditCadastro(true);
-    }
+    if (!selectedClient) return;
+    setEditForm({
+      id: Number(selectedClient.id),
+      nome: selectedClient.nome,
+      telefone: selectedClient.telefone,
+      email: selectedClient.email,
+      instagram: selectedClient.instagram,
+      nascimento: selectedClient.nascimento,
+      genero: selectedClient.genero,
+      cpf: selectedClient.cpf,
+      cep: selectedClient.cep,
+      logradouro: selectedClient.logradouro,
+      numero: selectedClient.numero,
+      complemento: selectedClient.complemento,
+      bairro: selectedClient.bairro,
+      cidade: selectedClient.cidade,
+      uf: selectedClient.uf,
+      imagem: selectedClient.foto,
+    });
+    setShowEditCadastro(true);
   };
+
 
   const handleOpenEditPlano = async (plan: PlanData) => {
     setEditingPlan(plan);
