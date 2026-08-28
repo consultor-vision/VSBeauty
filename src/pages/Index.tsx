@@ -773,7 +773,7 @@ const Index = () => {
         data_inicio: newDate,                           // date (yyyy-MM-dd)
         hora_inicio: `${newStartTime}:00`,              // time
         hora_fim: `${computedEndTime}:00`,              // time
-        status_procedimento: "Pendente",                // text
+        status_procedimento: "Agendado",                // text
         sessao: proximaSessao,                          // int8
         alterado_por: Number(user.id),                  // int8 (usuarios.id)
         data_alteracao: newDate,                        // date

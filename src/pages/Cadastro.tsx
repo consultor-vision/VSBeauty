@@ -570,7 +570,8 @@ const CadastroContent = ({ user }: { user: any }) => {
           status_financeiro: editPlanForm.status_financeiro || null,
           data_alteracao: new Date().toISOString(),
         })
-        .eq('id', editingPlan.id);
+        .eq('id', editingPlan.id)
+        .eq('id_companhia', user?.id_companhia);
       if (error) throw error;
       toast.success('Plano atualizado');
       setShowEditPlano(false);
@@ -621,7 +622,9 @@ const CadastroContent = ({ user }: { user: any }) => {
     setSavingAnamnese(true);
     try {
       // delete previous and re-insert (simple sync)
-      await supabase.from('anamnese_cliente').delete().eq('id_cliente', Number(selectedClient.id));
+      await supabase.from('anamnese_cliente').delete()
+        .eq('id_cliente', Number(selectedClient.id))
+        .eq('id_companhia', user.id_companhia);
       const rows = Object.entries(anamneseData)
         .filter(([idx, v]) => v && (v.opcao || v.qual))
         .map(([idx, v]) => ({
