@@ -177,7 +177,147 @@ const CadastroContent = ({ user }: { user: any }) => {
     formaPagamento: "",
     parcelas: "",
     valorEntrada: "",
+    statusProcedimento: "Pendente",
+    statusFinanceiro: "",
   });
+  const [savingNovoPlano, setSavingNovoPlano] = useState(false);
+
+  const FORMA_PAGAMENTO_LABELS: Record<string, string> = {
+    cartao_credito: "Cartão de Crédito",
+    cartao_debito: "Cartão de Débito",
+    pix: "Pix",
+    dinheiro: "Dinheiro",
+    boleto: "Boleto",
+  };
+
+  const emptyNovoPlano = {
+    procedimento: "",
+    quantidadeSessoes: "",
+    valorUnitario: "",
+    formaPagamento: "",
+    parcelas: "",
+    valorEntrada: "",
+    statusProcedimento: "Pendente",
+    statusFinanceiro: "",
+  };
+
+  const parseCurrency = (v: string) => {
+    const s = (v || "").replace(/[^\d,]/g, "").replace(",", ".");
+    return parseFloat(s) || 0;
+  };
+
+  const handleSaveNovoPlano = async () => {
+    if (savingNovoPlano) return;
+
+    if (!selectedClient?.id) {
+      toast.error("Selecione um cliente antes de criar o plano.");
+      return;
+    }
+    if (!user?.id_companhia) {
+      toast.error("Companhia do usuário não identificada.");
+      return;
+    }
+    if (!user?.uid) {
+      toast.error("Usuário autenticado não identificado.");
+      return;
+    }
+
+    const proc = procedimentos.find((p) => p.nome.toLowerCase() === novoPlano.procedimento);
+    if (!proc) {
+      toast.error("Selecione um procedimento válido.");
+      return;
+    }
+
+    const sessoes = parseInt(novoPlano.quantidadeSessoes, 10);
+    if (!sessoes || sessoes <= 0) {
+      toast.error("Informe uma quantidade de sessões válida.");
+      return;
+    }
+
+    const valorUnitario = parseCurrency(novoPlano.valorUnitario) || Number(proc.valor) || 0;
+    if (valorUnitario <= 0) {
+      toast.error("Valor unitário inválido para o procedimento selecionado.");
+      return;
+    }
+
+    const valorTotal = valorUnitario * sessoes;
+    const parcelas = parseInt(novoPlano.parcelas, 10);
+    if (!parcelas || parcelas <= 0) {
+      toast.error("Informe o número de parcelas.");
+      return;
+    }
+    if (!novoPlano.formaPagamento) {
+      toast.error("Selecione a forma de pagamento.");
+      return;
+    }
+    if (!novoPlano.statusFinanceiro) {
+      toast.error("Selecione o status financeiro.");
+      return;
+    }
+
+    const formaPagamento = FORMA_PAGAMENTO_LABELS[novoPlano.formaPagamento] || novoPlano.formaPagamento;
+    const statusFinanceiro = novoPlano.statusFinanceiro;
+    const statusProcedimento = novoPlano.statusProcedimento || "Pendente";
+    const valorEntrada = parseCurrency(novoPlano.valorEntrada);
+    const hoje = new Date();
+    const nomePlano = `${proc.nome} | ${hoje.getDate()}/${hoje.getMonth() + 1}/${hoje.getFullYear()}`;
+
+    setSavingNovoPlano(true);
+    try {
+      const { data: planoCriado, error } = await supabase
+        .from("planos")
+        .insert({
+          id_companhia: Number(user.id_companhia),
+          id_cliente: Number(selectedClient.id),
+          id_procedimento: Number(proc.id),
+          sessoes,
+          status_financeiro: statusFinanceiro,
+          status_procedimento: statusProcedimento,
+          id_usuario: user.uid,
+          valor_procediemtno: valorTotal,
+          forma_pagamento: formaPagamento,
+          parcelas,
+          nome_plano: nomePlano,
+        })
+        .select()
+        .maybeSingle();
+
+      if (error || !planoCriado) throw error || new Error("Plano não retornado pelo banco");
+
+      if (valorEntrada > 0) {
+        const { error: entradaError } = await supabase.from("planos_Entrada").insert({
+          id_plano: Number(planoCriado.id),
+          id_companhia: Number(user.id_companhia),
+          id_cliente: Number(selectedClient.id),
+          id_procedimento: Number(proc.id),
+          sessoes,
+          status_financeiro: statusFinanceiro,
+          status_procedimento: statusProcedimento,
+          id_usuario: user.uid,
+          valor_entrada: valorEntrada,
+          forma_pagamento: formaPagamento,
+          parcelas,
+          nome_plano: nomePlano,
+          Observacao: "Entrada",
+        });
+        if (entradaError) {
+          console.error("Erro ao salvar entrada do plano:", entradaError);
+          toast.error("Plano criado, mas não foi possível salvar o valor de entrada.");
+        }
+      }
+
+      toast.success("Plano criado com sucesso!");
+      setShowNovoProcedimento(false);
+      setNovoPlano(emptyNovoPlano);
+      await fetchClientPlans(Number(selectedClient.id));
+    } catch (e: any) {
+      console.error("Erro ao salvar plano:", e);
+      toast.error(`Não foi possível salvar o plano: ${e?.message || "erro desconhecido"}`);
+    } finally {
+      setSavingNovoPlano(false);
+    }
+  };
+
 
   // ViaCEP integration
   const buscarCEP = async (cep: string, target: "novo" | "edit") => {
