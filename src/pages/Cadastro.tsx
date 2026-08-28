@@ -668,7 +668,7 @@ const CadastroContent = ({ user }: { user: any }) => {
 
   return (
     <Layout title="Consulta de Clientes">
-      <div className="flex flex-col gap-4 h-[calc(100vh-140px)] overflow-y-auto mt-1 pt-2 custom-scrollbar pb-12">
+      <div className="flex flex-col gap-4 min-h-full mt-1 pt-2">
         {/* Top Row - Avatar + Client Panel */}
         <div className="flex flex-col lg:flex-row gap-4 shrink-0">
           {/* Avatar */}

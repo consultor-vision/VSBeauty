@@ -94,23 +94,26 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
   };
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-background">
-      {/* Header */}
-      <header className="px-6 py-1.5 border-b border-border shrink-0 flex items-center justify-between">
-        {title && <h1 className="text-lg font-semibold text-gold">{title}</h1>}
-        {headerRight && <div>{headerRight}</div>}
-      </header>
+    <div className="flex flex-col h-screen [height:100dvh] max-h-[100dvh] overflow-hidden bg-background">
+      {/* Content area: 75% of the available viewport height */}
+      <div className="flex flex-col basis-3/4 grow-0 shrink-0 min-h-0 overflow-hidden">
+        {/* Header */}
+        <header className="px-6 py-1.5 border-b border-border shrink-0 flex items-center justify-between">
+          {title && <h1 className="text-lg font-semibold text-gold">{title}</h1>}
+          {headerRight && <div>{headerRight}</div>}
+        </header>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-hidden px-3 py-2">
-        <div className="w-full h-full">
-          {children}
-        </div>
-      </main>
+        {/* Main Content (internal scroll only) */}
+        <main className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-3 py-2 custom-scrollbar">
+          <div className="w-full min-h-full">
+            {children}
+          </div>
+        </main>
+      </div>
 
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-md border-t border-border z-50 pt-[10px]">
-        <div className="flex items-center justify-between px-4 py-2">
+      {/* Bottom Navigation: 25% of the available viewport height */}
+      <nav className="basis-1/4 grow-0 shrink-0 min-h-0 flex items-center bg-card/95 backdrop-blur-md border-t border-border z-50 overflow-hidden">
+        <div className="w-full flex items-center justify-between px-4 py-2">
           {/* Left: hamburger + avatar + name */}
           <div className="flex items-center gap-3">
             <button
@@ -168,7 +171,7 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
 
       {/* ========== HAMBURGER MENU ========== */}
       {showMenu && (
-        <div className="fixed bottom-14 left-4 z-[60] w-72 glass-panel gold-glow animate-in slide-in-from-bottom-4 duration-200">
+        <div className="fixed bottom-[26vh] left-4 z-[60] w-72 glass-panel gold-glow animate-in slide-in-from-bottom-4 duration-200">
           {/* User info */}
           <div className="flex items-center gap-3 p-4 border-b border-border">
             <div className="w-10 h-10 rounded-full bg-gold/20 border border-gold/40 flex items-center justify-center overflow-hidden">
