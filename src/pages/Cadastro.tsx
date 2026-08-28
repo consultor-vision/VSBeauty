@@ -720,19 +720,29 @@ const CadastroContent = ({ user }: { user: any }) => {
             <h2 className="text-center text-gold font-semibold text-base mb-5">
               Painel de Visualização de Cliente
             </h2>
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-[80px_1fr_120px_150px_150px_120px] gap-3">
-                <FormField label="ID" value={selectedClient?.id} />
-                <FormField label="Nome" value={selectedClient?.nome} />
-                <FormField label="Nascimento" value={selectedClient?.nascimento} />
+            <div className="space-y-2">
+              <div className="grid grid-cols-1 gap-2">
+                <FormField label="Nome Completo" value={selectedClient?.nome} />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                <FormField label="Data de Nascimento" value={selectedClient?.nascimento} />
+                <FormField label="Gênero" value={selectedClient?.genero} />
                 <FormField label="CPF" value={selectedClient?.cpf} />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                 <FormField label="Telefone" value={selectedClient?.telefone} />
+                <FormField label="Email" value={selectedClient?.email} />
                 <FormField label="Instagram" value={selectedClient?.instagram} />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-[2fr_80px_1fr_1fr_1fr_80px] gap-3">
+              <div className="grid grid-cols-1 gap-2">
                 <FormField label="Logradouro" value={selectedClient?.logradouro} />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                 <FormField label="Número" value={selectedClient?.numero} />
                 <FormField label="CEP" value={selectedClient?.cep} />
+                <FormField label="Complemento" value={selectedClient?.complemento} />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                 <FormField label="Bairro" value={selectedClient?.bairro} />
                 <FormField label="Cidade" value={selectedClient?.cidade} />
                 <FormField label="UF" value={selectedClient?.uf} />
