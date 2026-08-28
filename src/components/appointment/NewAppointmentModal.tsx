@@ -53,6 +53,14 @@ export const addMinutesToTime = (time: string, minutes: number): string => {
   return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
 };
 
+/** Converte data ISO (yyyy-MM-dd) para o padrão brasileiro dd/MM/yyyy. */
+const formatBirthDateBR = (value?: string | null): string => {
+  if (!value) return "-";
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (match) return `${match[3]}/${match[2]}/${match[1]}`;
+  return value;
+};
+
 export const NewAppointmentModal = ({
   open,
   onOpenChange,
@@ -351,7 +359,7 @@ export const NewAppointmentModal = ({
               <span className="text-muted-foreground">Nome: </span>
               <span className="text-gold font-medium">{client.nome}</span>
               <span className="text-muted-foreground"> | Data de Nascimento: </span>
-              <span className="text-gold">{client.dataNascimento || "-"}</span>
+              <span className="text-gold">{formatBirthDateBR(client.dataNascimento)}</span>
               <span className="text-muted-foreground"> | CPF: </span>
               <span className="text-gold">{client.cpf || "-"}</span>
             </div>
