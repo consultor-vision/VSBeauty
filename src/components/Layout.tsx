@@ -95,8 +95,8 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
 
   return (
     <div className="flex flex-col h-screen [height:100dvh] max-h-[100dvh] overflow-hidden bg-background">
-      {/* Content area: 75% of the available viewport height */}
-      <div className="flex flex-col basis-3/4 grow-0 shrink-0 min-h-0 overflow-hidden">
+      {/* Content area: 92% of the available viewport height */}
+      <div className="flex flex-col basis-[92%] grow-0 shrink-0 min-h-0 overflow-hidden">
         {/* Header */}
         <header className="px-6 py-1.5 border-b border-border shrink-0 flex items-center justify-between">
           {title && <h1 className="text-lg font-semibold text-gold">{title}</h1>}
@@ -111,8 +111,8 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
         </main>
       </div>
 
-      {/* Bottom Navigation: 25% of the available viewport height */}
-      <nav className="basis-1/4 grow-0 shrink-0 min-h-0 flex items-center bg-card/95 backdrop-blur-md border-t border-border z-50 overflow-hidden">
+      {/* Bottom Navigation: 8% of the available viewport height */}
+      <nav className="basis-[8%] grow-0 shrink-0 min-h-0 flex items-center bg-card/95 backdrop-blur-md border-t border-border z-50 overflow-hidden">
         <div className="w-full flex items-center justify-between px-4 py-2">
           {/* Left: hamburger + avatar + name */}
           <div className="flex items-center gap-3">
