@@ -171,7 +171,7 @@ const Layout = ({ title, children, headerRight }: LayoutProps) => {
 
       {/* ========== HAMBURGER MENU ========== */}
       {showMenu && (
-        <div className="fixed bottom-14 left-4 z-[60] w-72 glass-panel gold-glow animate-in slide-in-from-bottom-4 duration-200">
+        <div className="fixed bottom-[26vh] left-4 z-[60] w-72 glass-panel gold-glow animate-in slide-in-from-bottom-4 duration-200">
           {/* User info */}
           <div className="flex items-center gap-3 p-4 border-b border-border">
             <div className="w-10 h-10 rounded-full bg-gold/20 border border-gold/40 flex items-center justify-center overflow-hidden">
