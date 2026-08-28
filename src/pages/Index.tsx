@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import Layout from "@/components/Layout";
+import { NewAppointmentModal } from "@/components/appointment/NewAppointmentModal";
 import {
   ChevronLeft,
   ChevronRight,
@@ -1461,131 +1462,34 @@ const Index = () => {
         </div>
       )}
 
-      {/* ========== NEW APPOINTMENT MODAL ========== */}
-      {showAppointmentModal && selectedClient && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="glass-panel gold-glow w-full max-w-3xl animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between p-4 border-b border-border">
-              <h2 className="text-lg font-semibold text-foreground">Novo Agendamento</h2>
-              <button onClick={() => setShowAppointmentModal(false)} className="p-1 rounded hover:bg-muted transition-colors">
-                <X className="w-5 h-5 text-foreground" />
-              </button>
-            </div>
-            <div className="p-6 space-y-6">
-              <div className="text-center text-sm">
-                <span className="text-muted-foreground">Nome: </span>
-                <span className="text-gold font-medium">{selectedClient.nome}</span>
-                <span className="text-muted-foreground"> | Data de Nascimento: </span>
-                <span className="text-gold">{selectedClient.dataNascimento}</span>
-                <span className="text-muted-foreground"> | CPF: </span>
-                <span className="text-gold">{selectedClient.cpf}</span>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="md:col-span-1">
-                  <label className="text-xs text-muted-foreground mb-1 block">Plano Disponível</label>
-                  <Select 
-                    value={selectedPlanId} 
-                    onValueChange={(val) => {
-                      setSelectedPlanId(val);
-                      const plan = availablePlans.find(p => String(p.id) === val);
-                      if (plan) {
-                        setNewProcedimento(plan.nome_plano || "Procedimento");
-                      } else {
-                        setNewProcedimento("Atendimento Avulso");
-                      }
-                      void loadProcedureForPlan(val);
-                    }}
+      {/* ========== NEW APPOINTMENT MODAL (compartilhado com Cadastro) ========== */}
+      <NewAppointmentModal
+        open={showAppointmentModal}
+        onOpenChange={setShowAppointmentModal}
+        client={
+          selectedClient
+            ? {
+                id: selectedClient.id,
+                nome: selectedClient.nome,
+                cpf: selectedClient.cpf,
+                dataNascimento: selectedClient.dataNascimento,
+              }
+            : null
+        }
+        isTimeAvailable={isTimeAvailable}
+        onSaved={(app) => {
+          setAppointments((prev) => [
+            ...prev,
+            {
+              ...app,
+              statusProcedimento: "pendente",
+              statusFinanceiro: "pendente",
+              valor: 0,
+            } as Appointment,
+          ]);
+        }}
+      />
 
-                  >
-                    <SelectTrigger className="bg-input border-border focus:ring-gold border-gold">
-                      <SelectValue placeholder={loadingAvailablePlans ? "Carregando planos..." : (availablePlans.length > 0 ? "Selecione um plano" : "Nenhum plano com sessões disponíveis")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availablePlans.map((p) => (
-                        <SelectItem key={p.id} value={String(p.id)}>
-                          {p.nome_plano} — {p.availableSessions} {p.availableSessions === 1 ? 'sessão disponível' : 'sessões disponíveis'}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {availablePlans.length === 0 && !loadingAvailablePlans && (
-                    <p className="text-[10px] text-muted-foreground mt-1 italic">
-                      Cliente não possui sessões em planos ativos. Agendamento será realizado como atendimento avulso.
-                    </p>
-                  )}
-                </div>
-
-                <div className="md:col-span-1">
-                  <label className="text-xs text-muted-foreground mb-1 block">Escolha o Profissional</label>
-                  <Select
-                    value={newProfissionalId ? String(newProfissionalId) : ""}
-                    onValueChange={(val) => {
-                      const prof = professionalOptions.find(p => String(p.id) === val);
-                      setNewProfissionalId(prof ? prof.id : null);
-                      setNewProfissional(prof?.nome || "");
-                    }}
-                  >
-                    <SelectTrigger className="bg-input border-border focus:ring-gold">
-                      <SelectValue placeholder="Profissionais" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {professionalOptions.map((p) => (
-                        <SelectItem key={p.id} value={String(p.id)}>{p.nome}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">Data para o agendamento</label>
-                  <Input
-                    type="date"
-                    value={newDate}
-                    onChange={(e) => setNewDate(e.target.value)}
-                    className="bg-input border-border text-foreground focus:border-gold [color-scheme:dark]"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">Horário de Início</label>
-                  <button
-                    onClick={() => openTimePicker("start")}
-                    className="w-full h-10 px-3 rounded-md bg-input border border-border text-foreground text-sm flex items-center justify-between hover:border-gold/50 transition-colors"
-                  >
-                    <span>{newStartTime || "Defina o Horário"}</span>
-                    <Clock className="w-4 h-4 text-muted-foreground" />
-                  </button>
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">Horário de Fechamento</label>
-                  <button
-                    onClick={() => { if (!planProcedure?.duracao) openTimePicker("end"); }}
-                    disabled={!!planProcedure?.duracao}
-                    title={planProcedure?.duracao ? `Calculado automaticamente (${planProcedure.duracao} min)` : undefined}
-                    className={cn(
-                      "w-full h-10 px-3 rounded-md bg-input border border-border text-foreground text-sm flex items-center justify-between transition-colors",
-                      planProcedure?.duracao ? "opacity-80 cursor-not-allowed" : "hover:border-gold/50"
-                    )}
-                  >
-                    <span>{loadingProcedure ? "Calculando..." : (newEndTime || "Defina o Horário")}</span>
-                    <Clock className="w-4 h-4 text-muted-foreground" />
-
-                  </button>
-                </div>
-              </div>
-              <div className="flex justify-center">
-                <button
-                  onClick={handleSaveAppointment}
-                  className="px-12 py-3 rounded-lg bg-gold text-primary-foreground font-semibold hover:bg-gold-light transition-all"
-                >
-                  Salvar
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ========== TIME PICKER MODAL ========== */}
       {showTimePickerModal && (
