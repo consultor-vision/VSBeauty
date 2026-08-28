@@ -908,112 +908,19 @@ const CadastroContent = ({ user }: { user: any }) => {
         </DialogContent>
       </Dialog>
 
-      {/* ========== EDITAR CADASTRO MODAL ========== */}
-      <Dialog open={showEditCadastro} onOpenChange={setShowEditCadastro}>
-        <DialogContent className="max-w-2xl bg-card border-border p-0">
-          <DialogHeader className="p-5 pb-0">
-            <DialogTitle className="text-foreground">Editar Cadastro</DialogTitle>
-          </DialogHeader>
-          {editForm && (
-            <div className="p-5 space-y-4">
-              <div className="flex items-start gap-4">
-                <button className="w-14 h-14 rounded-full bg-gold/20 border border-gold flex items-center justify-center shrink-0 hover:bg-gold/30 transition-colors">
-                  <Upload className="w-6 h-6 text-gold" />
-                </button>
-                <div className="flex-1">
-                  <label className="text-xs text-gold mb-1 block">Nome Completo</label>
-                  <Input value={editForm.nome} onChange={(e) => setEditForm({ ...editForm, nome: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-              </div>
+      {/* ========== EDITAR CADASTRO (mesmo formulário do Novo Cadastro) ========== */}
+      <ClientFormModal
+        open={showEditCadastro}
+        onOpenChange={setShowEditCadastro}
+        initialValues={editForm}
+        idCompanhia={user?.id_companhia}
+        onSaved={async (savedId) => {
+          const updated = await fetchClients();
+          const found = updated.find((c) => Number(c.id) === Number(savedId));
+          if (found) setSelectedClient(found);
+        }}
+      />
 
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="text-xs text-gold mb-1 block">Telefone</label>
-                  <Input value={editForm.telefone} onChange={(e) => setEditForm({ ...editForm, telefone: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-                <div>
-                  <label className="text-xs text-gold mb-1 block">Email</label>
-                  <Input value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-                <div>
-                  <label className="text-xs text-gold mb-1 block">Instagram</label>
-                  <Input value={editForm.instagram} onChange={(e) => setEditForm({ ...editForm, instagram: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="text-xs text-gold mb-1 block">Data de Nascimento</label>
-                  <Input value={editForm.nascimento} onChange={(e) => setEditForm({ ...editForm, nascimento: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-                <div>
-                  <label className="text-xs text-gold mb-1 block">Gênero</label>
-                  <Select value={editForm.genero.toLowerCase() || undefined} onValueChange={(v) => setEditForm({ ...editForm, genero: v })}>
-                    <SelectTrigger className="bg-input border-border text-foreground h-9">
-                      <SelectValue placeholder="Gênero" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="feminino">Feminino</SelectItem>
-                      <SelectItem value="masculino">Masculino</SelectItem>
-                      <SelectItem value="outro">Outro</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label className="text-xs text-gold mb-1 block">CPF</label>
-                  <Input value={editForm.cpf} onChange={(e) => setEditForm({ ...editForm, cpf: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-[1fr_auto_2fr] gap-3 items-end">
-                <div>
-                  <label className="text-xs text-gold mb-1 block">CEP</label>
-                  <Input value={editForm.cep} onChange={(e) => setEditForm({ ...editForm, cep: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-                <button type="button" onClick={() => editForm && buscarCEP(editForm.cep, "edit")} disabled={cepLoading} className="h-9 w-9 rounded-md bg-gold/20 border border-gold flex items-center justify-center text-gold hover:bg-gold/30 transition-colors disabled:opacity-50">→</button>
-                <div>
-                  <label className="text-xs text-gold mb-1 block">Logradouro</label>
-                  <Input value={editForm.logradouro} onChange={(e) => setEditForm({ ...editForm, logradouro: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-3">
-                <div>
-                  <label className="text-xs text-gold mb-1 block">Número</label>
-                  <Input value={editForm.numero} onChange={(e) => setEditForm({ ...editForm, numero: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="text-xs text-gold mb-1 block">Bairro</label>
-                  <Input value={editForm.bairro} onChange={(e) => setEditForm({ ...editForm, bairro: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-                <div>
-                  <label className="text-xs text-gold mb-1 block">Cidade</label>
-                  <Input value={editForm.cidade} onChange={(e) => setEditForm({ ...editForm, cidade: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-                <div>
-                  <label className="text-xs text-gold mb-1 block">UF</label>
-                  <Input value={editForm.uf} onChange={(e) => setEditForm({ ...editForm, uf: e.target.value })} className="bg-input border-border text-foreground h-9" />
-                </div>
-              </div>
-
-              <div className="flex justify-center pt-2">
-                <button
-                  onClick={() => {
-                    if (editForm) setSelectedClient(editForm);
-                    setShowEditCadastro(false);
-                  }}
-                  className="px-12 py-2.5 rounded-lg bg-gold text-primary-foreground font-semibold text-sm hover:bg-gold-light transition-all"
-                >
-                  Salvar
-                </button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
 
       {/* ========== NOVA FICHA DE ANAMNESE MODAL ========== */}
       <Dialog open={showAnamnese} onOpenChange={setShowAnamnese}>
