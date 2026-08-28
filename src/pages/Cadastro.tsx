@@ -740,10 +740,8 @@ const CadastroContent = ({ user }: { user: any }) => {
             {!selectedClient && (
               <>
                 <ActionButton icon={Users} label="Clientes" onClick={() => setShowClientList(true)} />
-                <ActionButton icon={Plus} label="Novo Cadastro" onClick={() => {
-                  setNovoCadastro({ nome: "", telefone: "", email: "", instagram: "", nascimento: "", genero: "", cpf: "", cep: "", logradouro: "", numero: "", bairro: "", cidade: "", uf: "" });
-                  setShowNovoCadastro(true);
-                }} />
+                <ActionButton icon={Plus} label="Novo Cadastro" onClick={() => setShowNovoCadastro(true)} />
+
               </>
             )}
             <ActionButton icon={Eraser} label="Limpar" onClick={handleClear} />
