@@ -754,7 +754,7 @@ const CadastroContent = ({ user }: { user: any }) => {
                   onClick={handleOpenAnamnese} 
                 />
                 <ActionButton icon={Plus} label="Novo Procedimento" onClick={() => {
-                  setNovoPlano({ procedimento: "", quantidadeSessoes: "", valorUnitario: "", formaPagamento: "", parcelas: "", valorEntrada: "" });
+                  setNovoPlano(emptyNovoPlano);
                   setShowNovoProcedimento(true);
                 }} />
                 <ActionButton icon={CalendarPlus} label="Agendamento" onClick={() => {
