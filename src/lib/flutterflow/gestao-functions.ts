@@ -1,50 +1,36 @@
 /**
- * Piloto de migração FlutterFlow → React (módulo Gestão).
- *
- * Funções portadas e VERIFICADAS a partir de
- * migration/flutterflow/lovable_conversion_final/src/lib/custom-functions/.
- * Os adaptadores originais retornavam `undefined` ou continham erros
- * (ex.: `textoParaDouble` referenciava variável inexistente). Aqui a lógica
- * do corpo Dart original foi reimplementada com tipagem explícita.
- *
- * Não acessa o Supabase: apenas cálculo/formatação, sem efeitos colaterais.
+ * Funções usadas pelo módulo Gestão. Reexporta os ports fiéis ao Dart
+ * de `custom-functions.ts` (fonte única) e adiciona o cálculo dos totais
+ * financeiros, idêntico às consultas do gestao.dart original:
+ * soma de `valor` / `valor_procediemtno` agrupada por status Pago / Pendente / Atrasado.
  */
+export {
+  formatarMoedaFF,
+  somarValores,
+  somarValoresContaReceber,
+  ptbrToDouble,
+  textoParaDouble,
+} from "./custom-functions";
 
-/** Formata número no padrão do FlutterFlow: "R$ 1234,56" (sem separador de milhar). */
-export function formatarMoedaFF(total: number): string {
-  const seguro = Number.isFinite(total) ? total : 0;
-  return `R$ ${seguro.toFixed(2).replace(".", ",")}`;
+export interface TotaisFinanceiros {
+  pago: number;
+  pendente: number;
+  atrasado: number;
 }
 
-/** Dart: somarValores(List<double>) → soma formatada. */
-export function somarValores(valores: ReadonlyArray<number | null | undefined>): string {
-  const total = valores.reduce<number>((acc, v) => acc + (typeof v === "number" && Number.isFinite(v) ? v : 0), 0);
-  return formatarMoedaFF(total);
+export function totaisPorStatus(
+  itens: ReadonlyArray<{ status: string | null | undefined; valorNumero: number | null | undefined }>,
+): TotaisFinanceiros {
+  const t: TotaisFinanceiros = { pago: 0, pendente: 0, atrasado: 0 };
+  for (const i of itens) {
+    const v = typeof i.valorNumero === "number" && Number.isFinite(i.valorNumero) ? i.valorNumero : 0;
+    if (i.status === "Pago") t.pago += v;
+    else if (i.status === "Pendente") t.pendente += v;
+    else if (i.status === "Atrasado") t.atrasado += v;
+  }
+  return t;
 }
 
-/**
- * Dart: somarValoresContaReceber(lista) → soma de `valor_procediemtno`.
- * Mantém o nome legado da coluna (com erro de digitação) do banco.
- */
-export function somarValoresContaReceber(
-  lista: ReadonlyArray<{ valor_procediemtno?: number | null } | null | undefined>,
-): string {
-  const total = lista.reduce<number>((acc, item) => {
-    const valor = item?.valor_procediemtno;
-    return acc + (typeof valor === "number" && Number.isFinite(valor) ? valor : 0);
-  }, 0);
-  return formatarMoedaFF(total);
-}
-
-/** Dart: ptbrToDouble("1.234,56") → 1234.56. Entrada inválida → 0. */
-export function ptbrToDouble(texto: string | null | undefined): number {
-  if (!texto) return 0;
-  const limpo = texto.replace(/R\$\s?/g, "").trim().replace(/\./g, "").replace(",", ".");
-  const n = Number(limpo);
-  return Number.isFinite(n) ? n : 0;
-}
-
-/** Dart: textoParaDouble — mesma regra de ptbrToDouble (adaptador original estava quebrado). */
-export function textoParaDouble(valorTexto: string | null | undefined): number {
-  return ptbrToDouble(valorTexto);
-}
+/** Exibição no padrão já usado pela tela Gestão (com separador de milhar). */
+export const formatarBRL = (v: number): string =>
+  v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
