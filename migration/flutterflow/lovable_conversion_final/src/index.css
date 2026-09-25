@@ -1,0 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body { margin: 0; font-family: system-ui, sans-serif; }
+button { border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 0.35rem 0.6rem; background: white; cursor: pointer; }
