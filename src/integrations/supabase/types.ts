@@ -1462,6 +1462,7 @@ export type Database = {
           status_procedimento: string
         }[]
       }
+      current_company_id: { Args: never; Returns: number }
       fn_recalc_plano:
         | {
             Args: { p_id_plano: number }
@@ -1475,6 +1476,7 @@ export type Database = {
               error: true
             } & "Could not choose the best candidate function between: public.fn_recalc_plano(p_id_plano => int8), public.fn_recalc_plano(p_id_plano => int4). Try renaming the parameters or the function itself in the database so function overloading can be resolved"
           }
+      is_vsb_admin: { Args: never; Returns: boolean }
       rollback_estoque_por_agendamento: {
         Args: { p_id_agendamento: number }
         Returns: undefined
