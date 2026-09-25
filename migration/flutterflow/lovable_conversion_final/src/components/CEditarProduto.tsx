@@ -1,0 +1,33 @@
+import React from "react";
+import type { CEditarProdutoModel } from "../models/CEditarProdutoModel";
+import { supabase } from "../lib/supabase";
+
+// Converted from FlutterFlow/Dart source: extracted_code\components\C_Editar_Produto\C_Editar_Produto_widget.dart
+// Original Flutter root widget: Align
+// This component is intentionally readable and editable in Lovable.
+// Review database actions, navigation, responsive layout, and validation marked in the source.
+
+export interface CEditarProdutoProps {
+  idProduto: number | null;
+}
+
+export function CEditarProduto({idProduto}: CEditarProdutoProps) {
+  // TODO: Map FlutterFlow actions and Supabase queries from the original Dart widget.
+  void supabase;
+  void ({idProduto} as unknown as CEditarProdutoModel | undefined);
+
+  return (
+    <section data-flutterflow-component="CEditarProduto" className="w-full space-y-4 rounded-lg border p-4">
+      <header>
+        <h2 className="text-xl font-semibold">C Editar Produto</h2>
+        <p className="text-sm text-muted-foreground">Converted from FlutterFlow for Lovable</p>
+      </header>
+      <div className="space-y-2">
+        <p key="label-0">Editar Produto</p>
+        <p key="label-1">Salvar</p>
+      </div>
+    </section>
+  );
+}
+
+export default CEditarProduto;

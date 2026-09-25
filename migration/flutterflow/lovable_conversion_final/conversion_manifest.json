@@ -1,0 +1,416 @@
+{
+  "components": [
+    {
+      "source": "extracted_code\\components\\A_Editar_Estoque\\A_Editar_Estoque_widget.dart",
+      "output": "src/components/AEditarEstoque.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\A_Ficha_Evolucao\\A_Ficha_Evolucao_widget.dart",
+      "output": "src/components/AFichaEvolucao.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\A_Novo_Estoque\\A_Novo_Estoque_widget.dart",
+      "output": "src/components/ANovoEstoque.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Agenda_DP_Popover\\Agenda_DP_Popover_widget.dart",
+      "output": "src/components/AgendaDPPopover.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Agenda_Editar_DP_Popover\\Agenda_Editar_DP_Popover_widget.dart",
+      "output": "src/components/AgendaEditarDPPopover.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Agendamento_Cadastro\\Agendamento_Cadastro_widget.dart",
+      "output": "src/components/AgendamentoCadastro.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Alerta_Agendamento\\Alerta_Agendamento_widget.dart",
+      "output": "src/components/AlertaAgendamento.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Alerta_CEP\\Alerta_CEP_widget.dart",
+      "output": "src/components/AlertaCEP.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Alerta_CPF_Duplicado\\Alerta_CPF_Duplicado_widget.dart",
+      "output": "src/components/AlertaCPFDuplicado.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Alerta_Duplicidade_Agenda\\Alerta_Duplicidade_Agenda_widget.dart",
+      "output": "src/components/AlertaDuplicidadeAgenda.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Alerta_Falta_dados\\Alerta_Falta_dados_widget.dart",
+      "output": "src/components/AlertaFaltaDados.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Alerta_Horario\\Alerta_Horario_widget.dart",
+      "output": "src/components/AlertaHorario.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Alerta_Horario_Cadastro\\Alerta_Horario_Cadastro_widget.dart",
+      "output": "src/components/AlertaHorarioCadastro.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\AlteracaoSenha\\AlteracaoSenha_widget.dart",
+      "output": "src/components/AlteracaoSenha.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Aniversariantes\\Aniversariantes_widget.dart",
+      "output": "src/components/Aniversariantes.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\B_Alerta_Campos_Editar\\B_Alerta_Campos_Editar_widget.dart",
+      "output": "src/components/BAlertaCamposEditar.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\B_Editar_Evolucao\\B_Editar_Evolucao_widget.dart",
+      "output": "src/components/BEditarEvolucao.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\B_Editar_EvolucaoCopy\\B_Editar_EvolucaoCopy_widget.dart",
+      "output": "src/components/BEditarEvolucaoCopy.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\B_Novo_Produto\\B_Novo_Produto_widget.dart",
+      "output": "src/components/BNovoProduto.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\BuscarCEP\\BuscarCEP_widget.dart",
+      "output": "src/components/BuscarCEP.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\C_Editar_Produto\\C_Editar_Produto_widget.dart",
+      "output": "src/components/CEditarProduto.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\C_Editar_Produtos\\C_Editar_Produtos_widget.dart",
+      "output": "src/components/CEditarProdutos.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Cadastro_DP_Popover\\Cadastro_DP_Popover_widget.dart",
+      "output": "src/components/CadastroDPPopover.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Cadastro_Geral\\Cadastro_Geral_widget.dart",
+      "output": "src/components/CadastroGeral.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\CadastroAgendamento\\CadastroAgendamento_widget.dart",
+      "output": "src/components/CadastroAgendamento.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\CalendarPopover\\CalendarPopover_widget.dart",
+      "output": "src/components/CalendarPopover.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Categoria_Editar\\Categoria_Editar_widget.dart",
+      "output": "src/components/CategoriaEditar.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Categoria_Nova\\Categoria_Nova_widget.dart",
+      "output": "src/components/CategoriaNova.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\CMP_Editar_Anamnese\\CMP_Editar_Anamnese_widget.dart",
+      "output": "src/components/CMPEditarAnamnese.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\CMP_Nova_AnamneseCopy\\CMP_Nova_AnamneseCopy_widget.dart",
+      "output": "src/components/CMPNovaAnamneseCopy.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Configuracoes\\Configuracoes_widget.dart",
+      "output": "src/components/Configuracoes.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Conta_Pagar\\Conta_Pagar_widget.dart",
+      "output": "src/components/ContaPagar.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Contas_Pagar_Emissao_DP_Popover\\Contas_Pagar_Emissao_DP_Popover_widget.dart",
+      "output": "src/components/ContasPagarEmissaoDPPopover.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Contas_Pagar_Vencimento_DP_Popover\\Contas_Pagar_Vencimento_DP_Popover_widget.dart",
+      "output": "src/components/ContasPagarVencimentoDPPopover.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\D_Alerta_Campos\\D_Alerta_Campos_widget.dart",
+      "output": "src/components/DAlertaCampos.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\D_Cliente_Evolucao\\D_Cliente_Evolucao_widget.dart",
+      "output": "src/components/DClienteEvolucao.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Descricao\\Descricao_widget.dart",
+      "output": "src/components/Descricao.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Descricao_Recebimento\\Descricao_Recebimento_widget.dart",
+      "output": "src/components/DescricaoRecebimento.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Edicao_Procedimento\\Edicao_Procedimento_widget.dart",
+      "output": "src/components/EdicaoProcedimento.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Editar_Cadastro\\Editar_Cadastro_widget.dart",
+      "output": "src/components/EditarCadastro.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Editar_Categoria_Editar\\Editar_Categoria_Editar_widget.dart",
+      "output": "src/components/EditarCategoriaEditar.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Editar_Categoria_Nova\\Editar_Categoria_Nova_widget.dart",
+      "output": "src/components/EditarCategoriaNova.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Editar_Colaborador\\Editar_Colaborador_widget.dart",
+      "output": "src/components/EditarColaborador.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Editar_Conta_Pagar\\Editar_Conta_Pagar_widget.dart",
+      "output": "src/components/EditarContaPagar.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Editar_Ficha_Anamnese\\Editar_Ficha_Anamnese_widget.dart",
+      "output": "src/components/EditarFichaAnamnese.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Editar_Item_Editar\\Editar_Item_Editar_widget.dart",
+      "output": "src/components/EditarItemEditar.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Editar_Item_Nova\\Editar_Item_Nova_widget.dart",
+      "output": "src/components/EditarItemNova.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Editar_Pergunta\\Editar_Pergunta_widget.dart",
+      "output": "src/components/EditarPergunta.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Editar_Plano_Entrada\\Editar_Plano_Entrada_widget.dart",
+      "output": "src/components/EditarPlanoEntrada.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Editar_PlanoCopy\\Editar_PlanoCopy_widget.dart",
+      "output": "src/components/EditarPlanoCopy.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Editar_Recebido\\Editar_Recebido_widget.dart",
+      "output": "src/components/EditarRecebido.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\EditarAgendamento\\EditarAgendamento_widget.dart",
+      "output": "src/components/EditarAgendamento.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\G_Colab_DP_Popover\\G_Colab_DP_Popover_widget.dart",
+      "output": "src/components/GColabDPPopover.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\G_Colab_Editar_DP_PopoverCopy\\G_Colab_Editar_DP_PopoverCopy_widget.dart",
+      "output": "src/components/GColabEditarDPPopoverCopy.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Historico_Plano\\Historico_Plano_widget.dart",
+      "output": "src/components/HistoricoPlano.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Item_Editar\\Item_Editar_widget.dart",
+      "output": "src/components/ItemEditar.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Item_Novo\\Item_Novo_widget.dart",
+      "output": "src/components/ItemNovo.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Menu_Central\\Menu_Central_widget.dart",
+      "output": "src/components/MenuCentral.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Menu_Gestao\\Menu_Gestao_widget.dart",
+      "output": "src/components/MenuGestao.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Nova_Ficha_AnamneseCopy\\Nova_Ficha_AnamneseCopy_widget.dart",
+      "output": "src/components/NovaFichaAnamneseCopy.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Nova_Pergunta\\Nova_Pergunta_widget.dart",
+      "output": "src/components/NovaPergunta.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Novo_Cadastro\\Novo_Cadastro_widget.dart",
+      "output": "src/components/NovoCadastro.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Novo_Colaborador\\Novo_Colaborador_widget.dart",
+      "output": "src/components/NovoColaborador.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Novo_Plano_Entrada\\Novo_Plano_Entrada_widget.dart",
+      "output": "src/components/NovoPlanoEntrada.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Novo_PlanoCopy\\Novo_PlanoCopy_widget.dart",
+      "output": "src/components/NovoPlanoCopy.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Novo_Procedimento\\Novo_Procedimento_widget.dart",
+      "output": "src/components/NovoProcedimento.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\NovoAgendamento\\NovoAgendamento_widget.dart",
+      "output": "src/components/NovoAgendamento.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Perfil_Paciente\\Perfil_Paciente_widget.dart",
+      "output": "src/components/PerfilPaciente.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Relogio\\Relogio_widget.dart",
+      "output": "src/components/Relogio.tsx"
+    },
+    {
+      "source": "extracted_code\\components\\Versao\\Versao_widget.dart",
+      "output": "src/components/Versao.tsx"
+    }
+  ],
+  "pages": [
+    {
+      "source": "extracted_code\\agenda.dart",
+      "output": "src/pages/AgendaPage.tsx"
+    },
+    {
+      "source": "extracted_code\\alterarsenha.dart",
+      "output": "src/pages/AlterarsenhaPage.tsx"
+    },
+    {
+      "source": "extracted_code\\analitcs.dart",
+      "output": "src/pages/AnalitcsPage.tsx"
+    },
+    {
+      "source": "extracted_code\\cadastro.dart",
+      "output": "src/pages/CadastroPage.tsx"
+    },
+    {
+      "source": "extracted_code\\capa.dart",
+      "output": "src/pages/CapaPage.tsx"
+    },
+    {
+      "source": "extracted_code\\editarCadastroCalendarioAgenda.dart",
+      "output": "src/pages/EditarCadastroCalendarioAgendaPage.tsx"
+    },
+    {
+      "source": "extracted_code\\emailrecuperar.dart",
+      "output": "src/pages/EmailrecuperarPage.tsx"
+    },
+    {
+      "source": "extracted_code\\Evolucao.dart",
+      "output": "src/pages/EvolucaoPage.tsx"
+    },
+    {
+      "source": "extracted_code\\gestao.dart",
+      "output": "src/pages/GestaoPage.tsx"
+    },
+    {
+      "source": "extracted_code\\login.dart",
+      "output": "src/pages/LoginPage.tsx"
+    }
+  ],
+  "custom_functions": [
+    {
+      "source": "extracted_code\\custom_functions\\addDays.dart",
+      "output": "src/lib/custom-functions/addDays.ts"
+    },
+    {
+      "source": "extracted_code\\custom_functions\\calcTotalPlano.dart",
+      "output": "src/lib/custom-functions/calcTotalPlano.ts"
+    },
+    {
+      "source": "extracted_code\\custom_functions\\calcularHoraFim.dart",
+      "output": "src/lib/custom-functions/calcularHoraFim.ts"
+    },
+    {
+      "source": "extracted_code\\custom_functions\\calcularLucro.dart",
+      "output": "src/lib/custom-functions/calcularLucro.ts"
+    },
+    {
+      "source": "extracted_code\\custom_functions\\converterHoraParaDateTime.dart",
+      "output": "src/lib/custom-functions/converterHoraParaDateTime.ts"
+    },
+    {
+      "source": "extracted_code\\custom_functions\\converterTextoParaData.dart",
+      "output": "src/lib/custom-functions/converterTextoParaData.ts"
+    },
+    {
+      "source": "extracted_code\\custom_functions\\criarDataHora.dart",
+      "output": "src/lib/custom-functions/criarDataHora.ts"
+    },
+    {
+      "source": "extracted_code\\custom_functions\\gerarListaNumeros.dart",
+      "output": "src/lib/custom-functions/gerarListaNumeros.ts"
+    },
+    {
+      "source": "extracted_code\\custom_functions\\getCalendarDays2025.dart",
+      "output": "src/lib/custom-functions/getCalendarDays2025.ts"
+    },
+    {
+      "source": "extracted_code\\custom_functions\\getFirstDayOfMonthFromName.dart",
+      "output": "src/lib/custom-functions/getFirstDayOfMonthFromName.ts"
+    },
+    {
+      "source": "extracted_code\\custom_functions\\getFirstDayOfNextMonthFromName.dart",
+      "output": "src/lib/custom-functions/getFirstDayOfNextMonthFromName.ts"
+    },
+    {
+      "source": "extracted_code\\custom_functions\\getNextMonth.dart",
+      "output": "src/lib/custom-functions/getNextMonth.ts"
+    },
+    {
+      "source": "extracted_code\\custom_functions\\getPreviousMonth.dart",
+      "output": "src/lib/custom-functions/getPreviousMonth.ts"
+    },
+    {
+      "source": "extracted_code\\custom_functions\\isSameDay.dart",
+      "output": "src/lib/custom-functions/isSameDay.ts"
+    },
+    {
+      "source": "extracted_code\\custom_functions\\monthNameToNumberStringmonth.dart",
+      "output": "src/lib/custom-functions/monthNameToNumberStringmonth.ts"
+    },
+    {
+      "source": "extracted_code\\custom_functions\\ptrToDouble.dart",
+      "output": "src/lib/custom-functions/ptrToDouble.ts"
+    },
+    {
+      "source": "extracted_code\\custom_functions\\somarValores.dart",
+      "output": "src/lib/custom-functions/somarValores.ts"
+    },
+    {
+      "source": "extracted_code\\custom_functions\\somarValoresContaReceber.dart",
+      "output": "src/lib/custom-functions/somarValoresContaReceber.ts"
+    },
+    {
+      "source": "extracted_code\\custom_functions\\stringToInt.dart",
+      "output": "src/lib/custom-functions/stringToInt.ts"
+    },
+    {
+      "source": "extracted_code\\custom_functions\\textoParaDouble.dart",
+      "output": "src/lib/custom-functions/textoParaDouble.ts"
+    },
+    {
+      "source": "extracted_code\\custom_functions\\yearToNextStartDate.dart",
+      "output": "src/lib/custom-functions/yearToNextStartDate.ts"
+    },
+    {
+      "source": "extracted_code\\custom_functions\\yearToStartDate.dart",
+      "output": "src/lib/custom-functions/yearToStartDate.ts"
+    }
+  ]
+}
