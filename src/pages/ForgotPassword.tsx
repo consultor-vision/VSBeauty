@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -21,11 +22,15 @@ const ForgotPassword = () => {
       return;
     }
     setLoading(true);
-    // TODO: Connect to Supabase Auth resetPasswordForEmail
-    setTimeout(() => {
-      setLoading(false);
-      setSent(true);
-    }, 1200);
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: `${window.location.origin}/redefinir-senha`,
+    });
+    setLoading(false);
+    if (error) {
+      toast({ title: "Não foi possível enviar", description: error.message, variant: "destructive" });
+      return;
+    }
+    setSent(true);
   };
 
   return (

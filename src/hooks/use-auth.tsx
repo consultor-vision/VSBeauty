@@ -35,21 +35,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return;
       }
 
-      setUser(userData);
-
-      if (userData.id_companhia) {
-        const { data: companyData, error: companyError } = await supabase
-          .from("companhia")
-          .select("*")
-          .eq("id", userData.id_companhia)
-          .maybeSingle();
-
-        if (companyError || !companyData) {
-          console.error("Erro ao buscar empresa:", companyError);
-        } else {
-          setCompany(companyData);
-        }
+      // Sessão restaurada também precisa respeitar bloqueio de acesso.
+      if (userData.acesso === false || !userData.id_companhia) {
+        await supabase.auth.signOut();
+        setUser(null);
+        setCompany(null);
+        return;
       }
+
+      const { data: companyData, error: companyError } = await supabase
+        .from("companhia")
+        .select("*")
+        .eq("id", userData.id_companhia)
+        .maybeSingle();
+
+      if (companyError || !companyData || companyData.empresa_ativa === false) {
+        console.error("Empresa inválida ou inativa:", companyError);
+        await supabase.auth.signOut();
+        setUser(null);
+        setCompany(null);
+        return;
+      }
+
+      setUser(userData);
+      setCompany(companyData);
     } catch (error) {
       console.error("Erro inesperado:", error);
     }

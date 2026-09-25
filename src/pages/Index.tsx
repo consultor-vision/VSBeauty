@@ -632,7 +632,7 @@ const Index = () => {
         if (plansError) throw plansError;
 
         const ids = (plansData || []).map((p: any) => p.id);
-        let realizadasMap: Record<number, number> = {};
+        const realizadasMap: Record<number, number> = {};
         
         if (ids.length > 0) {
           const { data: agData, error: agError } = await supabase

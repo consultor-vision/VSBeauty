@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import SplashVideo from "./components/SplashVideo";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Index from "./pages/Index";
 import Cadastro from "./pages/Cadastro";
 import Evolucao from "./pages/Evolucao";
@@ -52,6 +53,7 @@ const App = () => {
               <Route path="/" element={<Login />} />
               <Route path="/login" element={<Login />} />
               <Route path="/esqueci-senha" element={<ForgotPassword />} />
+              <Route path="/redefinir-senha" element={<ResetPassword />} />
               <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
               <Route path="/agenda" element={<ProtectedRoute><Index /></ProtectedRoute>} />
               <Route path="/cadastro" element={<ProtectedRoute><Cadastro /></ProtectedRoute>} />
