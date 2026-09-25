@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
+import { totaisPorStatus, formatarBRL, type TotaisFinanceiros } from "@/lib/flutterflow/gestao-functions";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { format, parseISO, isValid } from "date-fns";
@@ -31,11 +32,11 @@ interface EstoqueItem {
 }
 interface ContaPagar {
   id: number; status: string; dataVencimento: string; categoria: string; item: string; valor: string;
-  dataEmissao: string; tipoPagamento: string; parcela: string; descricao: string;
+  dataEmissao: string; tipoPagamento: string; parcela: string; descricao: string; valorNumero: number;
 }
 interface ContaReceber {
   id: number; status: string; dataVencimento: string; procedimento: string; cliente: string; valor: string;
-  dataEmissao: string; tipoPagamento: string; parcela: string; descricao: string; qtdSessoes: string; statusFinanceiro: string;
+  dataEmissao: string; tipoPagamento: string; parcela: string; descricao: string; qtdSessoes: string; statusFinanceiro: string; valorNumero: number;
 }
 
 // ── Real Data Fetchers will be implemented below ──
@@ -246,6 +247,7 @@ const Gestao = () => {
       categoria: (c.categoria as any)?.Nome || "-",
       item: (c.item_financeiro as any)?.item || "-",
       valor: (c.valor || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+      valorNumero: Number(c.valor) || 0,
       dataEmissao: c.Data_Emissao ? format(new Date(c.Data_Emissao), "dd/MM/yyyy") : "-",
       tipoPagamento: c.Tipo_Pagamento || "-",
       parcela: String(c.Parcela || 1),
@@ -267,6 +269,7 @@ const Gestao = () => {
       procedimento: c.nome_plano || (c.procedimentos as any)?.nome || "-",
       cliente: (c.clientes as any)?.nome || "-",
       valor: (c.valor_procediemtno || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+      valorNumero: Number(c.valor_procediemtno) || 0,
       dataEmissao: c.created_at ? format(new Date(c.created_at), "dd/MM/yyyy") : "-",
       tipoPagamento: c.forma_pagamento || "-",
       parcela: String(c.parcelas || 1),
@@ -1368,12 +1371,19 @@ const EstoqueView = ({ estoque, onEdit }: { estoque: EstoqueItem[]; onEdit: (e: 
   </div>
 );
 
+/** Totais reais por status (regra do gestao.dart do FlutterFlow). */
+const TotaisLinha = ({ totais, labels }: { totais: TotaisFinanceiros; labels: [string, string, string] }) => (
+  <>
+    <span>{labels[0]}: <span className="text-gold">{formatarBRL(totais.pago)}</span></span>
+    <span>{labels[1]}: <span className="text-foreground">{formatarBRL(totais.pendente)}</span></span>
+    <span>{labels[2]}: <span className="text-destructive">{formatarBRL(totais.atrasado)}</span></span>
+  </>
+);
+
 const ContasPagarView = ({ contas, onDescricao, onEdit }: { contas: ContaPagar[]; onDescricao: (c: ContaPagar) => void; onEdit: (c: ContaPagar) => void }) => (
   <div className="flex-1 min-h-0 h-auto max-h-none overflow-auto custom-scrollbar px-4 pt-4 [&_td]:py-[14.2px] [&_th]:h-[52px] text-[20.4px]">
     <div className="flex gap-6 mb-4 text-xs">
-      <span>Total Pago: <span className="text-gold">R$ 4.697,55</span></span>
-      <span>Total a Pagar: <span className="text-foreground">R$ 0,00</span></span>
-      <span>Total Atrasado: <span className="text-destructive">R$ 21.678,99</span></span>
+      <TotaisLinha totais={totaisPorStatus(contas)} labels={["Total Pago", "Total a Pagar", "Total Atrasado"]} />
     </div>
     <Table>
       <TableHeader>
@@ -1407,9 +1417,7 @@ const ContasPagarView = ({ contas, onDescricao, onEdit }: { contas: ContaPagar[]
 const ContasReceberView = ({ contas, onDescricao, onEdit }: { contas: ContaReceber[]; onDescricao: (c: ContaReceber) => void; onEdit: (c: ContaReceber) => void }) => (
   <div className="flex-1 min-h-0 h-auto max-h-none overflow-auto custom-scrollbar px-4 pt-4 [&_td]:py-2 [&_th]:h-9 text-[13.3px]">
     <div className="flex gap-6 mb-4 text-xs">
-      <span>Total Recebido: <span className="text-gold">R$ 247.314,55</span></span>
-      <span>Total Pendente: <span className="text-foreground">R$ 15.000,00</span></span>
-      <span>Total Atrasado: <span className="text-destructive">R$ 76.195,00</span></span>
+      <TotaisLinha totais={totaisPorStatus(contas.map((c) => ({ status: c.statusFinanceiro, valorNumero: c.valorNumero })))} labels={["Total Recebido", "Total Pendente", "Total Atrasado"]} />
     </div>
     <Table>
       <TableHeader>
