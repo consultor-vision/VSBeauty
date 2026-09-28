@@ -13,6 +13,7 @@ import { NewUserModal } from "@/components/admin/NewUserModal";
 import { EditCompanyModal } from "@/components/admin/EditCompanyModal";
 import { EditVersionModal } from "@/components/admin/EditVersionModal";
 import { NewVersionModal } from "@/components/admin/NewVersionModal";
+import { GitSyncDiagnosis } from "@/components/admin/GitSyncDiagnosis";
 import {
   Dialog,
   DialogContent,
@@ -320,6 +321,9 @@ const Administracao = () => {
                   </Button>
                 </div>
               </div>
+            </div>
+            <div className="mt-6">
+              <GitSyncDiagnosis />
             </div>
           </TabsContent>
 
