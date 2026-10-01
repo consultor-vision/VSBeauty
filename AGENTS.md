@@ -1,0 +1,1 @@
+- WhatsApp notices are sent by the `whatsapp-notify` edge function (uazapi), triggered by DB triggers via pg_net and authenticated with a Vault secret; logged idempotently in `whatsapp_envios` — why: keeps credentials server-side and prevents duplicate sends.

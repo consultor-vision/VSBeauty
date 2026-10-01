@@ -1211,6 +1211,51 @@ export type Database = {
         }
         Relationships: []
       }
+      whatsapp_envios: {
+        Row: {
+          chave: string
+          created_at: string
+          erro: string | null
+          id: string
+          id_agendamento: number | null
+          id_cliente: number | null
+          id_companhia: number | null
+          resposta: Json | null
+          status: string
+          telefone: string | null
+          tipo: string
+          updated_at: string
+        }
+        Insert: {
+          chave: string
+          created_at?: string
+          erro?: string | null
+          id?: string
+          id_agendamento?: number | null
+          id_cliente?: number | null
+          id_companhia?: number | null
+          resposta?: Json | null
+          status?: string
+          telefone?: string | null
+          tipo: string
+          updated_at?: string
+        }
+        Update: {
+          chave?: string
+          created_at?: string
+          erro?: string | null
+          id?: string
+          id_agendamento?: number | null
+          id_cliente?: number | null
+          id_companhia?: number | null
+          resposta?: Json | null
+          status?: string
+          telefone?: string | null
+          tipo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       vw_agenda_clientes: {
@@ -1476,6 +1521,7 @@ export type Database = {
               error: true
             } & "Could not choose the best candidate function between: public.fn_recalc_plano(p_id_plano => int8), public.fn_recalc_plano(p_id_plano => int4). Try renaming the parameters or the function itself in the database so function overloading can be resolved"
           }
+      get_whatsapp_webhook_secret: { Args: never; Returns: string }
       is_vsb_admin: { Args: never; Returns: boolean }
       rollback_estoque_por_agendamento: {
         Args: { p_id_agendamento: number }
@@ -1525,6 +1571,10 @@ export type Database = {
             Returns: undefined
           }
       verificar_e_atualizar_contas: { Args: never; Returns: undefined }
+      whatsapp_dispatch: {
+        Args: { p_id: number; p_tipo: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
