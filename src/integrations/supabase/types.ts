@@ -1571,6 +1571,10 @@ export type Database = {
             Returns: undefined
           }
       verificar_e_atualizar_contas: { Args: never; Returns: undefined }
+      whatsapp_dispatch: {
+        Args: { p_id: number; p_tipo: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
